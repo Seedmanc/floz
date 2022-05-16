@@ -1,11 +1,12 @@
 import Phaser from 'phaser'
 
 import GameScene from './scenes/Game'
+import GameoverScene from "~/scenes/Gameover";
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
-	width: 800,
-	height: 800,
+	width: 1000,
+	height: 1000,
 	backgroundColor: '#bad3ec',
 	fps: {
 		target: 60
@@ -18,7 +19,7 @@ const config: Phaser.Types.Core.GameConfig = {
 			debug: true
 		}
 	},
-	scene: [GameScene]
+	scene: [GameScene, GameoverScene]
 }
 
 export default new Phaser.Game(config)

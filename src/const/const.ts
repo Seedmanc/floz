@@ -2,7 +2,12 @@ enum keys {
     WallLeft,
     WallRight,
     Water,
-    Player
+    Player,
+    Blob,
+    Score,
+    HP,
+    HpBar,
+    Dead
 }
 
 
