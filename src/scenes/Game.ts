@@ -13,6 +13,7 @@ export default class GameScene extends Phaser.Scene
     value;
     hpBar;
     health;
+    waterLevel;
 
 	constructor()
 	{
@@ -34,24 +35,26 @@ export default class GameScene extends Phaser.Scene
     init() {
 	    this.health = 2;
 	    this.value = 0;
+	    this.waterLevel = 0;
     }
 
     create()
     {
         this.physics.world.setBoundsCollision();
 
-        this.wallLeft = this.physics.add.staticImage(0, 0,K.WallLeft).setOrigin(0,0);
-        this.wallLeft.body.updateFromGameObject();
-
         this.wallRight = this.physics.add.staticImage(this.scale.width, this.scale.height,K.WallRight).setOrigin(1,1);
         this.wallRight.setY(this.scale.height - (this.scale.height - this.wallRight.height)/2 ).body.updateFromGameObject();
 
-        this.waterSurface = this.physics.add.staticImage(0, 0,K.Water).setOrigin(0,0);
-        this.waterSurface.setY(this.scale.height - this.waterSurface.height).body.updateFromGameObject();
-        this.player = this.physics.add.image(this.scale.width/2, this.scale.height-this.waterSurface.height*1.6, K.Player).setCollideWorldBounds(true);
+        this.waterSurface = this.physics.add.staticImage(0, 0,K.Water).setOrigin(0,1);
+        this.waterSurface.setY(this.scale.height ).body.updateFromGameObject();
+
+        this.wallLeft = this.physics.add.staticImage(0, 0,K.WallLeft).setOrigin(0,0);
+        this.wallLeft.body.updateFromGameObject();
+
+        this.player = this.physics.add.image(this.scale.width/2, this.scale.height-this.waterSurface.height*1.57, K.Player).setCollideWorldBounds(true);
         this.physics.add.collider(this.waterSurface, this.player);
 
-        this.player. setDragX(300)
+        this.player. setDragX(200)
 
         this.blobs = this.physics.add.group({/* runChildUpdate: true,*/ immovable: true, allowGravity: false });
         for(let i=0; i<3; i++) {
@@ -95,8 +98,8 @@ export default class GameScene extends Phaser.Scene
         bullet.checkWorldBounds = true;
         bullet.rotation = this.player.rotation;
         let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, this.input.activePointer.x, this.input.activePointer.y);
-        bullet.body.velocity.x = Math.cos(angle) * 300;
-        bullet.body.velocity.y = Math.sin(angle) * 300;
+        bullet.body.velocity.x = Math.cos(angle) * 350;
+        bullet.body.velocity.y = Math.sin(angle) * 350;
         this.player.body.setVelocityX( -Math.cos(angle)* 300 )
     }
 
@@ -121,7 +124,7 @@ export default class GameScene extends Phaser.Scene
 	    this.hpBar.setScale(1, this.health);
 	    if (this.health == 0) {
             this.scene.stop('game');
-            this.scene.start('gameover')
+            this.scene.start('gameover', {win: false})
         }
     }
 
@@ -130,9 +133,27 @@ export default class GameScene extends Phaser.Scene
 	    this.score.text = this.value;
 	    this.blobs.killAndHide(blob);
 	    blob.disableBody(true, true)
+        this.waterLevel+=100;
+	    this.player.y -=2;
+	    if (this.blobs.countActive() == 0) {
+	        this.value += Math.round((this.scale.height - this.waterSurface.displayHeight-100)/10);
+            this.scene.stop('game');
+            this.scene.start('gameover', {win: true, score: this.value})
+        }
     }
 
     update() {
+	    if (this.waterSurface.displayHeight < this.scale.height - 50*4) {
+            this.waterSurface.setScale(1,1+this.waterLevel/2500).body.updateFromGameObject();
+            this.waterLevel ++ ;
+        } else {
+            this.scene.stop('game');
+            this.scene.start('gameover', {win: false})
+        }
+	    if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) {
+            this.scene.stop('game');
+            this.scene.start('gameover', {win: false})
+        }
 
     }
 }
