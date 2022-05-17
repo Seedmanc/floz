@@ -7,7 +7,8 @@ enum keys {
     Score,
     HP,
     HpBar,
-    Dead
+    Dead,
+    Ice
 }
 
 

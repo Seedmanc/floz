@@ -14,6 +14,7 @@ export default class GameScene extends Phaser.Scene
     hpBar;
     health;
     waterLevel;
+    icicles;
 
 	constructor()
 	{
@@ -30,6 +31,7 @@ export default class GameScene extends Phaser.Scene
         this.load.image(K.Score, 'score.png')
         this.load.image(K.HP, 'hp.jpg')
         this.load.image(K.HpBar, 'hpbar.png')
+        this.load.image(K.Ice, 'ice.png')
     }
 
     init() {
@@ -40,6 +42,8 @@ export default class GameScene extends Phaser.Scene
 
     create()
     {
+
+        this.input.mouse.disableContextMenu();
         this.physics.world.setBoundsCollision();
 
         this.wallRight = this.physics.add.staticImage(this.scale.width, this.scale.height,K.WallRight).setOrigin(1,1);
@@ -78,7 +82,13 @@ export default class GameScene extends Phaser.Scene
         });
 
         this.bullets = this.physics.add.group({allowGravity: false });
-        this.input.on('pointerup', this.shoot, this);
+        this.icicles = this.physics.add.group({allowGravity: true });
+        this.input.on('pointerup', (pointer) => {
+            if (pointer.leftButtonReleased())
+                this.shoot()
+            else if (pointer.rightButtonReleased())
+                this.shootIce()
+        });
 
         this.input.activePointer.x = this.scale.width/2;
         this.input.activePointer.y = this.scale.height/2;
@@ -89,18 +99,36 @@ export default class GameScene extends Phaser.Scene
         this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
         this.physics.add.collider(this.player, this.wallLeft )
         this.physics.add.collider(this.player, this.wallRight )
+        this.physics.add.collider(this.icicles, this.wallRight )
+        this.physics.add.collider(this.icicles, this.wallLeft)
+        this.physics.add.overlap(this.icicles, this.blobs, this.cutBlob, undefined, this);
+        this.physics.add.collider(this.icicles, this.player, () => {
+            this.scene.stop('game');
+            this.scene.start('gameover', {win: false})
+        }, undefined, this);
     }
 
     shoot() {
-        let bullet = this.bullets.create(this.player.x , this.player.y, K.Blob).setScale(0.5).refreshBody().setDepth(-1);
+        let bullet = this.bullets.create(this.player.x , this.player.y, K.Blob).setScale(0.5).refreshBody().setDepth(-1).setFriction(1, 1);
         bullet.body.setCircle(18).setOffset(7,7)
         bullet.outOfBoundsKill = true;
         bullet.checkWorldBounds = true;
-        bullet.rotation = this.player.rotation;
         let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, this.input.activePointer.x, this.input.activePointer.y);
         bullet.body.velocity.x = Math.cos(angle) * 350;
-        bullet.body.velocity.y = Math.sin(angle) * 350;
+        bullet.body.velocity.y = Math.sin(angle) * 360;
         this.player.body.setVelocityX( -Math.cos(angle)* 300 )
+    }
+
+    shootIce() {
+        let bullet = this.icicles.create(this.player.x , this.player.y, K.Ice).setScale().refreshBody().setDepth(-1).setBounce(1.1);
+        bullet.body.setSize(10,10);
+        bullet.outOfBoundsKill = true;
+        bullet.checkWorldBounds = true;
+        let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, this.input.activePointer.x, this.input.activePointer.y);
+        bullet.rotation = angle;
+        bullet.body.velocity.x = Math.cos(angle) * 700;
+        bullet.body.velocity.y = Math.sin(angle) * 700;
+        this.player.body.setVelocityX( -Math.cos(angle)* 500 )
     }
 
     slideDown(  etc, bullet) {
@@ -112,6 +140,10 @@ export default class GameScene extends Phaser.Scene
         this.bullets.killAndHide(bullet);
         bullet.active = false;
         bullet.disableBody(true, true);
+        blob.setAccelerationY(200)
+    }
+
+    cutBlob(bullet, blob) {
         blob.setAccelerationY(200)
     }
 
@@ -155,5 +187,8 @@ export default class GameScene extends Phaser.Scene
             this.scene.start('gameover', {win: false})
         }
 
+	    this.icicles.getChildren().forEach(c => {
+	        c.rotation = Math.atan2(c.body.velocity.y, c.body.velocity.x)
+        })
     }
 }
