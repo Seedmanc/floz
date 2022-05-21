@@ -1,20 +1,26 @@
 import Phaser from 'phaser'
 import K from '~/const/const';
+import Player from "~/models/Player";
+import StaticGroup = Phaser.Physics.Arcade.StaticGroup;
+import Icicle from "~/models/Icicle";
+import Blob from "~/models/Blob";
+import Group = Phaser.Physics.Arcade.Group;
+import Image = Phaser.Physics.Arcade.Image;
 
 export default class GameScene extends Phaser.Scene
 {
-    wallLeft;
-    wallRight;
-    waterSurface;
-    player;
-    blobs;
-    bullets;
-    score;
-    value;
-    hpBar;
-    health;
-    waterLevel;
-    icicles;
+    wallLeft!: Image
+    waterSurface!: Image
+    player!: Player;
+    blobs!: Group
+    bullets!: Group;
+    score!: Phaser.GameObjects.Text;
+    value!: number;
+    hpBar!: Phaser.GameObjects.Image;
+    health!: number;
+    waterLevel!: number;
+    icicles!: Group
+    walls!: StaticGroup
 
 	constructor()
 	{
@@ -46,25 +52,27 @@ export default class GameScene extends Phaser.Scene
         this.input.mouse.disableContextMenu();
         this.physics.world.setBoundsCollision();
 
-        this.wallRight = this.physics.add.staticImage(this.scale.width, this.scale.height,K.WallRight).setOrigin(1,1);
-        this.wallRight.setY(this.scale.height - (this.scale.height - this.wallRight.height)/2 ).body.updateFromGameObject();
+        this.walls = this.physics.add.staticGroup( )
+        this.walls.create(this.scale.width, this.scale.height, K.WallRight).setOrigin(1,0.5)
+           .setY(this.scale.height - (this.scale.height  )/2 ).body.updateFromGameObject();
 
         this.waterSurface = this.physics.add.staticImage(0, 0,K.Water).setOrigin(0,1);
         this.waterSurface.setY(this.scale.height ).body.updateFromGameObject();
 
-        this.wallLeft = this.physics.add.staticImage(0, 0,K.WallLeft).setOrigin(0,0);
+        this.wallLeft = this.walls.create(0, 0, K.WallLeft).setOrigin(0,0);
         this.wallLeft.body.updateFromGameObject();
 
-        this.player = this.physics.add.image(this.scale.width/2, this.scale.height-this.waterSurface.height*1.57, K.Player).setCollideWorldBounds(true);
+        this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*2.1);
+        this.add.existing(this.player)
+
         this.physics.add.collider(this.waterSurface, this.player);
 
-        this.player. setDragX(200)
 
-        this.blobs = this.physics.add.group({/* runChildUpdate: true,*/ immovable: true, allowGravity: false });
+        this.blobs = this.physics.add.group({ immovable: true, allowGravity: false , classType: Blob});
         for(let i=0; i<3; i++) {
             for (let j=0; j<12-i; j++) {
                 let size = 50;
-                this.blobs.create(this.scale.width/2-size*12/2+j*size + i*size/2 + size/2 , size*2 + size * i/1.1, K.Blob).body.setCircle(21).setOffset(4,4)
+                this.blobs.create(this.scale.width/2-size*12/2+j*size + i*size/2 + size/2 , size*2 + size * i/1.1)
             }
         }
         let hp = this.add.image(this.wallLeft.width/2 , this.scale.height-this.waterSurface.height-100, K.HP);
@@ -72,7 +80,7 @@ export default class GameScene extends Phaser.Scene
         this.hpBar.setOrigin(0.5,1).setScale(1,this.health);
 
         let score = this.add.image(this.wallLeft.width/2 , this.scale.height-this.waterSurface.height -100- hp.height, K.Score);
-        this.score = this.add.text(score.x+120/3, score.y  , this.value, {
+        this.score = this.add.text(score.x+120/3, score.y  , this.value+'', {
             fontFamily: 'Quicksand',
             fontSize: '32px',
             color: '#5D7B95',
@@ -81,26 +89,18 @@ export default class GameScene extends Phaser.Scene
             shadow: { color: '#8FA8BE', fill: true, offsetX: 1, offsetY: 2, blur: 1, stroke: false }
         });
 
-        this.bullets = this.physics.add.group({allowGravity: false });
-        this.icicles = this.physics.add.group({allowGravity: true });
-        this.input.on('pointerup', (pointer) => {
-            if (pointer.leftButtonReleased())
-                this.shoot()
-            else if (pointer.rightButtonReleased())
-                this.shootIce()
-        });
+        this.bullets = this.physics.add.group({allowGravity: true });
+        this.icicles = this.physics.add.group({allowGravity: true, classType: Icicle });
 
         this.input.activePointer.x = this.scale.width/2;
         this.input.activePointer.y = this.scale.height/2;
-        this.physics.add.collider( this.bullets, this.wallLeft, this.slideDown,undefined, this)
-        this.physics.add.collider(this.bullets, this.wallRight , this.slideDown, undefined,this)
+        this.physics.add.collider( this.bullets, this.walls, this.slideDown,undefined, this)
         this.physics.add.collider(this.bullets, this.blobs , this.dropBlob, undefined,this)
         this.physics.add.collider(this.player, this.blobs, this.hitPlayer, undefined, this)
         this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
-        this.physics.add.collider(this.player, this.wallLeft )
-        this.physics.add.collider(this.player, this.wallRight )
-        this.physics.add.collider(this.icicles, this.wallRight )
-        this.physics.add.collider(this.icicles, this.wallLeft)
+        this.physics.add.collider(this.player, this.walls )
+        this.physics.add.collider(this.icicles, this.walls )
+        this.physics.add.overlap(this.icicles, this.waterSurface, (w,icicle) => this.icicles.killAndHide(icicle['disableBody'](true,true)) )
         this.physics.add.overlap(this.icicles, this.blobs, this.cutBlob, undefined, this);
         this.physics.add.collider(this.icicles, this.player, () => {
             this.scene.stop('game');
@@ -108,50 +108,26 @@ export default class GameScene extends Phaser.Scene
         }, undefined, this);
     }
 
-    shoot() {
-        let bullet = this.bullets.create(this.player.x , this.player.y, K.Blob).setScale(0.5).refreshBody().setDepth(-1).setFriction(1, 1);
-        bullet.body.setCircle(18).setOffset(7,7)
-        bullet.outOfBoundsKill = true;
-        bullet.checkWorldBounds = true;
-        let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, this.input.activePointer.x, this.input.activePointer.y);
-        bullet.body.velocity.x = Math.cos(angle) * 350;
-        bullet.body.velocity.y = Math.sin(angle) * 360;
-        this.player.body.setVelocityX( -Math.cos(angle)* 300 )
-    }
 
-    shootIce() {
-        let bullet = this.icicles.create(this.player.x , this.player.y, K.Ice).setScale().refreshBody().setDepth(-1).setBounce(1.1);
-        bullet.body.setSize(10,10);
-        bullet.outOfBoundsKill = true;
-        bullet.checkWorldBounds = true;
-        let angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, this.input.activePointer.x, this.input.activePointer.y);
-        bullet.rotation = angle;
-        bullet.body.velocity.x = Math.cos(angle) * 700;
-        bullet.body.velocity.y = Math.sin(angle) * 700;
-        this.player.body.setVelocityX( -Math.cos(angle)* 500 )
-    }
-
-    slideDown(  etc, bullet) {
+    slideDown(  obj1: Phaser.GameObjects.GameObject, obj2) {
+        let bullet  = [obj1, obj2].find(obj => obj.texture.key == K.Blob)
 	    this.bullets.kill(bullet)
-        bullet.setAccelerationY(200);
+        bullet.body.setDragY(175);
     }
 
     dropBlob(bullet, blob) {
         this.bullets.killAndHide(bullet);
         bullet.active = false;
         bullet.disableBody(true, true);
-        blob.setAccelerationY(200)
+        blob.drop()
     }
 
     cutBlob(bullet, blob) {
-        blob.setAccelerationY(200)
+        blob.drop()
     }
 
     hitPlayer(player, blob) {
-	    this.blobs.killAndHide(blob)
-	    blob.disableBody(true, true);
-	    blob.setPosition(0,0)
-        blob.active = false
+        blob.kill()
         this.health--;
 	    this.hpBar.setScale(1, this.health);
 	    if (this.health == 0) {
@@ -162,9 +138,8 @@ export default class GameScene extends Phaser.Scene
 
     hitWater(water, blob) {
 	    this.value += 10;
-	    this.score.text = this.value;
-	    this.blobs.killAndHide(blob);
-	    blob.disableBody(true, true)
+	    this.score.text = this.value+'';
+	    blob.kill();
         this.waterLevel+=100;
 	    this.player.y -=2;
 	    if (this.blobs.countActive() == 0) {
@@ -188,7 +163,7 @@ export default class GameScene extends Phaser.Scene
         }
 
 	    this.icicles.getChildren().forEach(c => {
-	        c.rotation = Math.atan2(c.body.velocity.y, c.body.velocity.x)
+	        c['rotation'] = Math.atan2(c.body.velocity.y, c.body.velocity.x)
         })
     }
 }
