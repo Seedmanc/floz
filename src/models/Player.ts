@@ -27,6 +27,7 @@ export default class Player extends Phaser.GameObjects.Container
         this.add(this.sprite)
 
         scene.physics.add.existing(this)
+        scene.add.existing(this)
 
         const body = this.body as Phaser.Physics.Arcade.Body
         body.setSize(this.sprite.width * 0.8, this.sprite.height * 0.9)
@@ -43,7 +44,6 @@ export default class Player extends Phaser.GameObjects.Container
             else if (pointer.rightButtonReleased())
                 this.shootIce()
         });
-
     }
 
     shoot() {
@@ -52,15 +52,14 @@ export default class Player extends Phaser.GameObjects.Container
         bullet.outOfBoundsKill = true;
         bullet.checkWorldBounds = true;
         let angle = Phaser.Math.Angle.Between(this.x, this.y, this.inputs.activePointer.x, this.inputs.activePointer.y);
-        bullet.body.velocity.x = Math.cos(angle) * 450;
-        bullet.body.velocity.y = Math.sin(angle) * 460;
+        bullet.body.velocity.x = Math.cos(angle) * 500;
+        bullet.body.velocity.y = Math.sin(angle) * 510;
         this.body.setVelocityX( -Math.cos(angle)* 300 )
     }
 
     shootIce() {
         let bullet = this.scene.icicles.create(this.x , this.y).setBounce(1.1) .setCollideWorldBounds(true)
         let angle = Phaser.Math.Angle.Between(this.x, this.y, this.inputs.activePointer.x, this.inputs.activePointer.y);
-        bullet.rotation = angle;
         bullet.body.velocity.x = Math.cos(angle) * 800;
         bullet.body.velocity.y = Math.sin(angle) * 800;
         this.body.setVelocityX( -Math.cos(angle) * 500 )
@@ -74,4 +73,5 @@ export default class Player extends Phaser.GameObjects.Container
     {
 
     }
+
 }

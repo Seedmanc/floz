@@ -1,5 +1,4 @@
 import Phaser from 'phaser'
-
 import GameScene from './scenes/Game'
 import GameoverScene from "~/scenes/Gameover";
 

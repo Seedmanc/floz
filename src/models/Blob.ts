@@ -16,13 +16,17 @@ export default class Blob extends Phaser.Physics.Arcade.Sprite
 
         scene.add.existing(this);
         scene.physics.add.existing(this)
-        this .body.setCircle(21).setOffset(4,4)
-
-
+        this.body.setCircle(21).setOffset(4,4)
     }
 
-    drop() {
-        this.setAccelerationY(200);
+    static drop(blob, bullet?) {
+        blob.setAccelerationY(200)
+
+        if (bullet) {
+            blob.scene.bullets.killAndHide(bullet);
+            bullet.active = false;
+            bullet.disableBody(true, true);
+        }
     }
 
     kill() {

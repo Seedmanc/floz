@@ -1,6 +1,7 @@
 import K from "~/const/const";
 import Phaser from "phaser";
 import GameScene from "~/scenes/Game";
+import Blob from "~/models/Blob";
 
 
 export default class Icicle extends Phaser.Physics.Arcade.Sprite
@@ -16,12 +17,20 @@ export default class Icicle extends Phaser.Physics.Arcade.Sprite
 
         scene.add.existing(this);
         scene.physics.add.existing(this)
-        this  .setCollideWorldBounds(true)
-        this .body.setSize(this.level*10,this.level*10)
+        this.setCollideWorldBounds(true)
+        this.body.setSize(this.level*10,this.level*10)
+
+        this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob)
+        this.scene.physics.add.overlap(this, this.scene.waterSurface, icicle => this.scene.icicles.killAndHide(icicle['disableBody'](true,true)))
     }
 
     preUpdate() {
         this['rotation'] = Math.atan2(this.body.velocity.y, this.body.velocity.x)
+    }
+
+    pierceBlob(_, blob) {
+        Blob.drop(blob)
+        this.level--;
     }
 
 }

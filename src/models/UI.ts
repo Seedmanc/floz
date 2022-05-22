@@ -56,3 +56,10 @@ export default class UI extends Phaser.GameObjects.Container
     }
 
 }
+
+Phaser.GameObjects.GameObjectFactory.register(
+    'UI',
+    function (this: Phaser.GameObjects.GameObjectFactory, x: number, y: number) {
+        return this.displayList.add(new UI(this.scene, x, y))
+    }
+)

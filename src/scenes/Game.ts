@@ -15,15 +15,14 @@ export default class GameScene extends Phaser.Scene
     player!: Player;
     blobs!: Group
     bullets!: Group;
-    score!: Phaser.GameObjects.Text;
     waterLevel!: number;
     icicles!: Group
     walls!: StaticGroup
     UI!: UI;
 
-    private readonly INFLOW_SPEED = 1/2500;
-    private readonly BLOBS_TOP = 50*2;
-    private readonly WATER_TO_POINTS = 1/10;
+    readonly INFLOW_SPEED = 1/2500;
+    readonly BLOBS_TOP = 50*2;
+    readonly WATER_TO_POINTS = 1/10;
 
 	constructor()
 	{
@@ -52,20 +51,20 @@ export default class GameScene extends Phaser.Scene
         this.input.mouse.disableContextMenu();
         this.physics.world.setBoundsCollision();
 
-        this.walls = this.physics.add.staticGroup( )
-        this.walls.create(this.scale.width, this.scale.height, K.WallRight).setOrigin(1,0.5)
-           .setY(this.scale.height - (this.scale.height  )/2 ).body.updateFromGameObject();
+        this.makeLevel()
+        this.addEntities()
+        this.addInteractions()
+    }
 
-        this.waterSurface = this.physics.add.staticImage(0, 0,K.Water).setOrigin(0,1);
-        this.waterSurface.setY(this.scale.height ).body.updateFromGameObject();
+    makeLevel() {
+        this.walls = this.physics.add.staticGroup()
+        this.walls.create(this.scale.width, this.scale.height/2, K.WallRight).setOrigin(1,0.5).body.updateFromGameObject();
+
+        this.waterSurface = this.physics.add.staticImage(0, this.scale.height, K.Water).setOrigin(0,1);
+        this.waterSurface.body.updateFromGameObject();
 
         this.wallLeft = this.walls.create(0, 0, K.WallLeft).setOrigin(0,0);
         this.wallLeft.body.updateFromGameObject();
-
-        this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*2.1);
-        this.add.existing(this.player)
-
-        this.physics.add.collider(this.waterSurface, this.player);
 
         this.blobs = this.physics.add.group({ immovable: true, allowGravity: false , classType: Blob});
         for(let i=0; i<3; i++) {
@@ -75,24 +74,33 @@ export default class GameScene extends Phaser.Scene
             }
         }
 
-        this.UI = this.add.existing(new UI(this, this.wallLeft.width/2, this.scale.height-this.waterSurface.height));
+        this.UI = this.add['UI'](this.wallLeft.width/2, this.scale.height-this.waterSurface.height);
+    }
 
-
+    addEntities() {
+        this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*1.6);
         this.bullets = this.physics.add.group({allowGravity: true });
         this.icicles = this.physics.add.group({allowGravity: true, classType: Icicle });
+    }
 
-        this.physics.add.collider(this.bullets, this.walls, this.slideDown,undefined, this)
-        this.physics.add.collider(this.bullets, this.blobs , this.dropBlob, undefined,this)
+    addInteractions() {
+	    //player
+        this.physics.add.collider(this.player, this.waterSurface);
         this.physics.add.overlap(this.player, this.blobs, this.hitPlayer, undefined, this)
-        this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
         this.physics.add.collider(this.player, this.walls )
-        this.physics.add.collider(this.icicles, this.walls )
-        this.physics.add.overlap(this.icicles, this.waterSurface, (w,icicle) => this.icicles.killAndHide(icicle['disableBody'](true,true)) )
-        this.physics.add.overlap(this.icicles, this.blobs, this.cutBlob, undefined, this);
-        this.physics.add.collider(this.icicles, this.player, () => {
+        this.physics.add.collider(this.player, this.icicles,  () => {
             this.scene.stop('game');
             this.scene.start('gameover')
         }, undefined, this);
+        //bullets
+        this.physics.add.collider(this.bullets, this.walls, this.slideDown, undefined, this)
+        this.physics.add.collider(this.blobs , this.bullets, Blob.drop)
+        this.physics.add.collider(this.bullets, this.waterSurface,
+            (_,bullet) => this.bullets.killAndHide(bullet['disableBody'](true,true))
+        )
+
+        this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
+        this.physics.add.collider(this.icicles, this.walls )
     }
 
 
@@ -106,24 +114,13 @@ export default class GameScene extends Phaser.Scene
         bullet.body.setDragY(175);
     }
 
-    dropBlob(bullet, blob) {
-        this.bullets.killAndHide(bullet);
-        bullet.active = false;
-        bullet.disableBody(true, true);
-        blob.drop()
-    }
-
-    cutBlob(bullet, blob) {
-        blob.drop()
-    }
-
     hitPlayer(player, blob) {
         blob.kill()
         player.damage()
 	    this.UI.updateHP(this.player.health);
 	    if (this.player.health == 0) {
             this.scene.stop('game');
-            this.scene.start('gameover')
+            this.scene.start('gameover', {})
         }
     }
 
@@ -131,7 +128,7 @@ export default class GameScene extends Phaser.Scene
 	    this.UI.addScore( blob.VOLUME/10)
 	    blob.kill();
         this.waterLevel += blob.VOLUME;
-	    this.player.y -= this.waterSurface.height ** 2 * this.INFLOW_SPEED  +1;
+	    this.player.y -= this.waterSurface.height ** 2 * this.INFLOW_SPEED;
 
 	    if (this.blobs.countActive() == 0) {
             this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) + this.player.health / this.WATER_TO_POINTS);
@@ -140,21 +137,22 @@ export default class GameScene extends Phaser.Scene
         }
     }
 
-    update() {
-	    this.raiseWater()
-
-        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) { //TODO fix drowning
-            this.scene.stop('game');
-            this.scene.start('gameover')
-        }
-    }
-
-    private raiseWater() {
+    raiseWater() {
         if (this.waterSurface.displayHeight < this.scale.height - this.BLOBS_TOP*2) {
             this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
             this.waterLevel++;
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
         } else {
+            this.scene.stop('game');
+            this.scene.start('gameover')
+        }
+    }
+
+
+    update() {
+	    this.raiseWater()
+
+        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) { //TODO fix drowning
             this.scene.stop('game');
             this.scene.start('gameover')
         }
