@@ -6,6 +6,7 @@ import Icicle from "~/models/Icicle";
 import Blob from "~/models/Blob";
 import Group = Phaser.Physics.Arcade.Group;
 import Image = Phaser.Physics.Arcade.Image;
+import UI from "~/models/UI";
 
 export default class GameScene extends Phaser.Scene
 {
@@ -15,12 +16,14 @@ export default class GameScene extends Phaser.Scene
     blobs!: Group
     bullets!: Group;
     score!: Phaser.GameObjects.Text;
-    value!: number;
-    hpBar!: Phaser.GameObjects.Image;
-    health!: number;
     waterLevel!: number;
     icicles!: Group
     walls!: StaticGroup
+    UI!: UI;
+
+    private readonly INFLOW_SPEED = 1/2500;
+    private readonly BLOBS_TOP = 50*2;
+    private readonly WATER_TO_POINTS = 1/10;
 
 	constructor()
 	{
@@ -41,14 +44,11 @@ export default class GameScene extends Phaser.Scene
     }
 
     init() {
-	    this.health = 2;
-	    this.value = 0;
 	    this.waterLevel = 0;
     }
 
     create()
     {
-
         this.input.mouse.disableContextMenu();
         this.physics.world.setBoundsCollision();
 
@@ -67,7 +67,6 @@ export default class GameScene extends Phaser.Scene
 
         this.physics.add.collider(this.waterSurface, this.player);
 
-
         this.blobs = this.physics.add.group({ immovable: true, allowGravity: false , classType: Blob});
         for(let i=0; i<3; i++) {
             for (let j=0; j<12-i; j++) {
@@ -75,28 +74,16 @@ export default class GameScene extends Phaser.Scene
                 this.blobs.create(this.scale.width/2-size*12/2+j*size + i*size/2 + size/2 , size*2 + size * i/1.1)
             }
         }
-        let hp = this.add.image(this.wallLeft.width/2 , this.scale.height-this.waterSurface.height-100, K.HP);
-        this.hpBar = this.add.image(this.wallLeft.width/2 , this.scale.height-this.waterSurface.height-21, K.HpBar);
-        this.hpBar.setOrigin(0.5,1).setScale(1,this.health);
 
-        let score = this.add.image(this.wallLeft.width/2 , this.scale.height-this.waterSurface.height -100- hp.height, K.Score);
-        this.score = this.add.text(score.x+120/3, score.y  , this.value+'', {
-            fontFamily: 'Quicksand',
-            fontSize: '32px',
-            color: '#5D7B95',
-            fontStyle: 'normal',
-            rtl: true,
-            shadow: { color: '#8FA8BE', fill: true, offsetX: 1, offsetY: 2, blur: 1, stroke: false }
-        });
+        this.UI = this.add.existing(new UI(this, this.wallLeft.width/2, this.scale.height-this.waterSurface.height));
+
 
         this.bullets = this.physics.add.group({allowGravity: true });
         this.icicles = this.physics.add.group({allowGravity: true, classType: Icicle });
 
-        this.input.activePointer.x = this.scale.width/2;
-        this.input.activePointer.y = this.scale.height/2;
-        this.physics.add.collider( this.bullets, this.walls, this.slideDown,undefined, this)
+        this.physics.add.collider(this.bullets, this.walls, this.slideDown,undefined, this)
         this.physics.add.collider(this.bullets, this.blobs , this.dropBlob, undefined,this)
-        this.physics.add.collider(this.player, this.blobs, this.hitPlayer, undefined, this)
+        this.physics.add.overlap(this.player, this.blobs, this.hitPlayer, undefined, this)
         this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
         this.physics.add.collider(this.player, this.walls )
         this.physics.add.collider(this.icicles, this.walls )
@@ -104,14 +91,18 @@ export default class GameScene extends Phaser.Scene
         this.physics.add.overlap(this.icicles, this.blobs, this.cutBlob, undefined, this);
         this.physics.add.collider(this.icicles, this.player, () => {
             this.scene.stop('game');
-            this.scene.start('gameover', {win: false})
+            this.scene.start('gameover')
         }, undefined, this);
     }
 
 
-    slideDown(  obj1: Phaser.GameObjects.GameObject, obj2) {
-        let bullet  = [obj1, obj2].find(obj => obj.texture.key == K.Blob)
-	    this.bullets.kill(bullet)
+    slideDown(bullet, wall) {
+        bullet.setScale(0.25,0.75 )
+        if (wall == this.wallLeft)
+            bullet.setX(this.wallLeft.width+bullet.displayWidth/4)
+        else
+            bullet.setX(this.scale.width - this.walls.getChildren()[0]['width'] - bullet.displayWidth/4)
+        this.bullets.kill(bullet)
         bullet.body.setDragY(175);
     }
 
@@ -128,42 +119,44 @@ export default class GameScene extends Phaser.Scene
 
     hitPlayer(player, blob) {
         blob.kill()
-        this.health--;
-	    this.hpBar.setScale(1, this.health);
-	    if (this.health == 0) {
+        player.damage()
+	    this.UI.updateHP(this.player.health);
+	    if (this.player.health == 0) {
             this.scene.stop('game');
-            this.scene.start('gameover', {win: false})
+            this.scene.start('gameover')
         }
     }
 
-    hitWater(water, blob) {
-	    this.value += 10;
-	    this.score.text = this.value+'';
+    hitWater(_, blob) {
+	    this.UI.addScore( blob.VOLUME/10)
 	    blob.kill();
-        this.waterLevel+=100;
-	    this.player.y -=2;
+        this.waterLevel += blob.VOLUME;
+	    this.player.y -= this.waterSurface.height ** 2 * this.INFLOW_SPEED  +1;
+
 	    if (this.blobs.countActive() == 0) {
-	        this.value += Math.round((this.scale.height - this.waterSurface.displayHeight-100)/10);
+            this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) + this.player.health / this.WATER_TO_POINTS);
             this.scene.stop('game');
-            this.scene.start('gameover', {win: true, score: this.value})
+            this.scene.start('gameover', {score: this.UI.value})
         }
     }
 
     update() {
-	    if (this.waterSurface.displayHeight < this.scale.height - 50*4) {
-            this.waterSurface.setScale(1,1+this.waterLevel/2500).body.updateFromGameObject();
-            this.waterLevel ++ ;
+	    this.raiseWater()
+
+        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) { //TODO fix drowning
+            this.scene.stop('game');
+            this.scene.start('gameover')
+        }
+    }
+
+    private raiseWater() {
+        if (this.waterSurface.displayHeight < this.scale.height - this.BLOBS_TOP*2) {
+            this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
+            this.waterLevel++;
+            this.UI.y = this.scale.height - this.waterSurface.displayHeight;
         } else {
             this.scene.stop('game');
-            this.scene.start('gameover', {win: false})
+            this.scene.start('gameover')
         }
-	    if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) {
-            this.scene.stop('game');
-            this.scene.start('gameover', {win: false})
-        }
-
-	    this.icicles.getChildren().forEach(c => {
-	        c['rotation'] = Math.atan2(c.body.velocity.y, c.body.velocity.x)
-        })
     }
 }

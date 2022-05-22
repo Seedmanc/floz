@@ -18,9 +18,10 @@ export default class Icicle extends Phaser.Physics.Arcade.Sprite
         scene.physics.add.existing(this)
         this  .setCollideWorldBounds(true)
         this .body.setSize(this.level*10,this.level*10)
-
-
     }
 
+    preUpdate() {
+        this['rotation'] = Math.atan2(this.body.velocity.y, this.body.velocity.x)
+    }
 
 }

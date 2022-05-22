@@ -7,6 +7,7 @@ export default class Player extends Phaser.GameObjects.Container
 {
     scene: GameScene
     body!: Phaser.Physics.Arcade.Body
+    health = 2;
 
     private sprite: Phaser.GameObjects.Sprite
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -62,12 +63,11 @@ export default class Player extends Phaser.GameObjects.Container
         bullet.rotation = angle;
         bullet.body.velocity.x = Math.cos(angle) * 800;
         bullet.body.velocity.y = Math.sin(angle) * 800;
-        this.body.setVelocityX( -Math.cos(angle)* 500 )
+        this.body.setVelocityX( -Math.cos(angle) * 500 )
     }
 
-    preUpdate()
-    {
-
+    damage(amount = 1) {
+        this.health -= amount;
     }
 
     private createAnimations()

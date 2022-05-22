@@ -7,6 +7,7 @@ export default class Blob extends Phaser.Physics.Arcade.Sprite
 {
     scene: GameScene
     level: number = 1;
+    readonly VOLUME = 100;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
@@ -29,6 +30,7 @@ export default class Blob extends Phaser.Physics.Arcade.Sprite
         this.disableBody(true, true);
         this.setPosition(0,0)
         this.active = false
+        this.destroy()
     }
 
 }

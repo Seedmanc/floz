@@ -1,10 +1,11 @@
 import Phaser from 'phaser'
 import K from "~/const/const";
+import UI from "~/models/UI";
 
 export default class GameoverScene extends Phaser.Scene
 {
-    win;
-    score;
+    #win!: boolean;
+    private score;
 
 	constructor()
 	{
@@ -12,7 +13,7 @@ export default class GameoverScene extends Phaser.Scene
 	}
 
 	init(obj) {
-	    this.win = obj.win;
+	    this.#win = obj && !!obj.score;
 	    this.score = obj.score;
     }
 
@@ -23,19 +24,21 @@ export default class GameoverScene extends Phaser.Scene
 
     create()
     {
-        let text = this.win ?
-            this.add.image(this.scale.width/2, this.scale.height/2, K.Score) :
-            this.add.image(this.scale.width/2, this.scale.height/2, K.Dead);
-        text.setInteractive()
-        if (this.win)
-            this.add.text(this.scale.width/2+50, this.scale.height/2 , this.score, {
-                fontFamily: 'Quicksand',
-                fontSize: '32px',
-                color: '#5D7B95',
-                fontStyle: 'normal',
-                rtl: true,
-                shadow: { color: '#8FA8BE', fill: true, offsetX: 1, offsetY: 2, blur: 1, stroke: false }});
-        text.on('pointerup', () => {
+        let ui = new UI(this, this.scale.width/2, this.scale.height/2);
+        ui.toggleHP(!this.#win)
+        ui.setScore(this.score);
+
+        let element;
+
+        if (this.#win) {
+            element = ui;
+            this.add.existing(ui);
+        } else
+           element = this.add.image(this.scale.width/2, this.scale.height/2, K.Dead);
+
+        element.setInteractive({ cursor: 'pointer' })
+
+        element.on('pointerup', () => {
             this.scene.stop('gameover');
             this.scene.start('game');
         })
