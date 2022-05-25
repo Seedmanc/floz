@@ -1,8 +1,9 @@
 import Phaser from 'phaser'
-import K from '~/const/const';
+import K from '~/const/TextureKeys';
 import Player from "~/models/Player";
 import StaticGroup = Phaser.Physics.Arcade.StaticGroup;
 import Icicle from "~/models/Icicle";
+import game from "../main";
 import Blob from "~/models/Blob";
 import Group = Phaser.Physics.Arcade.Group;
 import Image = Phaser.Physics.Arcade.Image;
@@ -20,7 +21,9 @@ export default class GameScene extends Phaser.Scene
     walls!: StaticGroup
     UI!: UI;
 
-    readonly INFLOW_SPEED = 1/2500;
+    debug;
+
+    readonly INFLOW_SPEED = 1/3300;
     readonly BLOBS_TOP = 50*2;
     readonly WATER_TO_POINTS = 1/10;
 
@@ -54,6 +57,14 @@ export default class GameScene extends Phaser.Scene
         this.makeLevel()
         this.addEntities()
         this.addInteractions()
+
+        if (game.config.physics.arcade?.debug)
+            this.debug = this.add.text( 0,0  , 'debug', {
+                fontFamily: 'Quicksand',
+                fontSize: '32px',
+                color: 'red',
+                fontStyle: 'normal'
+            });
     }
 
     makeLevel() {
@@ -96,7 +107,10 @@ export default class GameScene extends Phaser.Scene
         this.physics.add.collider(this.bullets, this.walls, this.slideDown, undefined, this)
         this.physics.add.collider(this.blobs , this.bullets, Blob.drop)
         this.physics.add.collider(this.bullets, this.waterSurface,
-            (_,bullet) => this.bullets.killAndHide(bullet['disableBody'](true,true))
+            (_,bullet) => {
+            this.bullets.killAndHide(bullet['disableBody'](true,true));
+            this.waterLevel+=33;
+            }
         )
 
         this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
@@ -117,11 +131,6 @@ export default class GameScene extends Phaser.Scene
     hitPlayer(player, blob) {
         blob.kill()
         player.damage()
-	    this.UI.updateHP(this.player.health);
-	    if (this.player.health == 0) {
-            this.scene.stop('game');
-            this.scene.start('gameover', {})
-        }
     }
 
     hitWater(_, blob) {
@@ -151,6 +160,8 @@ export default class GameScene extends Phaser.Scene
 
     update() {
 	    this.raiseWater()
+
+        this.player.stateMachine.update();
 
         if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) { //TODO fix drowning
             this.scene.stop('game');

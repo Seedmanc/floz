@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import K from "~/const/const";
+import K from "~/const/TextureKeys";
 import UI from "~/models/UI";
 
 export default class GameoverScene extends Phaser.Scene
