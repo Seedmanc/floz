@@ -83,10 +83,8 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     shoot() {
-        let bullet = this.scene.bullets.create(this.x , this.y, K.Blob).setScale(0.5).refreshBody().setDepth(-1)
-        bullet.body.setCircle(18).setOffset(7,7)
-        bullet.outOfBoundsKill = true;
-        bullet.checkWorldBounds = true;
+        let bullet = this.scene.bullets.create(this.x , this.y, K.Blob)
+
         let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
         bullet.body.velocity.x = Math.cos(angle) * 500;
         bullet.body.velocity.y = Math.sin(angle) * 510;

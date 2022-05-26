@@ -8,6 +8,7 @@ import Blob from "~/models/Blob";
 import Group = Phaser.Physics.Arcade.Group;
 import Image = Phaser.Physics.Arcade.Image;
 import UI from "~/models/UI";
+import Bullet from "~/models/Bullet";
 
 export default class GameScene extends Phaser.Scene
 {
@@ -91,7 +92,7 @@ export default class GameScene extends Phaser.Scene
 
     addEntities() {
         this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*1.6);
-        this.bullets = this.physics.add.group({allowGravity: true });
+        this.bullets = this.physics.add.group({allowGravity: true , classType: Bullet });
         this.icicles = this.physics.add.group({allowGravity: true, classType: Icicle });
     }
 
@@ -100,33 +101,8 @@ export default class GameScene extends Phaser.Scene
         this.physics.add.collider(this.player, this.waterSurface);
         this.physics.add.overlap(this.player, this.blobs, this.hitPlayer, undefined, this)
         this.physics.add.collider(this.player, this.walls )
-        this.physics.add.collider(this.player, this.icicles,  () => {
-            this.scene.stop('game');
-            this.scene.start('gameover')
-        }, undefined, this);
-        //bullets
-        this.physics.add.collider(this.bullets, this.walls, this.slideDown, undefined, this)
-        this.physics.add.collider(this.blobs , this.bullets, Blob.drop)
-        this.physics.add.collider(this.bullets, this.waterSurface,
-            (_,bullet) => {
-            this.bullets.killAndHide(bullet['disableBody'](true,true));
-            this.waterLevel+=33;
-            }
-        )
-
+        //etc
         this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
-        this.physics.add.collider(this.icicles, this.walls )
-    }
-
-
-    slideDown(bullet, wall) {
-        bullet.setScale(0.25,0.75 )
-        if (wall == this.wallLeft)
-            bullet.setX(this.wallLeft.width+bullet.displayWidth/4)
-        else
-            bullet.setX(this.scale.width - this.walls.getChildren()[0]['width'] - bullet.displayWidth/4)
-        this.bullets.kill(bullet)
-        bullet.body.setDragY(175);
     }
 
     hitPlayer(player, blob) {
@@ -165,7 +141,8 @@ export default class GameScene extends Phaser.Scene
 
         this.player.stateMachine.update();
 
-        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) { //TODO fix drowning
+        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) {
+            alert('Please report this to dev')
             this.scene.stop('game');
             this.scene.start('gameover')
         }

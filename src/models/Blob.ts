@@ -19,7 +19,7 @@ export default class Blob extends Phaser.Physics.Arcade.Sprite
         this.body.setCircle(21).setOffset(4,4)
     }
 
-    static drop(blob, bullet?) {
+    static drop(bullet, blob) {
         blob.setAccelerationY(200)
 
         if (bullet) {
