@@ -1,7 +1,8 @@
 enum S {
     Idle,
     Hurt,
-    Charging
+    Charging,
+    Pumping
 }
 
 export default S;

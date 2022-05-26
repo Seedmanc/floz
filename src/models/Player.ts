@@ -2,105 +2,84 @@ import S from '~/const/StateKeys';
 import K from "~/const/TextureKeys";
 import Phaser from "phaser";
 import GameScene from "~/scenes/Game";
+import { ChargeState } from '~/statemachine/Charge';
+import HurtState from '~/statemachine/Hurt';
+import IdleState from '~/statemachine/Idle';
 import StateMachine from '~/statemachine/StateMachine';
+import Text = Phaser.GameObjects.Text;
+import PumpState from "~/statemachine/Pump";
 
 
 export default class Player extends Phaser.GameObjects.Container
 {
     scene: GameScene
     body!: Phaser.Physics.Arcade.Body
-    health = 2;
     stateMachine: StateMachine
+    pumpText: Text;
+    health: number;
 
-    private sprite: Phaser.GameObjects.Sprite
-    private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-    private inputs: Phaser.Input.InputPlugin;
+    _sprite: Phaser.GameObjects.Sprite
+    _inputs: Phaser.Input.InputPlugin;
+    _keyE: Phaser.Input.Keyboard.Key;
 
+    get isHurt(): boolean {
+        return this.health < this.scene.MAX_HEALTH;
+    }
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y)
         this.scene = <GameScene>scene;
+        this.health = scene['MAX_HEALTH'];
 
-        this.sprite = scene.add.sprite(0, 0,  K.Player)
+        this._sprite = scene.add.sprite(0, 0,  K.Player)
             .setOrigin(0.5, 0.5)
+        this.add(this._sprite)
 
-        this.add(this.sprite)
+        this.pumpText = scene.add.text( 10,-20  , '(E)', {
+            fontFamily: 'Comic Neue',
+            fontSize: '24px',
+            color: 'blue',
+            fontStyle: 'bold'
+        }).setVisible(false);
+        this.add(this.pumpText);
+        this.scene.tweens.add({
+            targets: this.pumpText,
+            alpha: { value: 0, duration: 250 },
+            yoyo: true,
+            loop: -1
+        })
 
         scene.physics.add.existing(this)
         scene.add.existing(this)
 
         const body = this.body as Phaser.Physics.Arcade.Body
-        body.setSize(this.sprite.width * 0.8, this.sprite.height * 0.9)
-            .setOffset(this.sprite.width * -0.4, -this.sprite.height * 0.4 )
+        body.setSize(this._sprite.width * 0.8, this._sprite.height * 0.9)
+            .setOffset(this._sprite.width * -0.4, -this._sprite.height * 0.4 )
             .setCollideWorldBounds(true)
             .setDragX(200);
 
-        this.cursors = scene.input.keyboard.createCursorKeys()
-        this.inputs = scene.input;
+        this._keyE = scene.input.keyboard.addKey('e');
+        this._inputs = scene.input;
 
         this.stateMachine = new StateMachine(this, 'player')
         this.addStates()
     }
 
     addStates() {
-        this.stateMachine.addState(S.Idle, {
-                onUpdate: () => {
-                    if (this.inputs.activePointer.getDuration() > 250 && this.inputs.activePointer.isDown)
-                        this.stateMachine.setState(S.Charging)
-                },
-                onEnter: () => {
-                    this.inputs.on('pointerup', (pointer) => {
-                        if (pointer.leftButtonReleased()) {
-                            this.shoot()
-                        }
-                        else if (game.config.physics.arcade?.debug && pointer.rightButtonReleased())
-                            this.shootIce()
-                    });
-                },
-                onExit: () => {
-                    this.inputs.off('pointerup')
-                }
-            })
-            .addState(S.Charging, {
-                onEnter: () => {
-                    this.inputs.on('pointerup', (pointer) => {
-                        if (pointer.getDuration() > 1000)
-                            this.shootIce()
-                        this.stateMachine.setState(S.Idle)
-                    });
-                },
-                onExit: () => {
-                    this.inputs.off('pointerup')
-                }
-            })
-            .addState(S.Hurt, {
-                onEnter: () => {
-                    this.scene.tweens.addCounter({
-                        from: 0,
-                        to: 100,
-                        duration: 100,
-                        repeat: 2,
-                        yoyo: true,
-                        ease: Phaser.Math.Easing.Sine.InOut,
-                        onUpdate: tween => {
-                            const value = tween.getValue()
-
-                            this.sprite.setAlpha(value/100)
-                        },
-                        onComplete: () => {
-                            this.stateMachine.setState(S.Idle)
-                            this.sprite.clearAlpha();
-                        }
-                    })
-
-                    if (this.health == 0) {
-                        this.scene.scene.stop('game');
-                        this.scene.scene.start('gameover', {})
-                    }
-                }
-        })
+        this.stateMachine
+            .addState(S.Idle, IdleState)
+            .addState(S.Charging, ChargeState)
+            .addState(S.Hurt, HurtState)
+            .addState(S.Pumping, PumpState)
             .setState(S.Idle)
+    }
+
+    tryPump() {
+        if (this.isHurt) {
+            this.stateMachine.setState(S.Pumping);
+            this._keyE.off('up', this.tryPump, this);
+        }
     }
 
     shoot() {
@@ -108,7 +87,7 @@ export default class Player extends Phaser.GameObjects.Container
         bullet.body.setCircle(18).setOffset(7,7)
         bullet.outOfBoundsKill = true;
         bullet.checkWorldBounds = true;
-        let angle = Phaser.Math.Angle.Between(this.x, this.y, this.inputs.activePointer.x, this.inputs.activePointer.y);
+        let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
         bullet.body.velocity.x = Math.cos(angle) * 500;
         bullet.body.velocity.y = Math.sin(angle) * 510;
         this.body.setVelocityX( -Math.cos(angle)* 300 )
@@ -117,16 +96,29 @@ export default class Player extends Phaser.GameObjects.Container
 
     shootIce() {
         let bullet = this.scene.icicles.create(this.x , this.y).setBounce(1.1) .setCollideWorldBounds(true)
-        let angle = Phaser.Math.Angle.Between(this.x, this.y, this.inputs.activePointer.x, this.inputs.activePointer.y);
+        let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
         bullet.body.velocity.x = Math.cos(angle) * 800;
         bullet.body.velocity.y = Math.sin(angle) * 800;
         this.body.setVelocityX( -Math.cos(angle) * 500 )
     }
 
     damage(amount = 1) {
+        if (this.stateMachine.isCurrentState(S.Hurt))
+            return;
+
         this.health -= amount;
         this.scene.UI.updateHP(this.health);
         this.stateMachine.setState(S.Hurt)
+//TODO reset charging
+        if (this.health == 0) {
+            this.scene.scene.stop('game');
+            this.scene.scene.start('gameover', {})
+        }
+    }
+    heal(amount = 1) {
+        this.health += amount;
+        this.scene.UI.updateHP(this.health);
+        this.pumpText.setVisible(this.isHurt);
     }
 
     private preUpdate()

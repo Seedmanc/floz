@@ -10,7 +10,6 @@ export default class UI extends Phaser.GameObjects.Container
     score:  Phaser.GameObjects.Image;
     hpBar!: Phaser.GameObjects.Image;
     value: number = 0;
-    health: number = 2;
     container: Phaser.GameObjects.Image;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
@@ -30,14 +29,14 @@ export default class UI extends Phaser.GameObjects.Container
         let hpContainer = scene.add.image(0 , -this.score.height, K.HP);
         this.container = hpContainer
         this.hpBar = scene.add.image(0 , -12, K.HpBar);
-        this.hpBar.setOrigin(0.5,1).setScale(1, this.health);
+        this.hpBar.setOrigin(0.5,1).setScale(1, 2);
 
         this.add([this.score, this.text, hpContainer, this.hpBar]);
         this.setSize(this.score.width, this.score.height+this.text.height);
     }
 
     updateHP(value) {
-        this.hpBar.setScale(1, value);
+        this.hpBar.setScale(1, value/this.scene.MAX_HEALTH*2);
     }
 
     addScore(value) {

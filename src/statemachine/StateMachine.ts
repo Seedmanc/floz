@@ -1,4 +1,6 @@
-interface IState
+import S from '~/const/StateKeys';
+
+export interface IState
 {
 	name: string|number
 	onEnter?: () => void
@@ -15,7 +17,7 @@ export default class StateMachine
 	private states = new Map<string|number, IState>()
 
 	private previousState?: IState
-	private currentState?: IState
+	private currentState!: IState
 	private isChangingState = false
 	private changeStateQueue: (string|number)[] = []
 
@@ -58,7 +60,7 @@ export default class StateMachine
 	{
 		if (!this.states.has(name))
 		{
-			console.warn(`Tried to change to unknown state: ${name}`)
+			console.warn(`Tried to change to unknown state: ${S[name]}`)
 			return
 		}
 
@@ -75,7 +77,7 @@ export default class StateMachine
 
 		this.isChangingState = true
 
-		console.log(`[StateMachine (${this.id})] change from ${this.currentState?.name ?? 'none'} to ${name}`)
+		console.log(`[StateMachine (${this.id})] change from ${S[this.currentState?.name ?? 'none']} to ${S[name]}`)
 
 		if (this.currentState && this.currentState.onExit)
 		{

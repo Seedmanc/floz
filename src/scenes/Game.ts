@@ -23,6 +23,7 @@ export default class GameScene extends Phaser.Scene
 
     debug;
 
+    readonly MAX_HEALTH = 3;
     readonly INFLOW_SPEED = 1/3300;
     readonly BLOBS_TOP = 50*2;
     readonly WATER_TO_POINTS = 1/10;
@@ -140,7 +141,8 @@ export default class GameScene extends Phaser.Scene
 	    this.player.y -= this.waterSurface.height ** 2 * this.INFLOW_SPEED;
 
 	    if (this.blobs.countActive() == 0) {
-            this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) + this.player.health / this.WATER_TO_POINTS);
+            this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) +
+                this.player.health / this.WATER_TO_POINTS);
             this.scene.stop('game');
             this.scene.start('gameover', {score: this.UI.value})
         }
