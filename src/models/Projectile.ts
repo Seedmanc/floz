@@ -15,11 +15,11 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Sprite {
 
         this.scene.physics.add.collider(this, this.scene.walls, this.collideWalls, undefined, this)
         this.scene.physics.add.collider(this, this.scene.waterSurface, this.collideWater, undefined, this)
-        this.scene.physics.add.collider(this, this.scene.player, this.collidePlayer, undefined, this)
+        window.setTimeout(() => this.scene.physics.add.collider(this, this.scene.player, this.collidePlayer, undefined, this),0); // cringe
     }
 
     protected preUpdate() {
-        this['rotation'] = Math.atan2(this.body.velocity.y, this.body.velocity.x)
+        this.rotation = Math.atan2(this.body.velocity.y, this.body.velocity.x)
     }
 
     abstract collideWalls(projectile, wall)

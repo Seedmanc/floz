@@ -49,7 +49,6 @@ export default class Player extends Phaser.GameObjects.Container
             yoyo: true,
             loop: -1
         })
-
         scene.physics.add.existing(this)
         scene.add.existing(this)
 

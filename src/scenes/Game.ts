@@ -99,29 +99,14 @@ export default class GameScene extends Phaser.Scene
     addInteractions() {
 	    //player
         this.physics.add.collider(this.player, this.waterSurface);
-        this.physics.add.overlap(this.player, this.blobs, this.hitPlayer, undefined, this)
         this.physics.add.collider(this.player, this.walls )
-        //etc
-        this.physics.add.collider(this.waterSurface, this.blobs, this.hitWater, undefined, this)
     }
 
-    hitPlayer(player, blob) {
-        blob.kill()
-        player.damage()
-    }
-
-    hitWater(_, blob) {
-	    this.UI.addScore( blob.VOLUME/10)
-	    blob.kill();
-        this.waterLevel += blob.VOLUME;
-	    this.player.y -= this.waterSurface.height ** 2 * this.INFLOW_SPEED;
-
-	    if (this.blobs.countActive() == 0) {
-            this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) +
-                this.player.health / this.WATER_TO_POINTS);
-            this.scene.stop('game');
-            this.scene.start('gameover', {score: this.UI.value})
-        }
+    win() {
+        this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) +
+            this.player.health / this.WATER_TO_POINTS);
+        this.scene.stop('game');
+        this.scene.start('gameover', {score: this.UI.value})
     }
 
     raiseWater() {

@@ -1,21 +1,16 @@
 import K from "~/const/TextureKeys";
 import Phaser from "phaser";
-import GameScene from "~/scenes/Game";
+import Projectile from "~/models/Projectile";
 
 
-export default class Blob extends Phaser.Physics.Arcade.Sprite
+export default class Blob extends Projectile
 {
-    scene: GameScene
     level: number = 1;
     readonly VOLUME = 100;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y, K.Blob)
-        this.scene = <GameScene>scene;
-
-        scene.add.existing(this);
-        scene.physics.add.existing(this)
         this.body.setCircle(21).setOffset(4,4)
     }
 
@@ -34,7 +29,24 @@ export default class Blob extends Phaser.Physics.Arcade.Sprite
         this.disableBody(true, true);
         this.setPosition(0,0)
         this.active = false
-        this.destroy()
     }
 
+    collideWalls(){}
+
+    collideWater(blob, water) {
+        this.scene.UI.addScore( blob.VOLUME/10)
+        blob.kill();
+
+        this.scene.waterLevel += blob.VOLUME;
+        this.scene.player.y -= water.height ** 2 * this.scene.INFLOW_SPEED;
+
+        if (this.scene.blobs.countActive() == 0) {
+            this.scene.win()
+        }
+    }
+
+    collidePlayer(blob, player) {
+        blob.kill()
+        player.damage()
+    }
 }
