@@ -9,6 +9,7 @@ import Group = Phaser.Physics.Arcade.Group;
 import Image = Phaser.Physics.Arcade.Image;
 import UI from "~/models/UI";
 import Bullet from "~/models/Bullet";
+import Shard from "~/models/Shards";
 
 export default class GameScene extends Phaser.Scene
 {
@@ -17,6 +18,7 @@ export default class GameScene extends Phaser.Scene
     player!: Player;
     blobs!: Group
     bullets!: Group;
+    shards!: Group;
     waterLevel!: number;
     icicles!: Group
     walls!: StaticGroup
@@ -45,6 +47,7 @@ export default class GameScene extends Phaser.Scene
         this.load.image(K.HP, 'hp.jpg')
         this.load.image(K.HpBar, 'hpbar.png')
         this.load.image(K.Ice, 'ice.png')
+        this.load.image(K.Shards, 'shard.png')
     }
 
     init() {
@@ -71,7 +74,8 @@ export default class GameScene extends Phaser.Scene
 
     makeLevel() {
         this.walls = this.physics.add.staticGroup()
-        this.walls.create(this.scale.width, this.scale.height/2, K.WallRight).setOrigin(1,0.5).body.updateFromGameObject();
+        this.walls.create(this.scale.width, this.scale.height/2, K.WallRight).setOrigin(1,0.5)
+            .body.updateFromGameObject()['checkCollision'].up = false;
 
         this.waterSurface = this.physics.add.staticImage(0, this.scale.height, K.Water).setOrigin(0,1);
         this.waterSurface.body.updateFromGameObject();
@@ -93,7 +97,8 @@ export default class GameScene extends Phaser.Scene
     addEntities() {
         this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*1.6);
         this.bullets = this.physics.add.group({allowGravity: true , classType: Bullet });
-        this.icicles = this.physics.add.group({allowGravity: true, classType: Icicle });
+        this.icicles = this.physics.add.group({allowGravity: false, classType: Icicle });
+        this.shards = this.physics.add.group({allowGravity: true, classType: Shard });
     }
 
     addInteractions() {
