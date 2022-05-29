@@ -11,7 +11,7 @@ export default class Blob extends Projectile
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y, K.Blob)
-        this.body.setCircle(21).setOffset(4,4)
+        this.body.setCircle(21).setOffset(4,4).customSeparateX = true;
     }
 
     static drop(bullet, blob) {

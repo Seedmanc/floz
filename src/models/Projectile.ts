@@ -1,9 +1,11 @@
 import Phaser from "phaser";
 import GameScene from "~/scenes/Game";
+import Icicle from "~/models/Icicle";
 
 export default abstract class Projectile extends Phaser.Physics.Arcade.Sprite {
     scene: GameScene
     body!: Phaser.Physics.Arcade.Body
+    defaultScale = 1;
 
     protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string) {
         super(scene, x, y, textureKey)
@@ -20,6 +22,11 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Sprite {
 
     protected preUpdate() {
         this.rotation = Math.atan2(this.body.velocity.y, this.body.velocity.x)
+
+        if (!(this instanceof Icicle)) {
+            this.scaleX = this.defaultScale + this.body.velocity.length()/3000;
+            this.scaleY = this.defaultScale - this.body.velocity.length()/3000;
+        }
     }
 
     abstract collideWalls(projectile, wall)

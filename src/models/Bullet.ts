@@ -6,11 +6,14 @@ import Projectile from "~/models/Projectile";
 
 export default class Bullet extends Projectile
 {
+    defaultScale = 0.5;
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y, K.Blob)
-        this.setScale(0.5).refreshBody().setDepth(-1)
+        this.setScale(this.defaultScale).refreshBody().setDepth(-1)
             .body.setCircle(18).setOffset(7,7)
+
+        this.body.customSeparateY = true;
 
         this.scene.physics.add.overlap(this, this.scene.blobs, Blob.drop)
     }
