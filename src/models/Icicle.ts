@@ -10,10 +10,11 @@ export default class Icicle extends Projectile
     integrity: number;
     readonly VOLUME = 50;
 
-    constructor(scene: Phaser.Scene, x: number, y: number)
+    constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
-        super(scene, x, y, K.Ice)
-        this.body.setSize(this.level*10,this.level*10)//.onWorldBounds = true
+        super(scene, x, y, K.Ice, ...etc)
+
+        this.body.setSize(this.level*10,this.level*10)
         this.integrity = this.level * 2;
         this.scene.waterLevel -= this.VOLUME;
 
@@ -26,10 +27,8 @@ export default class Icicle extends Projectile
     }
 
     break() {
-        let shard = this.scene.shards.create(this.x, this.y).body;
-        shard.velocity.x = this.body.velocity.x/2;
-        shard.velocity.y = this.body.velocity.y/2;
-
+        // @ts-ignore
+        this.scene.shards.create(this);
         this.scene.icicles.killAndHide(this.disableBody(true,true));
     }
 
@@ -50,8 +49,8 @@ export default class Icicle extends Projectile
         this.scene.scene.start('gameover', {})
     }
 
-    delayedCall() {
-        super.delayedCall();
+    delayedCall(...etc) {
+        super.delayedCall(...etc);
         this.setBounce(1);
     }
 }

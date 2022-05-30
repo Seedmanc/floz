@@ -9,9 +9,9 @@ export default class Bullet extends Projectile
     defaultScale = 0.5;
     readonly VOLUME = 33;
 
-    constructor(scene: Phaser.Scene, x: number, y: number)
+    constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
-        super(scene, x, y, K.Blob)
+        super(scene, x, y, K.Blob, ...etc)
         this.setScale(this.defaultScale).refreshBody().setDepth(-1)
             .body.setCircle(18).setOffset(7,7)
 
@@ -37,9 +37,5 @@ export default class Bullet extends Projectile
 
     collidePlayer(projectile, player) {
         //TODO
-    }
-
-    delayedCall() {
-        super.delayedCall();
     }
 }

@@ -10,7 +10,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
 
     readonly VOLUME;
 
-    protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string) {
+    protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string, angle?, speed?) {
         super(scene, x, y, textureKey)
 
         this.scene = <GameScene>scene;
@@ -19,7 +19,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
 
         this.scene.physics.add.collider(this, this.scene.walls, this.collideWalls, undefined, this)
         this.scene.physics.add.collider(this, this.scene.waterSurface, this.collideWater, undefined, this)
-        window.setTimeout(this.delayedCall.bind(this))
+        window.setTimeout(() => this.delayedCall(angle, speed))
     }
 
     protected preUpdate() {
@@ -32,9 +32,14 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
         }
     }
 
-    delayedCall() {
+    delayedCall(angle?, speed?) {
         this.scene.physics.add.collider(this, this.scene.player, this.collidePlayer, undefined, this);
         this.setCollideWorldBounds(true)
+
+        if (angle && speed) {
+            this.body.velocity.x = Math.cos(angle) * speed;
+            this.body.velocity.y = Math.sin(angle) * speed;
+        }
     }
 
     abstract collideWalls(projectile, wall)

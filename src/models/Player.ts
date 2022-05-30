@@ -82,18 +82,14 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     shoot() {
-        let bullet = this.scene.bullets.create(this.x , this.y, K.Blob)
         let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
-        bullet.body.velocity.x = Math.cos(angle) * 500;
-        bullet.body.velocity.y = Math.sin(angle) * 510;
+        this.scene.bullets.create(this.x , this.y, String(angle), 550)
         this.body.setVelocityX( -Math.cos(angle) * 300)
     }
 
     shootIce() {
-        let bullet = this.scene.icicles.create(this.x , this.y)
         let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
-        bullet.body.velocity.x = Math.cos(angle) * 800;
-        bullet.body.velocity.y = Math.sin(angle) * 800;
+        this.scene.icicles.create(this.x , this.y, angle+'', 800)
         this.body.setVelocityX( -Math.cos(angle) * 500 )
     }
 
