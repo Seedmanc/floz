@@ -37,8 +37,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
         this.setCollideWorldBounds(true)
 
         if (angle && speed) {
-            this.body.velocity.x = Math.cos(angle) * speed;
-            this.body.velocity.y = Math.sin(angle) * speed;
+            this.scene.physics.velocityFromRotation(angle, speed, this.body.velocity)
         }
     }
 

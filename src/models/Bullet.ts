@@ -20,7 +20,7 @@ export default class Bullet extends Projectile
         this.scene.physics.add.overlap(this, this.scene.blobs, Blob.drop)
     }
 
-    collideWalls(bullet, wall) {
+    collideWalls(bullet, wall) {//TODO from the top
         bullet.setScale(0.25, 0.75).setRotation(0);
         if (wall == this.scene.wallLeft)
             bullet.setX(this.scene.wallLeft.width+bullet.displayWidth/4)
