@@ -24,7 +24,8 @@ export default class GameScene extends Phaser.Scene
     walls!: StaticGroup
     UI!: UI;
 
-    debug;
+    debug!: Phaser.GameObjects.Text;
+    toggleDebug!: Phaser.Input.Keyboard.Key;
 
     readonly MAX_HEALTH = 3;
     readonly INFLOW_SPEED = 1/3300;
@@ -63,13 +64,19 @@ export default class GameScene extends Phaser.Scene
         this.addEntities()
         this.addInteractions()
 
-        if (game.config.physics.arcade?.debug)
-            this.debug = this.add.text( 0,0  , 'debug', {
-                fontFamily: 'Quicksand',
-                fontSize: '32px',
-                color: 'red',
-                fontStyle: 'normal'
-            });
+        this.setDebug()
+    }
+
+    setDebug() {
+        this.debug = this.add.text( 0,0  , 'debug', {
+            fontFamily: 'Quicksand',
+            fontSize: '32px',
+            color: 'red',
+            fontStyle: 'normal'
+        });
+        this.physics.world.drawDebug = false;
+        this.debug.setVisible(this.physics.world.drawDebug);
+        this.toggleDebug = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     }
 
     makeLevel() {
@@ -129,6 +136,19 @@ export default class GameScene extends Phaser.Scene
         }
     }
 
+    updateDebug() {
+        if (Phaser.Input.Keyboard.JustDown(this.toggleDebug)) {
+            if (!this.physics.world.debugGraphic)
+                this.physics.world.createDebugGraphic();
+            if (this.physics.world.drawDebug) {
+                this.physics.world.drawDebug = false;
+                this.physics.world.debugGraphic.clear();
+            } else {
+                this.physics.world.drawDebug = true;
+            }
+            this.debug.setVisible(this.physics.world.drawDebug);
+        }
+    }
 
     update() {
 	    this.raiseWater()
@@ -140,5 +160,7 @@ export default class GameScene extends Phaser.Scene
             this.scene.stop('game');
             this.scene.start('gameover')
         }
+
+        this.updateDebug();
     }
 }

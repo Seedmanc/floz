@@ -46,6 +46,8 @@ export default class Icicle extends Projectile
     }
 
     collidePlayer(projectile, player) {
+        if (this.scene.game.config.physics.arcade?.debug)
+            return;
         this.scene.scene.stop('game');
         this.scene.scene.start('gameover', {})
     }
