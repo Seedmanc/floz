@@ -14,7 +14,7 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
         if (pointer.leftButtonReleased()) {
             this.shoot()
         } else if (game.config.physics.arcade?.debug && pointer.rightButtonReleased())
-            this.shootIce()
+            this.shoot(true)
         });
     }
     static onExit(this: Player) {

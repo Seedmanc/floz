@@ -5,7 +5,7 @@ export module ChargeState {
     export function onEnter(this: Player) {
         this._inputs.on('pointerup', (pointer) => {
             if (pointer.getDuration() > 1000)
-                this.shootIce()
+                this.shoot(true)
             this.stateMachine.setState(S.Idle)
         });
     }

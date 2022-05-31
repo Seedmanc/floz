@@ -6,15 +6,16 @@ import Icicle from "~/models/Icicle";
 
 export default class Shard extends Projectile
 {
-    readonly VOLUME = 50;
+    static readonly VOLUME = Icicle.VOLUME;
     readonly LIFE = 10;
+
     private timer;
     private readonly speed;
 
     constructor(scene: Phaser.Scene, icicle: Icicle)
     {
         super(scene, icicle.x, icicle.y, K.Shards)
-        this.body.setSize(this.body.width/2, this.body.height/2) .setOffset(12, 0)
+        this.body.setSize(this.body.width/2, this.body.height/2).setOffset(12, 0)
         this.speed = {...icicle.body.velocity};
         this.setAlpha(0.7)
         this.canRotate = false;
@@ -22,7 +23,6 @@ export default class Shard extends Projectile
         this.scene.physics.add.collider(this, this.scene.shards, this.slide, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.walls, this.contain, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.shards, this.separate, undefined, this);
-        this.body.setMaxVelocityY(20)
     }
 
     contain() {
@@ -52,8 +52,11 @@ export default class Shard extends Projectile
     collideWalls() {}
 
     collideWater() {
+        this.body.setMaxVelocityY(30)
         this.setAccelerationX(0).setDragX(120);
-        this.setVelocityY(-20)
+
+        if (this.y > this.scene.scale.height - this.scene.waterSurface.displayHeight)
+           this.setVelocityY(-20)
 
         if (!this.timer) {
             this.timer = this.scene.time.addEvent({
@@ -63,11 +66,11 @@ export default class Shard extends Projectile
                         return;
                     this.scene.shards.killAndHide(this);
                     this.disableBody(true, true);
-                    this.scene.waterLevel += this.VOLUME/2;
+                    this.scene.waterLevel += Shard.VOLUME/2;
                 },
                 callbackScope: this,
             })
-            this.scene.waterLevel += this.VOLUME/2
+            this.scene.waterLevel += Shard.VOLUME/2
         }
     }
 

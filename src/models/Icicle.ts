@@ -8,7 +8,9 @@ export default class Icicle extends Projectile
 {
     level: number = 1;
     integrity: number;
-    readonly VOLUME = 50;
+    static readonly VOLUME = 50;
+    static readonly IMPULSE = 800;
+    static readonly GROUP = 'icicles';
 
     constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
@@ -16,11 +18,11 @@ export default class Icicle extends Projectile
 
         this.body.setSize(this.level*10,this.level*10)
         this.integrity = this.level * 2;
-        this.scene.waterLevel -= this.VOLUME;
+        this.scene.waterLevel -= Icicle.VOLUME;
         this.body.onWorldBounds = true;
 
         this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob)
-        this.scene.physics.world.on('worldbounds', this.collideWalls, this)
+        this.scene.physics.world.once('worldbounds', this.collideWalls, this)
     }
 
     pierceBlob(_, blob) {

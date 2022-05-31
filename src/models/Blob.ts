@@ -6,7 +6,7 @@ import Projectile from "~/models/Projectile";
 export default class Blob extends Projectile
 {
     level: number = 1;
-    readonly VOLUME = 100;
+    static readonly VOLUME = 100;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
@@ -34,10 +34,10 @@ export default class Blob extends Projectile
     collideWalls(){}
 
     collideWater(blob, water) {
-        this.scene.UI.addScore( blob.VOLUME/10)
+        this.scene.UI.addScore( Blob.VOLUME/10)
         blob.kill();
 
-        this.scene.waterLevel += blob.VOLUME;
+        this.scene.waterLevel += Blob.VOLUME;
         this.scene.player.y -= water.height ** 2 * this.scene.INFLOW_SPEED;
 
         if (this.scene.blobs.countActive() == 0) {

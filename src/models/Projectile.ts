@@ -8,8 +8,6 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     defaultScale = 1;
     canRotate = true;
 
-    readonly VOLUME;
-
     protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string, angle?, speed?) {
         super(scene, x, y, textureKey)
 

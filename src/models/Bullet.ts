@@ -7,7 +7,9 @@ import Projectile from "~/models/Projectile";
 export default class Bullet extends Projectile
 {
     defaultScale = 0.5;
-    readonly VOLUME = 33;
+    static readonly VOLUME = 33;
+    static readonly IMPULSE = 600;
+    static readonly GROUP = 'bullets';
 
     constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
@@ -16,7 +18,7 @@ export default class Bullet extends Projectile
             .body.setCircle(18).setOffset(7,7)
 
         this.body.customSeparateY = true;
-        this.scene.waterLevel -= this.VOLUME;
+        this.scene.waterLevel -= Bullet.VOLUME;
         this.scene.physics.add.overlap(this, this.scene.blobs, Blob.drop)
     }
 
@@ -32,7 +34,7 @@ export default class Bullet extends Projectile
 
     collideWater(bullet) {
         this.scene.bullets.killAndHide(bullet['disableBody'](true,true));
-        this.scene.waterLevel+= this.VOLUME;
+        this.scene.waterLevel+= Bullet.VOLUME;
     }
 
     collidePlayer(projectile, player) {

@@ -8,6 +8,8 @@ import IdleState from '~/statemachine/Idle';
 import StateMachine from '~/statemachine/StateMachine';
 import Text = Phaser.GameObjects.Text;
 import PumpState from "~/statemachine/Pump";
+import Icicle from "~/models/Icicle";
+import Bullet from "~/models/Bullet";
 
 
 export default class Player extends Phaser.GameObjects.Container
@@ -65,15 +67,12 @@ export default class Player extends Phaser.GameObjects.Container
         }
     }
 
-    shoot() {
-        let angle = this.hand.rotation + 180;
-        this.scene.bullets.create(this.x , this.y, String(angle), 550)
-        this.body.setVelocityX( -Math.cos(angle) * 300)
-    }
-    shootIce() {
-        let angle = this.hand.rotation + 180;
-        this.scene.icicles.create(this.x , this.y, angle+'', 800)
-        this.body.setVelocityX( -Math.cos(angle) * 500 )
+    shoot(isIcicle?: boolean) {
+        let Projectile = isIcicle ? Icicle : Bullet;
+        let angle = this.hand.rotation + this.hand.getData('shiftAngle');
+
+        this.scene[Projectile.GROUP].create(this.x , this.y, String(angle), Projectile.IMPULSE)
+        this.body.setVelocityX(-Math.cos(angle) * Projectile.IMPULSE/2)
     }
 
     damage(amount = 1) {
@@ -123,12 +122,29 @@ export default class Player extends Phaser.GameObjects.Container
 
     private preUpdate()
     {
+        this._sprite.flipX = this._inputs.activePointer.x > this.x;
+        this.adjustHand();
+
         let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
-        angle = Phaser.Math.Angle.Normalize(angle);
 
         if (angle > 0.75*Math.PI || angle < Math.PI/5) { // except lower ~quarter of a circle
-            this.hand.rotation = angle-180;             // I have no idea what's going on here
+            this.hand.rotation = angle - this.hand.getData('shiftAngle');             // I have no idea what's going on here
         }
+    }
+
+    private adjustHand() {
+        this.hand.flipX = this._sprite.flipX;
+
+        if (this.hand.flipX) {
+            this.hand.setOrigin(0.1, 0.9);
+            this.hand.x = 5;
+            this.hand.setData('shiftAngle', 180+45);
+        } else {
+            this.hand.setOrigin(0.9, 0.9);
+            this.hand.x = -5;
+            this.hand.setData('shiftAngle', 180);
+        }
+
     }
 
 }
