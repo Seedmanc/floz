@@ -9,7 +9,8 @@ enum keys {
     HpBar,
     Dead,
     Ice,
-    Shards
+    Shards,
+    Hand
 }
 
 

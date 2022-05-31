@@ -14,7 +14,7 @@ export default abstract class HurtState implements Omit<IState, 'name'> {
              ease: Phaser.Math.Easing.Linear,
              onUpdate: tween => {
                 const value = tween.getValue()
-                this._sprite.setAlpha(value/100)
+                this.setAlpha(value/100)
              },
              onComplete: () => {
                 this.stateMachine.setState(S.Idle)

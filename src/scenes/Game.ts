@@ -49,6 +49,7 @@ export default class GameScene extends Phaser.Scene
         this.load.image(K.HpBar, 'hpbar.png')
         this.load.image(K.Ice, 'ice.png')
         this.load.image(K.Shards, 'shard.png')
+        this.load.image(K.Hand, 'hand.png')
     }
 
     init() {
@@ -74,7 +75,7 @@ export default class GameScene extends Phaser.Scene
             color: 'red',
             fontStyle: 'normal'
         });
-        this.physics.world.drawDebug = false;
+        this.physics.world.drawDebug = !!this.game.config.physics.arcade?.debug;
         this.debug.setVisible(this.physics.world.drawDebug);
         this.toggleDebug = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     }

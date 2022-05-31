@@ -17,6 +17,7 @@ export default class Icicle extends Projectile
         this.body.setSize(this.level*10,this.level*10)
         this.integrity = this.level * 2;
         this.scene.waterLevel -= this.VOLUME;
+        this.body.onWorldBounds = true;
 
         this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob)
         this.scene.physics.world.on('worldbounds', this.collideWalls, this)
@@ -46,7 +47,7 @@ export default class Icicle extends Projectile
     }
 
     collidePlayer(projectile, player) {
-        if (this.scene.game.config.physics.arcade?.debug)
+        if (this.scene.physics.world.drawDebug)
             return;
         this.scene.scene.stop('game');
         this.scene.scene.start('gameover', {})
@@ -56,7 +57,7 @@ export default class Icicle extends Projectile
         super.delayedCall(...etc);
         this.setBounce(1);
 
-        if (this.level == 1)
+        if (this.level == 1)    // half the gravity
             this.setAccelerationY(-(this.scene.game.config.physics.arcade?.gravity || 200)/2)
     }
 }

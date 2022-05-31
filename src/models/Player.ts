@@ -12,13 +12,14 @@ import PumpState from "~/statemachine/Pump";
 
 export default class Player extends Phaser.GameObjects.Container
 {
-    scene: GameScene
+    scene!: GameScene
     body!: Phaser.Physics.Arcade.Body
     stateMachine: StateMachine
-    pumpText: Text;
+    pumpText!: Text;
     health: number;
 
-    _sprite: Phaser.GameObjects.Sprite
+    private readonly hand: Phaser.GameObjects.Sprite
+    readonly _sprite: Phaser.GameObjects.Sprite
     _inputs: Phaser.Input.InputPlugin;
     _keyE: Phaser.Input.Keyboard.Key;
 
@@ -29,51 +30,32 @@ export default class Player extends Phaser.GameObjects.Container
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y)
-        this.scene = <GameScene>scene;
-        this.health = scene['MAX_HEALTH'];
+        this.health = this.scene.MAX_HEALTH;
 
         this._sprite = scene.add.sprite(0, 0,  K.Player)
-            .setOrigin(0.5, 0.5)
+            .setOrigin(0.5, 0.5);
         this.add(this._sprite)
 
-        this.pumpText = scene.add.text( 10,-20  , '(E)', {
-            fontFamily: 'Comic Neue',
-            fontSize: '24px',
-            color: 'blue',
-            fontStyle: 'bold'
-        }).setVisible(false);
-        this.add(this.pumpText);
-        this.scene.tweens.add({
-            targets: this.pumpText,
-            alpha: { value: 0, duration: 250 },
-            yoyo: true,
-            loop: -1
-        })
+        this.hand = scene.add.sprite(-5, -10,  K.Hand)
+            .setOrigin(0.9, 0.9);
+        this.add(this.hand)
+
+        this.addPumpButton()
+
         scene.physics.add.existing(this)
         scene.add.existing(this)
 
-        const body = this.body as Phaser.Physics.Arcade.Body
-        body.setSize(this._sprite.width * 0.8, this._sprite.height * 0.9)
+        this.body.setSize(this._sprite.width * 0.8, this._sprite.height * 0.9)
             .setOffset(this._sprite.width * -0.4, -this._sprite.height * 0.4 )
             .setCollideWorldBounds(true)
-            .setDragX(200);
+            .setDragX(200)
+            .setMaxVelocityY(10);
 
         this._keyE = scene.input.keyboard.addKey('e');
         this._inputs = scene.input;
 
         this.stateMachine = new StateMachine(this, 'player')
         this.addStates()
-
-        this.body.setMaxVelocityY(10)
-    }
-
-    addStates() {
-        this.stateMachine
-            .addState(S.Idle, IdleState)
-            .addState(S.Charging, ChargeState)
-            .addState(S.Hurt, HurtState)
-            .addState(S.Pumping, PumpState)
-            .setState(S.Idle)
     }
 
     tryPump() {
@@ -84,13 +66,12 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     shoot() {
-        let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
+        let angle = this.hand.rotation + 180;
         this.scene.bullets.create(this.x , this.y, String(angle), 550)
         this.body.setVelocityX( -Math.cos(angle) * 300)
     }
-
     shootIce() {
-        let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
+        let angle = this.hand.rotation + 180;
         this.scene.icicles.create(this.x , this.y, angle+'', 800)
         this.body.setVelocityX( -Math.cos(angle) * 500 )
     }
@@ -114,9 +95,40 @@ export default class Player extends Phaser.GameObjects.Container
         this.pumpText.setVisible(this.isHurt);
     }
 
+
+    private addPumpButton() {
+        this.pumpText = this.scene.add.text( 10,-20  , '(E)', {
+            fontFamily: 'Comic Neue',
+            fontSize: '24px',
+            color: 'blue',
+            fontStyle: 'bold'
+        }).setVisible(false);
+        this.add(this.pumpText);
+        this.scene.tweens.add({
+            targets: this.pumpText,
+            alpha: { value: 0, duration: 250 },
+            yoyo: true,
+            loop: -1
+        })
+    }
+
+    private addStates() {
+        this.stateMachine
+            .addState(S.Idle, IdleState)
+            .addState(S.Charging, ChargeState)
+            .addState(S.Hurt, HurtState)
+            .addState(S.Pumping, PumpState)
+            .setState(S.Idle)
+    }
+
     private preUpdate()
     {
-     //   this.scene.debug.text = this.inputs.activePointer.getDuration()/60
+        let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
+        angle = Phaser.Math.Angle.Normalize(angle);
+
+        if (angle > 0.75*Math.PI || angle < Math.PI/5) { // except lower ~quarter of a circle
+            this.hand.rotation = angle-180;             // I have no idea what's going on here
+        }
     }
 
 }
