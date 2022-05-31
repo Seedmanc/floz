@@ -22,6 +22,7 @@ export default class Shard extends Projectile
         this.scene.physics.add.collider(this, this.scene.shards, this.slide, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.walls, this.contain, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.shards, this.separate, undefined, this);
+        this.body.setMaxVelocityY(20)
     }
 
     contain() {
@@ -52,10 +53,11 @@ export default class Shard extends Projectile
 
     collideWater() {
         this.setAccelerationX(0)
+        this.setVelocityY(-20)
 
         if (!this.timer) {
             this.timer = this.scene.time.addEvent({
-                delay: this.LIFE * 10,
+                delay: this.LIFE * 1000,
                 callback: () => {
                     this.scene.shards.killAndHide(this);
                     this.disableBody(true, true);

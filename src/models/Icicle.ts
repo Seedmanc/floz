@@ -34,14 +34,15 @@ export default class Icicle extends Projectile
 
     collideWalls(body) {
         let icicle = body.gameObject || body;
-
         if (!--icicle.integrity)
             icicle.break();
     }
 
     collideWater(icicle) {
-        this.body.setVelocityY(0);
-        this.break();
+        if (icicle.angle > 45 && icicle.angle < 135) {
+            this.body.setVelocityY(0);
+            this.break();
+        }
     }
 
     collidePlayer(projectile, player) {
@@ -52,5 +53,8 @@ export default class Icicle extends Projectile
     delayedCall(...etc) {
         super.delayedCall(...etc);
         this.setBounce(1);
+
+        if (this.level == 1)
+            this.setAccelerationY(-(this.scene.game.config.physics.arcade?.gravity || 200)/2)
     }
 }
