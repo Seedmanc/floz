@@ -9,6 +9,7 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
             this.stateMachine.setState(S.Charging)
     }
     static onEnter(this: Player) {
+        this.reticicle.setVisible(false)
         this._keyE.on('up', this.tryPump, this)
         this._inputs.on('pointerup', (pointer) => {
             if (pointer.leftButtonReleased()) {

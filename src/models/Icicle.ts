@@ -17,7 +17,7 @@ export default class Icicle extends Projectile
         super(scene, x, y, K.Ice, ...etc)
 
         this.body.setSize(this.level*10,this.level*10)
-        this.integrity = this.level * 2;
+        this.integrity = this.level * 3;
         this.scene.waterLevel -= Icicle.VOLUME;
         this.body.onWorldBounds = true;
 

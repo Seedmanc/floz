@@ -11,5 +11,9 @@ export module ChargeState {
     }
     export function onExit(this: Player) {
         this._inputs.off('pointerup')
+        this.reticicle.setVisible(false)
+    }
+    export function onUpdate(this: Player) {
+        this.reticicle.setVisible(this._inputs.activePointer.getDuration() > 1000)
     }
 }
