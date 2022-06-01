@@ -5,8 +5,9 @@ import Icicle from "~/models/Icicle";
 export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     scene: GameScene
     body!: Phaser.Physics.Arcade.Body
-    defaultScale = 1;
-    canRotate = true;
+
+    protected readonly defaultScale: number = 1;
+    protected readonly canRotate: boolean = true;
 
     protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string, angle?, speed?) {
         super(scene, x, y, textureKey)

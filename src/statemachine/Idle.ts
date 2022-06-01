@@ -11,11 +11,12 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
     static onEnter(this: Player) {
         this._keyE.on('up', this.tryPump, this)
         this._inputs.on('pointerup', (pointer) => {
-        if (pointer.leftButtonReleased()) {
-            this.shoot()
-        } else if (game.config.physics.arcade?.debug && pointer.rightButtonReleased())
-            this.shoot(true)
-        });
+            if (pointer.leftButtonReleased()) {
+                this.shoot()
+            } else if (game.config.physics.arcade?.debug && pointer.rightButtonReleased())
+                this.shoot(true)
+            }
+        );
     }
     static onExit(this: Player) {
         this._inputs.off('pointerup')

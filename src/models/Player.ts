@@ -50,7 +50,7 @@ export default class Player extends Phaser.GameObjects.Container
         this.body.setSize(this._sprite.width * 0.8, this._sprite.height * 0.9)
             .setOffset(this._sprite.width * -0.4, -this._sprite.height * 0.4 )
             .setCollideWorldBounds(true)
-            .setDragX(200)
+            .setDragX(200).setBounceX(0.25)
             .setMaxVelocityY(10);
 
         this._keyE = scene.input.keyboard.addKey('e');
@@ -122,28 +122,23 @@ export default class Player extends Phaser.GameObjects.Container
 
     private preUpdate()
     {
-        this._sprite.flipX = this._inputs.activePointer.x > this.x;
-        this.adjustHand();
-
         let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
 
         if (angle > 0.75*Math.PI || angle < Math.PI/5) { // except lower ~quarter of a circle
-            this.hand.rotation = angle - this.hand.getData('shiftAngle');             // I have no idea what's going on here
+            this._sprite.flipX = this._inputs.activePointer.x > this.x;
+            this.adjustHand();
+            this.hand.rotation = angle - this.hand.getData('shiftAngle'); // I have no idea what's going on here
         }
     }
 
     private adjustHand() {
         this.hand.flipX = this._sprite.flipX;
 
-        if (this.hand.flipX) {
-            this.hand.setOrigin(0.1, 0.9);
-            this.hand.x = 5;
-            this.hand.setData('shiftAngle', 180+45);
-        } else {
-            this.hand.setOrigin(0.9, 0.9);
-            this.hand.x = -5;
-            this.hand.setData('shiftAngle', 180);
-        }
+        let flip = this.hand.flipX ? 1 : -1;
+
+        this.hand.setOrigin(0.5 - 0.4 * flip, 0.9);
+        this.hand.x = 5 * flip;
+        this.hand.setData('shiftAngle', (180+22.5) + 22.5 * flip); // 45/2
 
     }
 

@@ -13,7 +13,6 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
             PumpState.timer = this.scene.time.addEvent({
                 delay: 500,                // ms
                 callback: () => this.stateMachine.setState(S.Idle),
-                //args: [],
                 callbackScope: this,
                 loop: true
             });
