@@ -23,11 +23,16 @@ export default class Bullet extends Projectile
     }
 
     collideWalls(bullet, wall) {//TODO from the top
-        bullet.setScale(0.25, 0.75).setRotation(0);
-        if (wall == this.scene.wallLeft)
-            bullet.setX(this.scene.wallLeft.width+bullet.displayWidth/4)
-        else
-            bullet.setX(this.scene.scale.width - this.scene.walls.getChildren()[0]['width'] - bullet.displayWidth/4)
+        bullet.setScale(0.25, 0.75)
+        let direction = Math.sign(this.body.velocity.y);
+
+        if (wall == this.scene.wallLeft) {
+            bullet.setX(this.scene.wallLeft.width+bullet.displayWidth/6)
+                .setRotation(direction *-0.1)
+        } else {
+            bullet.setX(this.scene.scale.width - this.scene.walls.getChildren()[0]['width'] - bullet.displayWidth/6)
+                .setRotation(direction * 0.1);
+        }
         this.scene.bullets.kill(bullet)
         bullet.body.setDragY(175);
     }

@@ -37,21 +37,6 @@ export default class GameScene extends Phaser.Scene
 		super('game')
 	}
 
-	preload()
-    {
-        this.load.image(K.WallLeft, 'left-wall.jpg')
-        this.load.image(K.WallRight, 'right-wall.jpg')
-        this.load.image(K.Water, 'water.jpg')
-        this.load.image(K.Player, 'player.png')
-        this.load.image(K.Blob, 'blob.png')
-        this.load.image(K.Score, 'score.png')
-        this.load.image(K.HP, 'hp.jpg')
-        this.load.image(K.HpBar, 'hpbar.png')
-        this.load.image(K.Ice, 'ice.png')
-        this.load.image(K.Shards, 'shard.png')
-        this.load.image(K.Hand, 'hand.png')
-    }
-
     init() {
 	    this.waterLevel = 0;
     }
@@ -110,7 +95,6 @@ export default class GameScene extends Phaser.Scene
     }
 
     addInteractions() {
-	    //player
         this.physics.add.collider(this.player, this.waterSurface);
         this.physics.add.overlap(this.player, this.waterSurface, () => {
             if (this.player.body.embedded)

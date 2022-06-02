@@ -23,6 +23,7 @@ export default class Icicle extends Projectile
 
         this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob)
         this.scene.physics.world.once('worldbounds', this.collideWalls, this)
+        this.scene.physics.add.collider(this.scene.icicles, this, this.collideWalls, undefined, this)
     }
 
     pierceBlob(_, blob) {

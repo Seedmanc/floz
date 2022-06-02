@@ -1,5 +1,4 @@
 import S from '~/const/StateKeys';
-import game from '~/main';
 import Player from '~/models/Player';
 import {IState} from '~/statemachine/StateMachine';
 
@@ -14,7 +13,7 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
         this._inputs.on('pointerup', (pointer) => {
             if (pointer.leftButtonReleased()) {
                 this.shoot()
-            } else if (game.config.physics.arcade?.debug && pointer.rightButtonReleased())
+            } else if (this.scene.physics.world.drawDebug && pointer.rightButtonReleased())
                 this.shoot(true)
             }
         );
