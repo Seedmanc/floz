@@ -22,6 +22,7 @@ export default class Shard extends Projectile
         this.setAlpha(0.7)
 
         this.scene.physics.add.collider(this, this.scene.shards, this.separate, undefined, this);
+        this.scene.physics.add.collider(this, this.scene.UI);
         this.scene.physics.add.overlap(this, this.scene.shards, this.separate, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.walls, this.contain, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.waterSurface, this.overlapWater, undefined, this);
@@ -71,7 +72,6 @@ export default class Shard extends Projectile
     }
 
     private contain() {
-        this.body.x = Math.max(this.body.x, this.scene.wallLeft.body.width+1)
         this.body.x = Math.min(this.body.x, this.scene.scale.width - this.scene.walls.getChildren()[1].body['width'] - this.body.width - 1)
     }
 }

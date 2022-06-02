@@ -6,8 +6,9 @@ import GameScene from "~/scenes/Game";
 export default class UI extends Phaser.GameObjects.Container
 {
     scene: GameScene
-    score:  Phaser.GameObjects.Image;
+    score: Phaser.GameObjects.Image;
     value: number = 0;
+    body!: Phaser.Physics.Arcade.Body
 
     private container: Phaser.GameObjects.Image;
     private readonly text: Phaser.GameObjects.Text;
@@ -34,6 +35,10 @@ export default class UI extends Phaser.GameObjects.Container
 
         this.add([this.score, this.text, hpContainer, this.hpBar]);
         this.setSize(this.score.width, this.score.height+this.text.height);
+
+        this.scene.physics.add.existing(this)
+        this.body.setImmovable(true);
+        this.body.setAllowGravity(false);
     }
 
     updateHP(value) {

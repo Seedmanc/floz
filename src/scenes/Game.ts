@@ -96,6 +96,7 @@ export default class GameScene extends Phaser.Scene
 
     addInteractions() {
         this.physics.add.collider(this.player, this.waterSurface);
+        this.physics.add.collider(this.player, this.UI)
         this.physics.add.overlap(this.player, this.waterSurface, () => {
             if (this.player.body.embedded)
                 this.player.body.setVelocityY(-25)
