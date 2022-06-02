@@ -3,7 +3,7 @@ import Player from '~/models/Player';
 import {IState} from '~/statemachine/StateMachine';
 
 export default abstract class PumpState implements Omit<IState, 'name'> {
-    static timer;
+    private static timer;
 
     static onEnter(this: Player) {
         this._keyE.on('up', () => {
@@ -14,7 +14,7 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
                 delay: 500,                // ms
                 callback: () => this.stateMachine.setState(S.Idle),
                 callbackScope: this,
-                loop: true
+                loop: false
             });
 
             if (this.isHurt)

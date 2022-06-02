@@ -26,11 +26,11 @@ export default class Icicle extends Projectile
         this.scene.physics.add.collider(this.scene.icicles, this, this.collideWalls, undefined, this)
     }
 
-    pierceBlob(_, blob) {
+    private pierceBlob(_, blob) {
         Blob.drop(null, blob)
     }
 
-    break() {
+    private break() {
         // @ts-ignore
         this.scene.shards.create(this);
         this.scene.icicles.killAndHide(this.disableBody(true,true));
@@ -50,6 +50,7 @@ export default class Icicle extends Projectile
     }
 
     collidePlayer(projectile, player) {
+        this.scene.cameras.main.shake(100, 0.01);
         if (this.scene.physics.world.drawDebug)
             return;
         this.scene.scene.stop('game');

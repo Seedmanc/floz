@@ -20,9 +20,9 @@ export default class Player extends Phaser.GameObjects.Container
     pumpText!: Text;
     health: number;
 
-    reticicle: Phaser.GameObjects.Image
-    private readonly hand: Phaser.GameObjects.Sprite
-    readonly _sprite: Phaser.GameObjects.Sprite
+    private hand: Phaser.GameObjects.Sprite
+    _sprite: Phaser.GameObjects.Sprite
+    _reticicle: Phaser.GameObjects.Image
     _inputs: Phaser.Input.InputPlugin;
     _keyE: Phaser.Input.Keyboard.Key;
 
@@ -30,7 +30,7 @@ export default class Player extends Phaser.GameObjects.Container
         return this.health < this.scene.MAX_HEALTH;
     }
 
-    get aimAngle(): number {
+    private get aimAngle(): number {
         return this.hand.rotation + this.hand.getData('shiftAngle')
     }
 
@@ -47,10 +47,10 @@ export default class Player extends Phaser.GameObjects.Container
             .setOrigin(0.9, 0.9);
         this.add(this.hand)
 
-        this.reticicle = scene.add.image(this.hand.x, this.hand.y, K.Ice)
+        this._reticicle = scene.add.image(this.hand.x, this.hand.y, K.Ice)
             .setScale(0.9)
             .setOrigin(0.5, 0.5)
-        this.add(this.reticicle);
+        this.add(this._reticicle);
 
         this.addPumpButton()
 
@@ -81,7 +81,7 @@ export default class Player extends Phaser.GameObjects.Container
         let Projectile = isIcicle ? Icicle : Bullet;
         let angle = this.aimAngle;
 
-        this.scene[Projectile.GROUP].create(this.x + this.reticicle.x, this.y + this.reticicle.getCenter().y  , String(angle), Projectile.IMPULSE)
+        this.scene[Projectile.GROUP].create(this.x + this._reticicle.x, this.y + this._reticicle.getCenter().y  , String(angle), Projectile.IMPULSE)
         this.body.setVelocityX(-Math.cos(angle) * Projectile.IMPULSE/2)
     }
 
@@ -89,6 +89,7 @@ export default class Player extends Phaser.GameObjects.Container
         if (this.stateMachine.isCurrentState(S.Hurt))
             return;
 
+        this.scene.cameras.main.shake(100, 0.01);
         this.health -= amount;
         this.scene.UI.updateHP(this.health);
         this.stateMachine.setState(S.Hurt)
@@ -144,11 +145,11 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     private adjustReticicle() {
-        this.reticicle.rotation = this.aimAngle;
-        this.reticicle.setOrigin(0.5,this.hand.flipX ? 0 : 0.5)
+        this._reticicle.rotation = this.aimAngle;
+        this._reticicle.setOrigin(0.5,this.hand.flipX ? 0 : 0.5)
 
-        this.reticicle.x = Math.cos( this.aimAngle ) * this.body.width /1.5 + this.hand.x
-        this.reticicle.y = Math.sin( this.aimAngle ) * this.body.height/1.5 + this.hand.y
+        this._reticicle.x = Math.cos( this.aimAngle ) * this.body.width /1.5 + this.hand.x
+        this._reticicle.y = Math.sin( this.aimAngle ) * this.body.height/1.5 + this.hand.y
     }
 
     private adjustHand() {

@@ -5,7 +5,7 @@ import Projectile from "~/models/Projectile";
 
 export default class Blob extends Projectile
 {
-    level: number = 1;
+    //level: number = 1;
     static readonly VOLUME = 100;
 
     constructor(scene: Phaser.Scene, x: number, y: number)

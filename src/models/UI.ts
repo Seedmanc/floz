@@ -6,11 +6,12 @@ import GameScene from "~/scenes/Game";
 export default class UI extends Phaser.GameObjects.Container
 {
     scene: GameScene
-    text: Phaser.GameObjects.Text;
     score:  Phaser.GameObjects.Image;
-    hpBar!: Phaser.GameObjects.Image;
     value: number = 0;
-    container: Phaser.GameObjects.Image;
+
+    private container: Phaser.GameObjects.Image;
+    private readonly text: Phaser.GameObjects.Text;
+    private readonly hpBar!: Phaser.GameObjects.Image;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {

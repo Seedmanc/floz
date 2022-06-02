@@ -31,7 +31,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
         }
     }
 
-    delayedCall(angle?, speed?) {
+    protected delayedCall(angle?, speed?) {
         this.scene.physics.add.collider(this, this.scene.player, this.collidePlayer, undefined, this);
         this.setCollideWorldBounds(true)
 
