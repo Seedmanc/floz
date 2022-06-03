@@ -71,8 +71,6 @@ export default class Player extends Phaser.GameObjects.Container
 
         this.stateMachine = new StateMachine(this, 'player')
         this.addStates()
-
-        this.damage()
     }
 
     tryPump() {
