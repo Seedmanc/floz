@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import GameScene from './scenes/Game'
 import GameoverScene from "~/scenes/Gameover";
 import PreloadScene from "~/scenes/Preload";
+import CircularProgressPlugin from 'phaser3-rex-plugins/plugins/circularprogress-plugin.js';
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
@@ -18,6 +19,13 @@ const config: Phaser.Types.Core.GameConfig = {
 			fps: 60,
 			debug: true
 		}
+	},
+	plugins: {
+		global: [{
+			key: 'rexCircularProgressPlugin',
+			plugin: CircularProgressPlugin,
+			start: true
+		}]
 	},
 	scene: [PreloadScene, GameScene, GameoverScene]
 }

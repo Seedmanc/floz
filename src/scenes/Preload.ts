@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import K from "~/const/TextureKeys";
-import UI from "~/models/UI";
+import WebFontFile from "~/etc/webfont";
 
 export default class PreloadScene extends Phaser.Scene
 {
@@ -21,6 +21,7 @@ export default class PreloadScene extends Phaser.Scene
         this.load.image(K.Ice, 'ice.png')
         this.load.image(K.Shards, 'shard.png')
         this.load.image(K.Hand, 'hand.png')
+        this.load.addFile(new WebFontFile(this.load, 'Comic Neue'))
     }
 
     create()

@@ -4,8 +4,13 @@ import {IState} from '~/statemachine/StateMachine';
 
 export default abstract class PumpState implements Omit<IState, 'name'> {
     private static timer;
+    private static presses;
+    private static readonly maxPresses = 10;
 
     static onEnter(this: Player) {
+        PumpState.presses = PumpState.maxPresses;
+        this.progress.setVisible(true)
+
         this._keyE.on('up', () => {
             if (PumpState.timer)
                 PumpState.timer.remove();
@@ -17,11 +22,22 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
                 loop: false
             });
 
-            if (this.isHurt)
+            PumpState.presses-= (this.scene.MAX_HEALTH - 1)/(this.scene.MAX_HEALTH - this.scene.player.health);
+
+            this.progress.value = 1 - PumpState.presses/PumpState.maxPresses
+
+            if (this.isHurt && PumpState.presses <= 0 || PumpState.presses == PumpState.maxPresses/2) {
                 this.heal();
+            }
+            if (!this.isHurt) {
+                this.stateMachine.setState(S.Idle)
+            }
         });
     }
+
     static onExit(this: Player) {
         this._keyE.off('up')
+        this.progress.setVisible(false);
+        this.progress.value = 0;
     }
 }

@@ -10,6 +10,8 @@ import Text = Phaser.GameObjects.Text;
 import PumpState from "~/statemachine/Pump";
 import Icicle from "~/models/Icicle";
 import Bullet from "~/models/Bullet";
+import UIPlugins from "phaser3-rex-plugins/templates/ui/ui-plugin";
+import CircularProgress = UIPlugins.CircularProgress;
 
 
 export default class Player extends Phaser.GameObjects.Container
@@ -19,6 +21,7 @@ export default class Player extends Phaser.GameObjects.Container
     stateMachine: StateMachine
     pumpText!: Text;
     health: number;
+    progress!: CircularProgress;
 
     private hand: Phaser.GameObjects.Sprite
     _sprite: Phaser.GameObjects.Sprite
@@ -103,17 +106,36 @@ export default class Player extends Phaser.GameObjects.Container
         this.health += amount;
         this.scene.UI.updateHP(this.health);
         this.pumpText.setVisible(this.isHurt);
+
+        // @ts-ignore
+        this.scene.bullets.create(this.x + this.body.width/2, this.y+this.body.height/3, -Math.PI/4, Bullet.IMPULSE/3)
+        // @ts-ignore
+        this.scene.bullets.create(this.x - this.body.width/2, this.y+this.body.height/3, -3*Math.PI/4, Bullet.IMPULSE/3)
     }
 
 
     private addPumpButton() {
-        this.pumpText = this.scene.add.text( 10,-20  , '(E)', {
+        this.progress = this.scene.add['rexCircularProgress']({
+            x: 30, y: -9,
+            radius: 16,
+            trackColor: Phaser.Display.Color.HexStringToColor('#a9a9a7').color,
+            barColor: Phaser.Display.Color.HexStringToColor('#dadfe2').color,
+            centerColor: Phaser.Display.Color.HexStringToColor('#a0c4e4').color,
+            anticlockwise: true,
+            value: 0
+        }).setVisible(false);
+        this.add(this.progress);
+
+        this.pumpText = this.scene.add.text( 23,-25  , 'e', {
             fontFamily: 'Comic Neue',
-            fontSize: '24px',
-            color: 'blue',
-            fontStyle: 'bold'
+            fontSize: '25px',
+            color: '#6069d2',
+            stroke: '#266AA754',
+            strokeThickness: 2,
+            shadow: { color: '#266AA7', fill: false, blur: 10 }
         }).setVisible(false);
         this.add(this.pumpText);
+
         this.scene.tweens.add({
             targets: this.pumpText,
             alpha: { value: 0, duration: 250 },
