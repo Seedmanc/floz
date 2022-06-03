@@ -8,7 +8,7 @@ export default abstract class HurtState implements Omit<IState, 'name'> {
         this.scene.tweens.addCounter({
              from: 100,
              to: 0,
-             duration: 150,
+             duration: 100,
              repeat: 2,
              yoyo: true,
              ease: Phaser.Math.Easing.Linear,

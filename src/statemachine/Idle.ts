@@ -9,7 +9,11 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
     }
     static onEnter(this: Player) {
         this._reticicle.setVisible(false)
-        this._keyE.on('up', this.tryPump, this)
+
+        this._keyE.on('down', this.tryPump, this)
+
+        this.pumpText.on('pointerdown', this.tryPump, this)
+
         this._inputs.on('pointerup', (pointer) => {
             if (pointer.leftButtonReleased()) {
                 this.shoot()
@@ -20,6 +24,8 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
     }
     static onExit(this: Player) {
         this._inputs.off('pointerup')
-        this._keyE.off('up', this.tryPump, this)
+        this._keyE.off('down', this.tryPump, this)
+
+        this.pumpText.off('pointerdown', this.tryPump, this)
     }
 }

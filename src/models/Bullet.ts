@@ -2,6 +2,7 @@ import K from "~/const/TextureKeys";
 import Phaser from "phaser";
 import Blob from "~/models/Blob";
 import Projectile from "~/models/Projectile";
+import S from "~/const/StateKeys";
 
 
 export default class Bullet extends Projectile
@@ -18,7 +19,9 @@ export default class Bullet extends Projectile
             .body.setCircle(18).setOffset(7,7)
 
         this.body.customSeparateY = true;
-        this.scene.waterLevel -= Bullet.VOLUME;
+        if (!this.scene.player.stateMachine.isCurrentState(S.Pumping))
+            this.scene.waterLevel -= Bullet.VOLUME;
+
         this.scene.physics.add.overlap(this, this.scene.blobs, Blob.drop)
     }
 

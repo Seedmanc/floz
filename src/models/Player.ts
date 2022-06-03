@@ -71,12 +71,15 @@ export default class Player extends Phaser.GameObjects.Container
 
         this.stateMachine = new StateMachine(this, 'player')
         this.addStates()
+
+        this.damage()
     }
 
     tryPump() {
         if (this.isHurt) {
             this.stateMachine.setState(S.Pumping);
             this._keyE.off('up', this.tryPump, this);
+            this.pumpText.off('pointerdown', this.tryPump, this)
         }
     }
 
@@ -126,14 +129,16 @@ export default class Player extends Phaser.GameObjects.Container
         }).setVisible(false);
         this.add(this.progress);
 
-        this.pumpText = this.scene.add.text( 23,-25  , 'e', {
+        this.pumpText = this.scene.add.text(13, -25  , '(e)', {
             fontFamily: 'Comic Neue',
             fontSize: '25px',
             color: '#6069d2',
             stroke: '#266AA754',
             strokeThickness: 2,
             shadow: { color: '#266AA7', fill: false, blur: 10 }
-        }).setVisible(false);
+        })
+            .setVisible(false)
+            .setInteractive();
         this.add(this.pumpText);
 
         this.scene.tweens.add({
