@@ -74,7 +74,7 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     tryPump() {
-        if (this.isHurt) {
+        if (this.isHurt && !PumpState.isCooldown) {
             this.stateMachine.setState(S.Pumping);
             this._keyE.off('up', this.tryPump, this);
             this.pumpText.off('pointerdown', this.tryPump, this)

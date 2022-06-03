@@ -6,6 +6,7 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
     private static timer;
     private static presses;
     private static readonly maxPresses = 10;
+    static isCooldown: boolean;
 
     static onEnter(this: Player) {
         PumpState.presses = PumpState.maxPresses;
@@ -30,7 +31,7 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
             PumpState.timer.remove();
 
         PumpState.timer = player.scene.time.addEvent({
-            delay: 400,                // ms
+            delay: 333,                // ms
             callback: () => player.stateMachine.setState(S.Idle),
             callbackScope: this,
             loop: false
@@ -51,8 +52,28 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
 
     static onExit(this: Player) {
         this._keyE.off('down')
-        this.progress.setVisible(false);
-        this.progress.value = 0;
+        PumpState.isCooldown = true;
+
+        let textVisible = this.pumpText.visible
+        this.pumpText.setVisible(false)
+        let penaltyTime = (PumpState.maxPresses - PumpState.presses) * 10
+        this.progress.setAlpha(0.75)
+
+        this.scene.tweens.addCounter({
+            from: penaltyTime,
+            to: 0,
+            duration: penaltyTime * 50,
+            onUpdate: tween => {
+                this.progress.value = tween.getValue()/PumpState.maxPresses/10
+            },
+            onComplete: () => {
+                PumpState.isCooldown = false;
+                this.progress.setVisible(false);
+                this.pumpText.setVisible(textVisible);
+                this.progress.setAlpha(1)
+            }
+        })
+
         this.pumpText.text = '(e)'
         this.pumpText.off('pointerdown')
     }
