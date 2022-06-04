@@ -67,7 +67,8 @@ export default class GameScene extends Phaser.Scene
 
     makeLevel() {
         this.walls = this.physics.add.staticGroup()
-        this.walls.create(this.scale.width, this.scale.height/2, K.WallRight).setOrigin(1,0.5)
+        this.walls.create(this.scale.width, this.scale.height-50, K.WallRight)
+            .setOrigin(1,1).setScale(1, 1.02)
             .body.updateFromGameObject()['checkCollision'].up = false;
 
         this.waterSurface = this.physics.add.staticImage(0, this.scale.height, K.Water).setOrigin(0,1);
@@ -122,20 +123,6 @@ export default class GameScene extends Phaser.Scene
         }
     }
 
-    updateDebug() {
-        if (Phaser.Input.Keyboard.JustDown(this.toggleDebug)) {
-            if (!this.physics.world.debugGraphic)
-                this.physics.world.createDebugGraphic();
-            if (this.physics.world.drawDebug) {
-                this.physics.world.drawDebug = false;
-                this.physics.world.debugGraphic.clear();
-            } else {
-                this.physics.world.drawDebug = true;
-            }
-            this.debug.setVisible(this.physics.world.drawDebug);
-        }
-    }
-
     update() {
 	    this.raiseWater()
 
@@ -148,5 +135,19 @@ export default class GameScene extends Phaser.Scene
         }
 
         this.updateDebug();
+    }
+
+    private updateDebug() {
+        if (Phaser.Input.Keyboard.JustDown(this.toggleDebug)) {
+            if (!this.physics.world.debugGraphic)
+                this.physics.world.createDebugGraphic();
+            if (this.physics.world.drawDebug) {
+                this.physics.world.drawDebug = false;
+                this.physics.world.debugGraphic.clear();
+            } else {
+                this.physics.world.drawDebug = true;
+            }
+            this.debug.setVisible(this.physics.world.drawDebug);
+        }
     }
 }

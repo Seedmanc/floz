@@ -29,8 +29,8 @@ export default class Player extends Phaser.GameObjects.Container
     _inputs: Phaser.Input.InputPlugin;
     _keyE: Phaser.Input.Keyboard.Key;
 
-    get isHurt(): boolean {
-        return this.health < this.scene.MAX_HEALTH;
+    get isHurt() {
+        return  this.scene.MAX_HEALTH - this.health;
     }
 
     private get aimAngle(): number {
@@ -60,8 +60,8 @@ export default class Player extends Phaser.GameObjects.Container
         scene.physics.add.existing(this)
         scene.add.existing(this)
 
-        this.body.setSize(this._sprite.width * 0.8, this._sprite.height * 0.9)
-            .setOffset(this._sprite.width * -0.4, -this._sprite.height * 0.4 )
+        this.body.setSize(this._sprite.width * 0.8, this._sprite.height * 0.89)
+            .setOffset(this._sprite.width * -0.4, -this._sprite.height * 0.4)
             .setCollideWorldBounds(true)
             .setDragX(200).setBounceX(0.25)
             .setMaxVelocityY(10);
@@ -102,11 +102,14 @@ export default class Player extends Phaser.GameObjects.Container
             this.scene.scene.stop('game');
             this.scene.scene.start('gameover', {})
         }
+        this.adjustBuyoancy()
     }
     heal(amount = 1) {
         this.health += amount;
         this.scene.UI.updateHP(this.health);
-        this.pumpText.setVisible(this.isHurt);
+        this.pumpText.setVisible(!!this.isHurt);
+
+        this.adjustBuyoancy()
 
         // @ts-ignore
         this.scene.bullets.create(this.x + this.body.width/2, this.y+this.body.height/3, -Math.PI/4, Bullet.IMPULSE/3)
@@ -114,6 +117,11 @@ export default class Player extends Phaser.GameObjects.Container
         this.scene.bullets.create(this.x - this.body.width/2, this.y+this.body.height/3, -3*Math.PI/4, Bullet.IMPULSE/3)
     }
 
+    private adjustBuyoancy() {
+        this.body
+            .setDragX(200 + 150*this.isHurt)
+            .setSize(this._sprite.width * 0.8, this._sprite.height * 0.89 - 6 * this.isHurt )
+    }
 
     private addPumpButton() {
         this.progress = this.scene.add['rexCircularProgress']({
@@ -136,7 +144,8 @@ export default class Player extends Phaser.GameObjects.Container
             shadow: { color: '#266AA7', fill: false, blur: 10 }
         })
             .setVisible(false)
-            .setInteractive();
+            .setInteractive({hitArea: new Phaser.Geom.Circle(-12, 12, 50), useHandCursor: true, hitAreaCallback: Phaser.Geom.Circle.Contains});
+
         this.add(this.pumpText);
 
         this.scene.tweens.add({
@@ -173,8 +182,8 @@ export default class Player extends Phaser.GameObjects.Container
         this._reticicle.rotation = this.aimAngle;
         this._reticicle.setOrigin(0.5,this.hand.flipX ? 0 : 0.5)
 
-        this._reticicle.x = Math.cos( this.aimAngle ) * this.body.width /1.5 + this.hand.x
-        this._reticicle.y = Math.sin( this.aimAngle ) * this.body.height/1.5 + this.hand.y
+        this._reticicle.x = Math.cos( this.aimAngle ) * this.body.width /1.45 + this.hand.x
+        this._reticicle.y = Math.sin( this.aimAngle ) * this.body.height/1.45 + this.hand.y
     }
 
     private adjustHand() {
