@@ -21,6 +21,7 @@ export default class PreloadScene extends Phaser.Scene
         this.load.image(K.Ice, 'ice.png')
         this.load.image(K.Shards, 'shard.png')
         this.load.image(K.Hand, 'hand.png')
+        this.load.image(K.Tail, 'tail.png')
         this.load.addFile(new WebFontFile(this.load, 'Comic Neue'))
     }
 

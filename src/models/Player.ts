@@ -26,6 +26,7 @@ export default class Player extends Phaser.GameObjects.Container
     private hand: Phaser.GameObjects.Sprite
     _sprite: Phaser.GameObjects.Sprite
     _reticicle: Phaser.GameObjects.Image
+    _tail: Phaser.GameObjects.Sprite
     _inputs: Phaser.Input.InputPlugin;
     _keyE: Phaser.Input.Keyboard.Key;
 
@@ -54,6 +55,10 @@ export default class Player extends Phaser.GameObjects.Container
             .setScale(0.9)
             .setOrigin(0.5, 0.5)
         this.add(this._reticicle);
+
+        this._tail = scene.add.sprite(1, 19, K.Tail)
+            .setOrigin(0.3, 0.95)
+        this.add(this._tail);
 
         this.addPumpButton()
 
@@ -86,7 +91,24 @@ export default class Player extends Phaser.GameObjects.Container
         let angle = this.aimAngle;
 
         this.scene[Projectile.GROUP].create(this.x + this._reticicle.x, this.y + this._reticicle.getCenter().y  , String(angle), Projectile.IMPULSE)
-        this.body.setVelocityX(-Math.cos(angle) * Projectile.IMPULSE/2)
+        let momentum = -Math.cos(angle) * Projectile.IMPULSE/2;
+        this.body.setVelocityX(momentum)
+
+        this.scene.tweens.add({
+            targets: this.scene.player._tail,
+            rotation: momentum / -3000,
+            duration: 250,
+            hold: 250,
+            yoyo: true,
+            onComplete: () => {
+                this.scene.tweens.add({
+                    targets: this.scene.player._tail,
+                    rotation: momentum / 5000,
+                    duration: 333,
+                    yoyo: true,
+                })
+            }
+        })
     }
 
     damage(amount = 1) {
@@ -102,14 +124,14 @@ export default class Player extends Phaser.GameObjects.Container
             this.scene.scene.stop('game');
             this.scene.scene.start('gameover', {})
         }
-        this.adjustBuyoancy()
+        this.adjustBuoyancy()
     }
     heal(amount = 1) {
         this.health += amount;
         this.scene.UI.updateHP(this.health);
         this.pumpText.setVisible(!!this.isHurt);
 
-        this.adjustBuyoancy()
+        this.adjustBuoyancy()
 
         // @ts-ignore
         this.scene.bullets.create(this.x + this.body.width/2, this.y+this.body.height/3, -Math.PI/4, Bullet.IMPULSE/3)
@@ -117,7 +139,7 @@ export default class Player extends Phaser.GameObjects.Container
         this.scene.bullets.create(this.x - this.body.width/2, this.y+this.body.height/3, -3*Math.PI/4, Bullet.IMPULSE/3)
     }
 
-    private adjustBuyoancy() {
+    private adjustBuoyancy() {
         this.body
             .setDragX(200 + 150*this.isHurt)
             .setSize(this._sprite.width * 0.8, this._sprite.height * 0.89 - 6 * this.isHurt )
@@ -174,6 +196,7 @@ export default class Player extends Phaser.GameObjects.Container
             this.adjustHand();
             this.hand.rotation = angle - this.hand.getData('shiftAngle'); // I have no idea what's going on here
             this.adjustReticicle()
+            this.adjustTail()
         }
 
     }
@@ -194,6 +217,12 @@ export default class Player extends Phaser.GameObjects.Container
         this.hand.setOrigin(0.5 - 0.4 * flip, 0.9);
         this.hand.x = 5 * flip;
         this.hand.setData('shiftAngle', (180+22.5) + 22.6 * flip); // 45/2
+    }
+
+    private adjustTail() {
+        this._tail.flipX = this._sprite.flipX;
+
+        this._tail.setOrigin(this._tail.flipX ? 0.7 : 0.3, 0.95)
     }
 
 }

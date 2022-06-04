@@ -10,7 +10,8 @@ enum keys {
     Dead,
     Ice,
     Shards,
-    Hand
+    Hand,
+    Tail
 }
 
 
