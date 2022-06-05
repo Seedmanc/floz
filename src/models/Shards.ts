@@ -43,8 +43,6 @@ export default class Shard extends Projectile
             this.timer = this.scene.time.addEvent({
                 delay: this.LIFE * 1000,
                 callback: () => {
-                    if (this.scene.physics.world.drawDebug)
-                        return;
                     this.scene.shards.killAndHide(this);
                     this.disableBody(true, true);
                     this.scene.waterLevel += Shard.VOLUME/2;

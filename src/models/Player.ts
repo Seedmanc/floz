@@ -24,6 +24,7 @@ export default class Player extends Phaser.GameObjects.Container
     progress!: CircularProgress;
 
     private hand: Phaser.GameObjects.Sprite
+    private flipMul = 1;
     _sprite: Phaser.GameObjects.Sprite
     _reticicle: Phaser.GameObjects.Image
     _tail: Phaser.GameObjects.Sprite
@@ -35,7 +36,7 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     private get aimAngle(): number {
-        return this.hand.rotation + this.hand.getData('shiftAngle')
+        return Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
     }
 
     constructor(scene: Phaser.Scene, x: number, y: number)
@@ -90,20 +91,24 @@ export default class Player extends Phaser.GameObjects.Container
         let Projectile = isIcicle ? Icicle : Bullet;
         let angle = this.aimAngle;
 
-        this.scene[Projectile.GROUP].create(this.x + this._reticicle.x, this.y + this._reticicle.getCenter().y  , String(angle), Projectile.IMPULSE)
+        this.scene[Projectile.GROUP].create(
+            this.body.center.x + this._reticicle.x*this.flipMul,
+            this.y + this._reticicle.y,
+            String(angle), Projectile.IMPULSE
+        )
         let momentum = -Math.cos(angle) * Projectile.IMPULSE/2;
         this.body.setVelocityX(momentum)
 
         this.scene.tweens.add({
             targets: this.scene.player._tail,
-            rotation: momentum / -3000,
+            rotation: momentum / -3000 * this.flipMul,
             duration: 250,
             hold: 250,
             yoyo: true,
             onComplete: () => {
                 this.scene.tweens.add({
                     targets: this.scene.player._tail,
-                    rotation: momentum / 5000,
+                    rotation: momentum / 5000 * this.flipMul,
                     duration: 333,
                     yoyo: true,
                 })
@@ -189,40 +194,30 @@ export default class Player extends Phaser.GameObjects.Container
 
     private preUpdate()
     {
-        let angle = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
-
-        if (angle > 0.75*Math.PI || angle < Math.PI/5) { // except lower ~quarter of a circle
-            this._sprite.flipX = this._inputs.activePointer.x > this.x;
+        if (this.aimAngle > 0.75*Math.PI || this.aimAngle < Math.PI/5) { // except lower ~quarter of a circle
+            this.flipBody()
             this.adjustHand();
-            this.hand.rotation = angle - this.hand.getData('shiftAngle'); // I have no idea what's going on here
             this.adjustReticicle()
-            this.adjustTail()
         }
+    }
 
+    private flipBody() {
+        this.flipMul = Math.sign(this.x - this._inputs.activePointer.x)
+        this.setScale(this.flipMul, 1)
+        this.body.setOffset(  this._sprite.width * -0.4 + this.body.width/2 - this.body.halfWidth * this.flipMul, this.body.offset.y)
     }
 
     private adjustReticicle() {
-        this._reticicle.rotation = this.aimAngle;
-        this._reticicle.setOrigin(0.5,this.hand.flipX ? 0 : 0.5)
+        this._reticicle.rotation = this.aimAngle * this.flipMul
+        this._reticicle.setOrigin(0.5, 0.375 + 0.25 * this.flipMul)
 
-        this._reticicle.x = Math.cos( this.aimAngle ) * this.body.width /1.45 + this.hand.x
+        this._reticicle.x = Math.cos( this.aimAngle ) * this.body.width * this.flipMul /1.45 + this.hand.x
         this._reticicle.y = Math.sin( this.aimAngle ) * this.body.height/1.45 + this.hand.y
     }
 
     private adjustHand() {
-        this.hand.flipX = this._sprite.flipX;
-
-        let flip = this.hand.flipX ? 1 : -1;
-
-        this.hand.setOrigin(0.5 - 0.4 * flip, 0.9);
-        this.hand.x = 5 * flip;
-        this.hand.setData('shiftAngle', (180+22.5) + 22.6 * flip); // 45/2
-    }
-
-    private adjustTail() {
-        this._tail.flipX = this._sprite.flipX;
-
-        this._tail.setOrigin(this._tail.flipX ? 0.7 : 0.3, 0.95)
+        let shiftAngle = this.flipMul > 0 ? 180 : -45;
+        this.hand.rotation = (this.aimAngle - shiftAngle) * this.flipMul;
     }
 
 }
