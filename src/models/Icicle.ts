@@ -2,6 +2,8 @@ import K from "~/const/TextureKeys";
 import Phaser from "phaser";
 import Blob from "~/models/Blob";
 import Projectile from "~/models/Projectile";
+import Player from "~/models/Player";
+import GameObject = Phaser.GameObjects.GameObject;
 
 
 export default class Icicle extends Projectile
@@ -26,7 +28,7 @@ export default class Icicle extends Projectile
         this.scene.physics.add.collider(this.scene.icicles, this, this.collideWalls, undefined, this)
     }
 
-    private pierceBlob(_, blob) {
+    private pierceBlob(_, blob: GameObject) {
         Blob.drop(null, blob)
     }
 
@@ -42,15 +44,16 @@ export default class Icicle extends Projectile
             icicle.break();
     }
 
-    collideWater(icicle) {
+    collideWater(icicle: Icicle) {
         if (icicle.angle > 45 && icicle.angle < 135) {
             this.body.setVelocityY(0);
             this.break();
         }
     }
 
-    collidePlayer(projectile, player) {
+    collidePlayer(projectile, player: Player) {
         this.scene.cameras.main.shake(100, 0.01);
+
         if (this.scene.physics.world.drawDebug)
             return;
         this.scene.scene.stop('game');

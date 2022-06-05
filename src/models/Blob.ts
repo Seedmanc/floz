@@ -1,6 +1,7 @@
 import K from "~/const/TextureKeys";
 import Phaser from "phaser";
 import Projectile from "~/models/Projectile";
+import Player from "~/models/Player";
 
 
 export default class Blob extends Projectile
@@ -33,7 +34,7 @@ export default class Blob extends Projectile
 
     collideWalls(){}
 
-    collideWater(blob, water) {
+    collideWater(blob: Blob, water) {
         this.scene.UI.addScore( Blob.VOLUME/10)
         blob.kill();
 
@@ -45,7 +46,7 @@ export default class Blob extends Projectile
         }
     }
 
-    collidePlayer(blob, player) {
+    collidePlayer(blob: Blob, player: Player) {
         blob.kill()
         player.damage()
     }

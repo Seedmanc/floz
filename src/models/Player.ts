@@ -12,6 +12,8 @@ import Icicle from "~/models/Icicle";
 import Bullet from "~/models/Bullet";
 import UIPlugins from "phaser3-rex-plugins/templates/ui/ui-plugin";
 import CircularProgress = UIPlugins.CircularProgress;
+import TailWobble from "~/tweens/TailWobble";
+import Blinking from "~/tweens/Blinking";
 
 
 export default class Player extends Phaser.GameObjects.Container
@@ -22,10 +24,10 @@ export default class Player extends Phaser.GameObjects.Container
     pumpText!: Text;
     health: number;
     progress!: CircularProgress;
+    flipMul = 1;
 
     private hand: Phaser.GameObjects.Sprite
-    private flipMul = 1;
-    _sprite: Phaser.GameObjects.Sprite
+    private _sprite: Phaser.GameObjects.Sprite
     _reticicle: Phaser.GameObjects.Image
     _tail: Phaser.GameObjects.Sprite
     _inputs: Phaser.Input.InputPlugin;
@@ -60,6 +62,7 @@ export default class Player extends Phaser.GameObjects.Container
         this._tail = scene.add.sprite(1, 19, K.Tail)
             .setOrigin(0.3, 0.95)
         this.add(this._tail);
+        TailWobble.add(this);
 
         this.addPumpButton()
 
@@ -99,21 +102,7 @@ export default class Player extends Phaser.GameObjects.Container
         let momentum = -Math.cos(angle) * Projectile.IMPULSE/2;
         this.body.setVelocityX(momentum)
 
-        this.scene.tweens.add({
-            targets: this.scene.player._tail,
-            rotation: momentum / -3000 * this.flipMul,
-            duration: 250,
-            hold: 250,
-            yoyo: true,
-            onComplete: () => {
-                this.scene.tweens.add({
-                    targets: this.scene.player._tail,
-                    rotation: momentum / 5000 * this.flipMul,
-                    duration: 333,
-                    yoyo: true,
-                })
-            }
-        })
+        TailWobble.play()
     }
 
     damage(amount = 1) {
@@ -130,6 +119,7 @@ export default class Player extends Phaser.GameObjects.Container
             this.scene.scene.start('gameover', {})
         }
         this.adjustBuoyancy()
+        TailWobble.play(0.2)
     }
     heal(amount = 1) {
         this.health += amount;
@@ -174,13 +164,7 @@ export default class Player extends Phaser.GameObjects.Container
             .setInteractive({hitArea: new Phaser.Geom.Circle(-12, 12, 50), useHandCursor: true, hitAreaCallback: Phaser.Geom.Circle.Contains});
 
         this.add(this.pumpText);
-
-        this.scene.tweens.add({
-            targets: this.pumpText,
-            alpha: { value: 0, duration: 250 },
-            yoyo: true,
-            loop: -1
-        })
+        Blinking.add(this.pumpText);
     }
 
     private addStates() {
@@ -202,7 +186,8 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     private flipBody() {
-        this.flipMul = Math.sign(this.x - this._inputs.activePointer.x)
+        this.pumpText.flipX = this._inputs.activePointer.x > this.x
+        this.flipMul = this.pumpText.flipX ? -1 : 1;
         this.setScale(this.flipMul, 1)
         this.body.setOffset(  this._sprite.width * -0.4 + this.body.width/2 - this.body.halfWidth * this.flipMul, this.body.offset.y)
     }

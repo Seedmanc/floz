@@ -1,11 +1,13 @@
 import S from '~/const/StateKeys';
 import Player from '~/models/Player';
 import {IState} from '~/statemachine/StateMachine';
+import Cooldown from "~/tweens/Cooldown";
 
 export default abstract class PumpState implements Omit<IState, 'name'> {
     private static timer;
     private static presses;
-    private static readonly maxPresses = 10;
+
+    static readonly maxPresses = 10;
     static isCooldown: boolean;
 
     static onEnter(this: Player) {
@@ -59,20 +61,13 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
         let penaltyTime = (PumpState.maxPresses - PumpState.presses) * 10
         this.progress.setAlpha(0.75)
 
-        this.scene.tweens.addCounter({
-            from: penaltyTime,
-            to: 0,
-            duration: penaltyTime * 50,
-            onUpdate: tween => {
-                this.progress.value = tween.getValue()/PumpState.maxPresses/10
-            },
-            onComplete: () => {
+        Cooldown.run(this, penaltyTime, this.progress.setValue)
+            .then(() => {
                 PumpState.isCooldown = false;
                 this.progress.setVisible(false);
                 this.pumpText.setVisible(textVisible);
                 this.progress.setAlpha(1)
-            }
-        })
+            });
 
         this.pumpText.text = '(e)'
         this.pumpText.off('pointerdown')

@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import Blob from "~/models/Blob";
 import Projectile from "~/models/Projectile";
 import S from "~/const/StateKeys";
+import Image = Phaser.Physics.Arcade.Image;
 
 
 export default class Bullet extends Projectile
@@ -25,7 +26,7 @@ export default class Bullet extends Projectile
         this.scene.physics.add.overlap(this, this.scene.blobs, Blob.drop)
     }
 
-    collideWalls(bullet, wall) {//TODO from the top
+    collideWalls(bullet: Bullet, wall: Image) {//TODO from the top
         bullet.setScale(0.25, 0.75)
         let direction = Math.sign(this.body.velocity.y);
 
@@ -40,8 +41,8 @@ export default class Bullet extends Projectile
         bullet.body.setDragY(175);
     }
 
-    collideWater(bullet) {
-        this.scene.bullets.killAndHide(bullet['disableBody'](true,true));
+    collideWater(bullet: Bullet) {
+        this.scene.bullets.killAndHide(bullet.disableBody(true,true));
         this.scene.waterLevel+= Bullet.VOLUME;
     }
 
