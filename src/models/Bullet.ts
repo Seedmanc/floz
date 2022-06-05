@@ -16,10 +16,12 @@ export default class Bullet extends Projectile
     constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
         super(scene, x, y, K.Blob, ...etc)
+
         this.setScale(this.defaultScale).refreshBody().setDepth(-1)
             .body.setCircle(18).setOffset(7,7)
 
         this.body.customSeparateY = true;
+       // TODO ? this.body.customSeparateX = true;
         if (!this.scene.player.stateMachine.isCurrentState(S.Pumping))
             this.scene.waterLevel -= Bullet.VOLUME;
 
@@ -31,14 +33,14 @@ export default class Bullet extends Projectile
         let direction = Math.sign(this.body.velocity.y);
 
         if (wall == this.scene.wallLeft) {
-            bullet.setX(this.scene.wallLeft.width+bullet.displayWidth/6)
+            bullet.setX(wall.width + bullet.displayWidth/6)
                 .setRotation(direction *-0.1)
         } else {
-            bullet.setX(this.scene.scale.width - this.scene.walls.getChildren()[0]['width'] - bullet.displayWidth/6)
+            bullet.setX(this.scene.scale.width - wall.width - bullet.displayWidth/6)
                 .setRotation(direction * 0.1);
         }
         this.scene.bullets.kill(bullet)
-        bullet.body.setDragY(175);
+        bullet.body.setDragY(150);
     }
 
     collideWater(bullet: Bullet) {

@@ -28,8 +28,6 @@ export default class Blob extends Projectile
     kill() {
         this.scene.blobs.killAndHide(this)
         this.disableBody(true, true);
-        this.setPosition(0,0)
-        this.active = false
     }
 
     collideWalls(){}
@@ -39,7 +37,6 @@ export default class Blob extends Projectile
         blob.kill();
 
         this.scene.waterLevel += Blob.VOLUME;
-        this.scene.player.y -= water.height ** 2 * this.scene.INFLOW_SPEED;
 
         if (this.scene.blobs.countActive() == 0) {
             this.scene.win()

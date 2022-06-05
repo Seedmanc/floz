@@ -20,7 +20,7 @@ export default class Shard extends Projectile
     {
         super(scene, icicle.x, icicle.y, K.Shards)
         this.body.setSize(this.body.width/2, this.body.height/2).setOffset(12, 0)
-        this.speed = {...icicle.body.velocity};
+        this.speed = icicle.body.velocity.clone();
         this.setAlpha(0.7)
 
         this.scene.physics.add.collider(this, this.scene.shards, this.separate, undefined, this);
@@ -33,9 +33,7 @@ export default class Shard extends Projectile
     delayedCall() {
         super.delayedCall();
         this.setBounce(0.33, 0.1).setDragX(80);
-
-        this.body.velocity.x = this.speed.x/2;
-        this.body.velocity.y = this.speed.y/2;
+        this.body.velocity = this.speed.scale(0.5);
     }
 
     collideWater() {
@@ -48,15 +46,14 @@ export default class Shard extends Projectile
                     this.scene.shards.killAndHide(this);
                     this.disableBody(true, true);
                     this.scene.waterLevel += Shard.VOLUME/2;
-                },
-                callbackScope: this,
+                }
             })
             this.scene.waterLevel += Shard.VOLUME/2
         }
     }
 
     collidePlayer(shard: Shard, player: Player) {
-        player.body.velocity.x =  Phaser.Math.Average([player.body.velocity.x, 50 * Math.sign(player.x-shard.x)]);
+        player.body.velocity.x = Phaser.Math.Average([player.body.velocity.x, 50 * Math.sign(player.x-shard.x)]);
         TailWobble.play()
     }
 
@@ -72,7 +69,7 @@ export default class Shard extends Projectile
         s2.setAccelerationX(-15* Math.sign(s1.x-s2.x));
     }
 
-    private contain() {
-        this.body.x = Math.min(this.body.x, this.scene.scale.width - this.scene.walls.getChildren()[1].body['width'] - this.body.width - 1)
+    private contain(shard, wall) {
+        this.body.x = Math.min(this.body.x, this.scene.scale.width - wall.width - this.body.width - 1)
     }
 }

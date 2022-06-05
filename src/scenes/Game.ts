@@ -69,7 +69,7 @@ export default class GameScene extends Phaser.Scene
         this.walls = this.physics.add.staticGroup()
         this.walls.create(this.scale.width, this.scale.height-50, K.WallRight)
             .setOrigin(1,1).setScale(1, 1.02)
-            .body.updateFromGameObject()['checkCollision'].up = false;
+            .body.updateFromGameObject().checkCollision.up = false;
 
         this.waterSurface = this.physics.add.staticImage(0, this.scale.height, K.Water).setOrigin(0,1);
         this.waterSurface.body.updateFromGameObject();
