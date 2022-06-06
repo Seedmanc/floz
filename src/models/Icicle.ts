@@ -18,17 +18,22 @@ export default class Icicle extends Projectile
     {
         super(scene, x, y, K.Ice, ...etc)
 
-        this.body.setSize(this.level*10,this.level*10)
+        this.body.setSize(this.level*15)
         this.integrity = this.level * 3;
         this.scene.waterLevel -= Icicle.VOLUME;
         this.body.onWorldBounds = true;
 
         this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob)
         this.scene.physics.world.once('worldbounds', this.collideWalls, this)
-        this.scene.physics.add.collider(this.scene.icicles, this, this.collideWalls, undefined, this)
+        this.scene.physics.add.collider(this.scene.icicles, this, this.annihilate)
     }
 
-    private pierceBlob(_, blob: GameObject) {
+    private annihilate(...both) {
+        both.forEach(icicle => icicle.break())
+    }
+
+    private pierceBlob(icicle, blob: GameObject) {
+        icicle.body.setSize(icicle.level*9, icicle.level*9)
         Blob.drop(null, blob)
     }
 
@@ -45,18 +50,32 @@ export default class Icicle extends Projectile
     }
 
     collideWater(icicle: Icicle) {
-        if (icicle.angle > 45 && icicle.angle < 135) {
+        let tol = 30
+        if (icicle.angle > tol && icicle.angle < 180-tol) {
             this.body.setVelocityY(0);
             this.break();
         }
     }
 
-    collidePlayer(projectile, player: Player) {
-        this.scene.cameras.main.shake(100, 0.01);
+    collidePlayer(icicle: Icicle, player: Player) {
+        this.scene.cameras.main.shake(100, 0.007);
 
-        if (this.scene.physics.world.drawDebug)
+        let speedToTailX = icicle.body.newVelocity.x * player.flipMul;
+        let centerToBackCorner = (icicle.x - player.x) * player.flipMul
+
+        let hitToTailX = speedToTailX <= 0
+        let hitToTailY = centerToBackCorner >= -player.body.width / 7
+        let hitSlowly  = icicle.body.newVelocity.lengthSq() <= 25
+
+        if ((player.body.touching.left && icicle.body.touching.right || player.body.touching.right && icicle.body.touching.left) &&
+            hitToTailX ||
+            player.body.touching.up && icicle.body.touching.down && hitToTailY ||
+            hitSlowly)
+        {
             return;
-        this.scene.scene.stop('game');
+        }
+
+        this.scene.scene.stop();
         this.scene.scene.start('gameover', {})
     }
 

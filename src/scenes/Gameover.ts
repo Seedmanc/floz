@@ -39,7 +39,7 @@ export default class GameoverScene extends Phaser.Scene
         element.setInteractive({ cursor: 'pointer' })
 
         element.on('pointerup', () => {
-            this.scene.stop('gameover');
+            this.scene.stop();
             this.scene.start('game');
         })
     }

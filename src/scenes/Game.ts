@@ -108,7 +108,7 @@ export default class GameScene extends Phaser.Scene
     win() {
         this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) +
             this.player.health / this.WATER_TO_POINTS);
-        this.scene.stop('game');
+        this.scene.stop();
         this.scene.start('gameover', {score: this.UI.value})
     }
 
@@ -118,7 +118,7 @@ export default class GameScene extends Phaser.Scene
             this.waterLevel++;
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
         } else {
-            this.scene.stop('game');
+            this.scene.stop();
             this.scene.start('gameover')
         }
     }
@@ -130,7 +130,7 @@ export default class GameScene extends Phaser.Scene
 
         if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) {
             alert('Please report this to dev')
-            this.scene.stop('game');
+            this.scene.stop();
             this.scene.start('gameover')
         }
 

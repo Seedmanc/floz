@@ -40,7 +40,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
         }
     }
 
-    abstract collideWalls(projectile, wall)
-    abstract collideWater(projectile, water)
-    abstract collidePlayer(projectile, player)
+    protected abstract collideWalls(projectile, wall)
+    protected abstract collideWater(projectile, water)
+    protected abstract collidePlayer(projectile, player)
 }
