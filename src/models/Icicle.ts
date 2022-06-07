@@ -3,6 +3,9 @@ import Phaser from "phaser";
 import Blob from "~/models/Blob";
 import Projectile from "~/models/Projectile";
 import Player from "~/models/Player";
+import TailSwatX from '~/tweens/TailSwatX';
+import TailSwatY from '~/tweens/TailSwatY';
+import TailWobble from '~/tweens/TailWobble';
 import GameObject = Phaser.GameObjects.GameObject;
 
 
@@ -13,6 +16,7 @@ export default class Icicle extends Projectile
     static readonly VOLUME = 50;
     static readonly IMPULSE = 800;
     static readonly GROUP = 'icicles';
+    private timer;
 
     constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
@@ -58,25 +62,35 @@ export default class Icicle extends Projectile
     }
 
     collidePlayer(icicle: Icicle, player: Player) {
-        this.scene.cameras.main.shake(100, 0.007);
+        if (this.timer)
+            return;
+        this.timer = window.setTimeout(() => this.timer = null, 500);
 
         let speedToTailX = icicle.body.newVelocity.x * player.flipMul;
         let centerToBackCorner = (icicle.x - player.x) * player.flipMul
-
         let hitToTailX = speedToTailX <= 0
         let hitToTailY = centerToBackCorner >= -player.body.width / 7
         let hitSlowly  = icicle.body.newVelocity.lengthSq() <= 25
 
-        if ((player.body.touching.left && icicle.body.touching.right || player.body.touching.right && icicle.body.touching.left) &&
-            hitToTailX ||
-            player.body.touching.up && icicle.body.touching.down && hitToTailY ||
+        //TODO relative speed to player
+        if ((icicle.body.touching.right || icicle.body.touching.left) && hitToTailX || // horizontal
+            icicle.body.touching.down && hitToTailY ||  // vertical
             hitSlowly)
         {
+            this.scene.cameras.main.shake(200, 0.00003 * icicle.body.newVelocity.lengthSq());
+
+            if (hitToTailX && !icicle.body.touching.down)
+                TailSwatX.play();
+            else if (hitToTailY)
+                TailSwatY.play((centerToBackCorner-20)/150);    // try to aim for the icicle
+            else
+                TailWobble.play(-icicle.body.newVelocity.lengthSq()/100)
             return;
         }
 
-        this.scene.scene.stop();
-        this.scene.scene.start('gameover', {})
+        icicle.break();
+        this.scene.cameras.main.shake(500, 0.01);
+        this.scene.lose();
     }
 
     delayedCall(...etc) {

@@ -40,7 +40,7 @@ export default class Bullet extends Projectile
                 .setRotation(direction * 0.1);
         }
         this.scene.bullets.kill(bullet)
-        bullet.body.setDragY(150);
+        bullet.body.setDragY(180);
     }
 
     collideWater(bullet: Bullet) {

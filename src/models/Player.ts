@@ -1,6 +1,7 @@
 import S from '~/const/StateKeys';
 import K from "~/const/TextureKeys";
 import Phaser from "phaser";
+import Projectile from '~/models/Projectile';
 import GameScene from "~/scenes/Game";
 import { ChargeState } from '~/statemachine/Charge';
 import HurtState from '~/statemachine/Hurt';
@@ -11,6 +12,8 @@ import PumpState from "~/statemachine/Pump";
 import Icicle from "~/models/Icicle";
 import Bullet from "~/models/Bullet";
 import UIPlugins from "phaser3-rex-plugins/templates/ui/ui-plugin";
+import TailSwatX from '~/tweens/TailSwatX';
+import TailSwatY from '~/tweens/TailSwatY';
 import CircularProgress = UIPlugins.CircularProgress;
 import TailWobble from "~/tweens/TailWobble";
 import Blinking from "~/tweens/Blinking";
@@ -71,22 +74,21 @@ export default class Player extends Phaser.GameObjects.Container
         }
     }
 
-    shoot(isIcicle?: boolean) {
-        let Projectile = isIcicle ? Icicle : Bullet;
+    shoot(projectile: typeof Icicle | typeof Bullet) {
         let angle = this.aimAngle;
 
-        this.scene[Projectile.GROUP].create(
+        this.scene[projectile.GROUP].create(
             this.body.center.x + this._reticicle.x*this.flipMul,
             this.y + this._reticicle.y,
-            String(angle), Projectile.IMPULSE
+            String(angle), projectile.IMPULSE
         )
 
-        this.body.setVelocityX(-Math.cos(angle) * Projectile.IMPULSE/2)
+        this.body.setVelocityX(-Math.cos(angle) * projectile.IMPULSE/2)
         TailWobble.play()
     }
 
     damage(amount = 1) {
-        TailWobble.play(0.2)
+        TailWobble.play(-0.2)
         if (this.stateMachine.isCurrentState(S.Hurt))
             return;
 
@@ -96,8 +98,7 @@ export default class Player extends Phaser.GameObjects.Container
         this.stateMachine.setState(S.Hurt)
 //TODO reset charging
         if (this.health == 0) {
-            this.scene.scene.stop();
-            this.scene.scene.start('gameover', {})
+            this.scene.lose()
         }
         this.adjustBuoyancy()
     }
@@ -132,6 +133,8 @@ export default class Player extends Phaser.GameObjects.Container
             .setOrigin(0.3, 0.95)
         this.add(this._tail);
         TailWobble.add(this);
+        TailSwatX.add(this);
+        TailSwatY.add(this);
 
         this.addPumpButton()
     }

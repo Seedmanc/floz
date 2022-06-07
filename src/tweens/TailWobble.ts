@@ -6,35 +6,32 @@ export default abstract class TailWobble {
     private static amplitude = 0;
 
     static add(player: Player) {
-        const back =
-            player.scene.tweens.add({
-                targets: player._tail,
-                rotation: {
-                    value:  () => -this.amplitude/2
-                },
-                duration: 333,
-                yoyo: true,
-                paused: true,
-                onComplete: () => this.amplitude = 0
-            })
+        let back;
         this.tween = player.scene.tweens.add({
             targets: player._tail,
             rotation: {
-                value:  () => this.amplitude = this.amplitude || player.body.velocity.x / -3500 * player.flipMul
+                value:  () => this.amplitude = this.amplitude || (player.body.velocity.x / -3000 * player.flipMul)
             },
-            duration: 250,
-            hold: 250,
-            yoyo: true,
+            duration: 300,
+            ease: "Expo.easeOut",
+            hold: 300,
             paused: true,
             onComplete: () => back.play()
         })
+        back =
+            player.scene.tweens.add({
+                targets: player._tail,
+                rotation: 0,
+                duration: 600,
+                ease: "Back.easeOut",
+                easeParams: [6],
+                paused: true,
+                onComplete: () => this.amplitude = 0
+            })
     }
 
     static play(amplitude: number = 0) {
         this.amplitude = amplitude;
-        if (this.tween.isPlaying())
-            this.tween.restart()
-        else
-            this.tween.play();
+        this.tween.play();
     }
 }

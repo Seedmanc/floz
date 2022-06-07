@@ -1,4 +1,6 @@
 import S from '~/const/StateKeys';
+import Bullet from '~/models/Bullet';
+import Icicle from '~/models/Icicle';
 import Player from '~/models/Player';
 import {IState} from '~/statemachine/StateMachine';
 
@@ -15,12 +17,11 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
         this.pumpText.on('pointerdown', this.tryPump, this)
 
         this._inputs.on('pointerup', (pointer) => {
-            if (pointer.leftButtonReleased()) {
-                this.shoot()
-            } else if (this.scene.physics.world.drawDebug && pointer.rightButtonReleased())
-                this.shoot(true)
-            }
-        );
+            if (pointer.leftButtonReleased())
+                this.shoot(Bullet)
+            else if (this.scene.physics.world.drawDebug && pointer.rightButtonReleased())
+                this.shoot(Icicle)
+        });
     }
     static onExit(this: Player) {
         this._inputs.off('pointerup')

@@ -99,7 +99,7 @@ export default class GameScene extends Phaser.Scene
         this.physics.add.collider(this.player, this.waterSurface);
         this.physics.add.collider(this.player, this.UI)
         this.physics.add.overlap(this.player, this.waterSurface, () => {
-            if (this.player.body.embedded)
+            if (this.player.body.embedded && this.player.body.checkCollision.down)
                 this.player.body.setVelocityY(-25)
         })
         this.physics.add.collider(this.player, this.walls )
@@ -112,14 +112,22 @@ export default class GameScene extends Phaser.Scene
         this.scene.start('gameover', {score: this.UI.value})
     }
 
+    lose() {
+        this.player.body.checkCollision.down = false;
+
+        window.setTimeout(() => {
+            this.scene.stop();
+            this.scene.start('gameover', {})
+        }, 1000)
+    }
+
     raiseWater() {
         if (this.waterSurface.displayHeight < this.scale.height - this.BLOBS_TOP*2) {
             this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
             this.waterLevel++;
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
         } else {
-            this.scene.stop();
-            this.scene.start('gameover')
+            this.lose()
         }
     }
 
@@ -128,10 +136,9 @@ export default class GameScene extends Phaser.Scene
 
         this.player.stateMachine.update();
 
-        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2) {
+        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2 && this.player.body.checkCollision.down) {
             alert('Please report this to dev')
-            this.scene.stop();
-            this.scene.start('gameover')
+            this.lose();
         }
 
         this.updateDebug();

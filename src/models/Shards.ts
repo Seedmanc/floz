@@ -54,7 +54,6 @@ export default class Shard extends Projectile
 
     collidePlayer(shard: Shard, player: Player) {
         player.body.velocity.x = Phaser.Math.Average([player.body.velocity.x, 50 * Math.sign(player.x-shard.x)]);
-        TailWobble.play()
     }
 
     collideWalls() {}
