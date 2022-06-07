@@ -73,8 +73,8 @@ export default class Icicle extends Projectile
         let hitSlowly  = icicle.body.newVelocity.lengthSq() <= 25
 
         //TODO relative speed to player
-        if ((icicle.body.touching.right || icicle.body.touching.left) && hitToTailX || // horizontal
-            icicle.body.touching.down && hitToTailY ||  // vertical
+        if ((icicle.body.touching.right || icicle.body.touching.left) && hitToTailX && this.scene.player.isHurt < 2 || // horizontal
+            icicle.body.touching.down && hitToTailY && !this.scene.player.isHurt ||  // vertical
             hitSlowly)
         {
             this.scene.cameras.main.shake(200, 0.00003 * icicle.body.newVelocity.lengthSq());
@@ -88,7 +88,7 @@ export default class Icicle extends Projectile
             return;
         }
 
-        icicle.break();
+        icicle.break(); // TODO pass through
         this.scene.cameras.main.shake(500, 0.01);
         this.scene.lose();
     }

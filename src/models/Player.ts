@@ -84,7 +84,8 @@ export default class Player extends Phaser.GameObjects.Container
         )
 
         this.body.setVelocityX(-Math.cos(angle) * projectile.IMPULSE/2)
-        TailWobble.play()
+        if (this.health > 1)
+          TailWobble.play()
     }
 
     damage(amount = 1) {
@@ -100,14 +101,14 @@ export default class Player extends Phaser.GameObjects.Container
         if (this.health == 0) {
             this.scene.lose()
         }
-        this.adjustBuoyancy()
+        this.adjustSoaking()
     }
     heal(amount = 1) {
         this.health += amount;
         this.scene.UI.updateHP(this.health);
         this.pumpText.setVisible(!!this.isHurt);
 
-        this.adjustBuoyancy()
+        this.adjustSoaking()
 
         // @ts-ignore
         this.scene.bullets.create(this.x + this.body.width/2, this.y+this.body.height/3, -Math.PI/4, Bullet.IMPULSE/3)
@@ -129,8 +130,8 @@ export default class Player extends Phaser.GameObjects.Container
             .setOrigin(0.5, 0.5)
         this.add(this._reticicle);
 
-        this._tail = scene.add.sprite(1, 19, K.Tail)
-            .setOrigin(0.3, 0.95)
+        this._tail = scene.add.sprite(1, 19, K.Tail, 0)
+            .setOrigin(0.2, 0.95)
         this.add(this._tail);
         TailWobble.add(this);
         TailSwatX.add(this);
@@ -139,10 +140,11 @@ export default class Player extends Phaser.GameObjects.Container
         this.addPumpButton()
     }
 
-    private adjustBuoyancy() {
+    private adjustSoaking() {
         this.body
             .setDragX(200 + 150*this.isHurt)
-            .setSize(this.body.width, this._sprite.height*0.89 - 6*this.isHurt)
+            .setSize(this.body.width, this._sprite.height*0.89 - 6*this.isHurt);
+        this._tail.setFrame(this.isHurt);
     }
 
     private addPumpButton() {

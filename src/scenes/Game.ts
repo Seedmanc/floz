@@ -137,7 +137,6 @@ export default class GameScene extends Phaser.Scene
         this.player.stateMachine.update();
 
         if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2 && this.player.body.checkCollision.down) {
-            alert('Please report this to dev')
             this.lose();
         }
 
