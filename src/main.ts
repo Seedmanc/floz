@@ -4,6 +4,9 @@ import GameoverScene from "~/scenes/Gameover";
 import PreloadScene from "~/scenes/Preload";
 import CircularProgressPlugin from 'phaser3-rex-plugins/plugins/circularprogress-plugin.js';
 
+let placeholder = document.querySelector('.canvas-placeholder')
+placeholder?.parentNode?.removeChild(placeholder!);
+
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	width: 1000,
@@ -18,7 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
 		arcade: {
 			gravity: { y: 200 },
 			fps: 60,
-			debug: true,
+			debug: false,
 			overlapBias: 6
 		}
 	},

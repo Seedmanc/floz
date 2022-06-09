@@ -2,28 +2,20 @@
 <html lang="en">
 	<head>
 		<title>Floz: an ounce of water</title>
-		<style>
-			body {
-				padding: 0;
-				margin: 0;
-			}
-			#game {
-				background: #c4ced8;
-				text-align: center;
-				max-height: 1000px;
-			}
-			canvas {
-				max-width: 1000px;
-			}
-			.water {
-				height: calc(100vh - 1000px) ;
-				background: #266aa7;
-			}
-		</style>
+		<script>
+			var head = document.getElementsByTagName('HEAD')[0];
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'styles.module.css';
+			head.appendChild(link);
+		</script>
 	</head>
 	<body>
+		<div id="game">
+			<div class="canvas-placeholder"></div>
+		</div>
+		<div class="water"></div>
 		<script src="main.ts"></script>
-		<div id="game"> </div> 
-	<div class="water"></div>
 	</body>
 </html>
