@@ -18,6 +18,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
 
         this.scene.physics.add.collider(this, this.scene.walls, this.collideWalls, undefined, this)
         this.scene.physics.add.collider(this, this.scene.waterSurface, this.collideWater, undefined, this)
+        this.scene.physics.add.collider(this, this.scene.source )
         window.setTimeout(() => this.delayedCall(angle, speed))
     }
 

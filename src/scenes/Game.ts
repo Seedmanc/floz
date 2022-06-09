@@ -14,7 +14,9 @@ import Shard from "~/models/Shards";
 export default class GameScene extends Phaser.Scene
 {
     wallLeft!: Image
+    wallRight!: Image;
     waterSurface!: Image
+    source!: Image
     player!: Player;
     blobs!: Group
     bullets!: Group;
@@ -67,9 +69,14 @@ export default class GameScene extends Phaser.Scene
 
     makeLevel() {
         this.walls = this.physics.add.staticGroup()
-        this.walls.create(this.scale.width, this.scale.height-50, K.WallRight)
-            .setOrigin(1,1).setScale(1, 1.02)
-            .body.updateFromGameObject().checkCollision.up = false;
+        this.wallRight = this.walls.create(this.scale.width, 0, K.WallRight)
+            .setOrigin(1,0)
+        this.wallRight.y = this.wallRight.width;
+        this.wallRight.body.updateFromGameObject()['checkCollision'].up = false;
+
+        this.source = this.physics.add.staticImage(this.scale.width, this.wallRight.y+1, K.Source).setOrigin(1, 1)
+        this.source.body.setCircle(this.source.width).setOffset(-this.source.width/2,-this.source.height/2)
+        this.source.setDepth(-1)
 
         this.waterSurface = this.physics.add.staticImage(0, this.scale.height, K.Water).setOrigin(0,1);
         this.waterSurface.body.updateFromGameObject();
