@@ -39,6 +39,7 @@ export default class UI extends Phaser.GameObjects.Container
         this.scene.physics.add.existing(this)
         this.body.setImmovable(true);
         this.body.setAllowGravity(false);
+        this.setDepth(5)
     }
 
     updateHP(value) {

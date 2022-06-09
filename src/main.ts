@@ -8,7 +8,8 @@ const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	width: 1000,
 	height: 1000,
-	backgroundColor: '#bad3ec',
+	backgroundColor: '#a0c4e4',
+	parent: 'game',
 	fps: {
 		target: 60
 	},

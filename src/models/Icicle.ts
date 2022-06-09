@@ -97,6 +97,7 @@ export default class Icicle extends Projectile
         super.delayedCall(...etc);
         this.setBounce(1);
 
+        this.scene.physics.add.overlap(this, this.scene.walls, icicle => icicle['break']())
         if (this.level == 1)    // half the gravity
             this.setAccelerationY(-(this.scene.game.config.physics.arcade?.gravity || 200)/2)
     }

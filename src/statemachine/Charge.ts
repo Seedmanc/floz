@@ -5,7 +5,7 @@ import Player from '~/models/Player';
 export module ChargeState {
     export function onEnter(this: Player) {
         this._inputs.on('pointerup', (pointer) => {
-            if (pointer.getDuration() > 1000)
+            if (pointer.getDuration() > 1000 && pointer.leftButtonReleased())
                 this.shoot(Icicle)
 
             this.stateMachine.setState(S.Idle)

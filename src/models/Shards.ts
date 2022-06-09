@@ -24,7 +24,7 @@ export default class Shard extends Projectile
         this.setAlpha(0.7)
 
         this.scene.physics.add.collider(this, this.scene.shards, this.separate, undefined, this);
-        this.scene.physics.add.collider(this, this.scene.UI);
+        this.scene.physics.add.collider(this, this.scene.UI, shard => shard.destroy());
         this.scene.physics.add.overlap(this, this.scene.shards, this.separate, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.walls, this.contain, undefined, this);
         this.scene.physics.add.overlap(this, this.scene.waterSurface, this.overlapWater, undefined, this);
