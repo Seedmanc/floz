@@ -26,7 +26,7 @@ export default class GameScene extends Phaser.Scene
     icicles!: Group
     walls!: StaticGroup
     UI!: UI;
-
+    particles!: Phaser.GameObjects.Particles.ParticleEmitterManager;
     debug!: Phaser.GameObjects.Text;
     toggleDebug!: Phaser.Input.Keyboard.Key;
 
@@ -75,6 +75,7 @@ export default class GameScene extends Phaser.Scene
         this.wallRight.y = this.wallRight.width;
         this.wallRight.body.updateFromGameObject()['checkCollision'].up = false;
 
+        this.particles = this.add.particles(K.Blob)
         this.source = new Source(this)
 
         this.waterSurface = this.physics.add.staticImage(0, this.scale.height, K.Water).setOrigin(0,1);
@@ -129,9 +130,9 @@ export default class GameScene extends Phaser.Scene
 
     raiseWater() { // TODO refactor
         if (this.waterSurface.displayHeight < this.scale.height - this.BLOBS_TOP*2) {
-            if (this.source.freezeLevel >= 2) return;
+            if (this.source.freezeLevel < 2)
+                this.waterLevel += this.source.flowMul;
 
-            this.waterLevel += 1/(this.source.freezeLevel + 1);
             this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
         } else {
