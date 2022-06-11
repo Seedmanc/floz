@@ -64,11 +64,13 @@ export default class Shard extends Projectile
     }
 
     private separate(s1, s2) {
+        if (!s1.visible || !s2.visible)
+            return;
         s1.setAccelerationX(15 * Math.sign(s1.x-s2.x))
         s2.setAccelerationX(-15* Math.sign(s1.x-s2.x));
     }
 
     private contain(shard, wall) {
-        this.body.x = Math.min(this.body.x, this.scene.scale.width - wall.width - this.body.width - 1)
+      // TODO this.body.x = Math.min(this.body.x, this.scene.scale.width - wall.width - this.body.width - 1)
     }
 }

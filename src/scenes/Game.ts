@@ -10,13 +10,14 @@ import Image = Phaser.Physics.Arcade.Image;
 import UI from "~/models/UI";
 import Bullet from "~/models/Bullet";
 import Shard from "~/models/Shards";
+import Source from "~/models/Source";
 
 export default class GameScene extends Phaser.Scene
 {
     wallLeft!: Image
     wallRight!: Image;
     waterSurface!: Image
-    source!: Image
+    source!: Source
     player!: Player;
     blobs!: Group
     bullets!: Group;
@@ -74,9 +75,7 @@ export default class GameScene extends Phaser.Scene
         this.wallRight.y = this.wallRight.width;
         this.wallRight.body.updateFromGameObject()['checkCollision'].up = false;
 
-        this.source = this.physics.add.staticImage(this.scale.width, this.wallRight.y+1, K.Source).setOrigin(1, 1)
-        this.source.body.setCircle(this.source.width).setOffset(-this.source.width/2,-this.source.height/2)
-        this.source.setDepth(-1)
+        this.source = new Source(this)
 
         this.waterSurface = this.physics.add.staticImage(0, this.scale.height, K.Water).setOrigin(0,1);
         this.waterSurface.body.updateFromGameObject();
@@ -128,10 +127,12 @@ export default class GameScene extends Phaser.Scene
         }, 1000)
     }
 
-    raiseWater() {
+    raiseWater() { // TODO refactor
         if (this.waterSurface.displayHeight < this.scale.height - this.BLOBS_TOP*2) {
+            if (this.source.freezeLevel >= 2) return;
+
+            this.waterLevel += 1/(this.source.freezeLevel + 1);
             this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
-            this.waterLevel++;
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
         } else {
             this.lose()

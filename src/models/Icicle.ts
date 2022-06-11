@@ -7,6 +7,7 @@ import TailSwatX from '~/tweens/TailSwatX';
 import TailSwatY from '~/tweens/TailSwatY';
 import TailWobble from '~/tweens/TailWobble';
 import GameObject = Phaser.GameObjects.GameObject;
+import Shard from "~/models/Shards";
 
 
 export default class Icicle extends Projectile
@@ -41,10 +42,11 @@ export default class Icicle extends Projectile
         Blob.drop(null, blob)
     }
 
-    private break() {
+    break(): Shard {
         // @ts-ignore
-        this.scene.shards.create(this);
+        let shard = this.scene.shards.create(this);
         this.scene.icicles.killAndHide(this.disableBody(true,true));
+        return shard;
     }
 
     collideWalls(body) {
