@@ -41,7 +41,14 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     private get aimAngle(): number {
-        return Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
+        let r = Phaser.Math.Angle.Between(this.x, this.y, this._inputs.activePointer.x, this._inputs.activePointer.y);
+
+        if (r < Math.PI && r > Math.PI/2 )
+             r = Math.max(0.75*Math.PI, r)
+        else if (r > 0 && r < Math.PI/2)
+            r = Math.min(Math.PI/5, r)
+
+        return r;
     }
 
     constructor(scene: Phaser.Scene, x: number, y: number)
@@ -190,11 +197,9 @@ export default class Player extends Phaser.GameObjects.Container
 
     private preUpdate()
     {
-        if (this.aimAngle > 0.75*Math.PI || this.aimAngle < Math.PI/5) { // except lower ~quarter of a circle
-            this.flipBody()
-            this.adjustHand();
-            this.adjustReticicle()
-        }
+        this.flipBody()
+        this.adjustHand();
+        this.adjustReticicle()
     }
 
     private flipBody() {
