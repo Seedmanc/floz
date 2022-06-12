@@ -4,6 +4,7 @@ import GameScene from "~/scenes/Game";
 import Shard from "~/models/Shards";
 import Sprite = Phaser.Physics.Arcade.Sprite;
 import GameObject = Phaser.GameObjects.GameObject;
+import Player from "~/models/Player";
 
 
 export default class Source extends Sprite
@@ -47,9 +48,13 @@ export default class Source extends Sprite
 
     static waterfallRepulsor<G extends GameObject & any>(that: G): G {
         let flowMul = that.scene.source.flowMul
-        return that.scene.source.flowMul && that.x > that.scene.waterSurface.getCenter().x ?
-            that.body.setGravityX(-5*Math.max(0, that.x-that.scene.waterSurface.getCenter().x * (1.6 - 0.15*flowMul))) :
-            that.body.setGravityX(0).setDragX(that.body.drag.x || 100);
+        // @ts-ignore
+        let force = (that instanceof Player) ? 6 : 2
+
+        return that.scene.source.flowMul && that.x > that.scene.waterSurface.getCenter().x*1.5 ?
+            that.body.setGravityX(-force * Math.max(0, that.x-that.scene.waterSurface.getCenter().x * (1.65 - 0.15*flowMul)))
+                  :
+            that.body.setGravityX(0) ;
     }
 
     canCollide(icicle) {
@@ -64,11 +69,8 @@ export default class Source extends Sprite
             this.shards.push(icicle.break());
         setTimeout(() => {
             this.shards.forEach(shard => shard
-                .setVelocity(0,0)
-                .setAcceleration(0,0)
-                .setVisible(false)
+                .disableBody(true,true)
                 .setPosition(shard.x*1.04, this.y)
-                .body.setAllowGravity(false)
             )
         })
 
@@ -90,7 +92,7 @@ export default class Source extends Sprite
         this.thawTimer = null;
         this.setFrame(0);
         this.scene?.wallRight.setFrame(0);
-        this.shards.forEach(shard => shard.setVisible(true).body.setAllowGravity(true));
+        this.shards.forEach(shard => shard.enableBody(false,0,0,true,true));
         this.shards = [];
         this.splash.start()
     }
