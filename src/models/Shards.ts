@@ -2,8 +2,8 @@ import K from "~/const/TextureKeys";
 import Phaser from "phaser";
 import Projectile from "~/models/Projectile";
 import Icicle from "~/models/Icicle";
-import TailWobble from "~/tweens/TailWobble";
 import Player from "~/models/Player";
+import Source from "~/models/Source";
 
 
 export default class Shard extends Projectile
@@ -37,7 +37,7 @@ export default class Shard extends Projectile
     }
 
     collideWater() {
-        this.setAccelerationX(0).setDragX(120);
+        Source.waterfallRepulsor(this.setDragX(120))
 
         if (!this.timer) {
             this.timer = this.scene.time.addEvent({

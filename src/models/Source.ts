@@ -3,6 +3,7 @@ import Phaser, {BlendModes} from "phaser";
 import GameScene from "~/scenes/Game";
 import Shard from "~/models/Shards";
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import GameObject = Phaser.GameObjects.GameObject;
 
 
 export default class Source extends Sprite
@@ -46,6 +47,13 @@ export default class Source extends Sprite
         setTimeout(() => this.scene.physics.add.collider(this, this.scene.icicles, this.freeze, this.canCollide, this))
     }
 
+    static waterfallRepulsor<G extends GameObject & any>(that: G): G {
+        let flowMul = that.scene.source.flowMul
+        return that.scene.source.flowMul ?
+            that.body.setGravityX(-5*Math.max(0, that.x-that.scene.waterSurface.getCenter().x * (1.6 - 0.15*flowMul))) :
+            that.body.setGravityX(0);
+    }
+
     private canCollide(_, icicle) {
         return icicle.y < this.displayHeight;
     }
@@ -84,7 +92,7 @@ export default class Source extends Sprite
         this.thawTimer = null;
         this.setFrame(0);
         this.scene?.wallRight.setFrame(0);
-        this.shards.forEach(shard => shard.setVisible(true).body.setAllowGravity(true));
+        this.shards.forEach(shard => shard.setDragX(202).setVisible(true).body.setAllowGravity(true));
         this.shards = [];
         this.splash.start()
     }
