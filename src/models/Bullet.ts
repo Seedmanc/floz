@@ -9,7 +9,7 @@ import Image = Phaser.Physics.Arcade.Image;
 export default class Bullet extends Projectile
 {
     defaultScale = 0.5;
-    static readonly VOLUME = 33;
+    static readonly VOLUME = 25;
     static readonly IMPULSE = 600;
     static readonly GROUP = 'bullets';
 

@@ -2,12 +2,14 @@ import K from "~/const/TextureKeys";
 import Phaser from "phaser";
 import Projectile from "~/models/Projectile";
 import Player from "~/models/Player";
+import Bullet from "~/models/Bullet";
 
 
 export default class Blob extends Projectile
 {
     //level: number = 1;
-    static readonly VOLUME = 100;
+    static readonly VALUE = 100;
+    volume = Blob.VALUE;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
@@ -19,6 +21,8 @@ export default class Blob extends Projectile
         blob.setAccelerationY(200)
 
         if (bullet) {
+            blob.volume += Bullet.VOLUME;
+            blob.defaultScale = Math.sqrt((blob.volume-Bullet.VOLUME)/Blob.VALUE);
             blob.scene.bullets.killAndHide(bullet);
             bullet.active = false;
             bullet.disableBody(true, true);
@@ -34,10 +38,10 @@ export default class Blob extends Projectile
     collideWalls(){}
 
     collideWater(blob: Blob, water) {
-        this.scene.UI.addScore( Blob.VOLUME/10)
+        this.scene.UI.addScore( Blob.VALUE/10)
         blob.kill();
 
-        this.scene.waterLevel += Blob.VOLUME;
+        this.scene.waterLevel += blob.volume;
 
         if (this.scene.blobs.countActive() == 0) {
             this.scene.win()
@@ -46,6 +50,7 @@ export default class Blob extends Projectile
 
     collidePlayer(blob: Blob, player: Player) {
         blob.kill()
-        player.damage()
+        player.damage(Math.round((blob.volume-1)/Blob.VALUE))
+        player.waterToll += blob.volume;
     }
 }

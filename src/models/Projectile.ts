@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import GameScene from "~/scenes/Game";
 import Icicle from "~/models/Icicle";
+import S from "~/const/StateKeys";
 
 export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     scene: GameScene
@@ -34,7 +35,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     }
 
     protected delayedCall(angle?, speed?) {
-        this.scene.physics.add.collider(this, this.scene.player, this.collidePlayer, undefined, this);
+        this.scene.physics.add.collider(this, this.scene.player, this.collidePlayer, () => !this.scene.player.stateMachine.isCurrentState(S.Hurt), this);
         this.setCollideWorldBounds(true)
 
         if (angle && speed) {

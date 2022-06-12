@@ -29,6 +29,7 @@ export default class Player extends Phaser.GameObjects.Container
     health: number;
     progress!: CircularProgress;
     flipMul = 1;
+    waterToll = 0;
 
     readonly WATERLINE = 30;
 
@@ -130,10 +131,15 @@ export default class Player extends Phaser.GameObjects.Container
 
         this.adjustSoaking()
 
+        for (let i = 0; i < Math.round(this.waterToll/Bullet.VOLUME); i++) {
+            this.spawnDroplets(i%2);
+        }
+    }
+
+    private spawnDroplets(side) {
         // @ts-ignore
-        this.scene.bullets.create(this.x + this.body.width/2, this.y+this.body.height/3, -Math.PI/4, Bullet.IMPULSE/3)
-        // @ts-ignore
-        this.scene.bullets.create(this.x - this.body.width/2, this.y+this.body.height/3, -3*Math.PI/4, Bullet.IMPULSE/3)
+        this.scene.bullets.create(this.x + (side ? 1 : -1)*this.body.width/2, this.y+this.body.height/3, side ? -Math.PI/4 : -3*Math.PI/4,
+            Bullet.IMPULSE/Phaser.Math.Between(2,4))
     }
 
     private addParts(scene) {
