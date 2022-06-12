@@ -70,9 +70,10 @@ export default class Shard extends Projectile
             return;
         s1.setAccelerationX(15 * Math.sign(s1.x-s2.x))
         s2.setAccelerationX(-15* Math.sign(s1.x-s2.x));
+
         setTimeout(() => {
-            s1.setAccelerationX(0)
-            s2.setAccelerationX(0);
+            s1?.setAccelerationX(0)
+            s2?.setAccelerationX(0);
         }, 1000)
     }
 
