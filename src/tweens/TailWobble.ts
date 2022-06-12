@@ -21,7 +21,7 @@ export default abstract class TailWobble {
         back =
             player.scene.tweens.add({
                 targets: player._tail,
-                rotation: () => player.isHurt * 0.1, // TODO fix wobble for 1 hurt
+                rotation: () => player.isHurt * 0.13, // TODO fix wobble for 1 hurt
                 duration: 600,
                 ease: "Back.easeOut",
                 easeParams: [6],

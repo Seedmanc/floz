@@ -8,6 +8,8 @@ export interface IState
 	onExit?: () => void
 }
 
+// todo extract more code into states
+
 let idCount = 0
 
 export default class StateMachine

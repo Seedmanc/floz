@@ -7,11 +7,13 @@ import CircularProgressPlugin from 'phaser3-rex-plugins/plugins/circularprogress
 let placeholder = document.querySelector('.canvas-placeholder')
 placeholder?.parentNode?.removeChild(placeholder!);
 
+export const bgColor = '#a0c4e4';
+
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	width: 1000,
 	height: 1000,
-	backgroundColor: '#a0c4e4',
+	backgroundColor: bgColor,
 	parent: 'game',
 	fps: {
 		target: 60

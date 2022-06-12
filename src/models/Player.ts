@@ -17,6 +17,7 @@ import TailSwatY from '~/tweens/TailSwatY';
 import CircularProgress = UIPlugins.CircularProgress;
 import TailWobble from "~/tweens/TailWobble";
 import Blinking from "~/tweens/Blinking";
+import {bgColor} from "~/main";
 
 
 export default class Player extends Phaser.GameObjects.Container
@@ -28,6 +29,8 @@ export default class Player extends Phaser.GameObjects.Container
     health: number;
     progress!: CircularProgress;
     flipMul = 1;
+
+    readonly WATERLINE = 30;
 
     private hand!: Phaser.GameObjects.Sprite
     private _sprite!: Phaser.GameObjects.Sprite
@@ -71,6 +74,16 @@ export default class Player extends Phaser.GameObjects.Container
 
         this.stateMachine = new StateMachine(this, 'player')
         this.addStates()
+
+        this.scene.physics.add.overlap(this, this.scene.waterSurface, () => {
+            let belowWater =  Math.min( 0, this.scene.waterSurface.getTopCenter().y - (this.y + this.body.height/2))
+
+           if (belowWater <= -this.WATERLINE)
+               this.damage();
+
+           if (this.body.embedded && this.body.checkCollision.down  )
+                this.body.setVelocityY(belowWater*11 - 22)
+        });
     }
 
     tryPump() {
@@ -101,7 +114,7 @@ export default class Player extends Phaser.GameObjects.Container
             return;
 
         this.scene.cameras.main.shake(100, 0.01);
-        this.health -= amount;
+        this.health = Math.max(this.health - amount, 0);
         this.scene.UI.updateHP(this.health);
         this.stateMachine.setState(S.Hurt)
 //TODO reset charging
@@ -156,18 +169,18 @@ export default class Player extends Phaser.GameObjects.Container
 
     private addPumpButton() {
         this.progress = this.scene.add['rexCircularProgress']({
-            x: 30, y: -9,
+            x: 20, y: -20,
             radius: 16,
             trackColor: Phaser.Display.Color.HexStringToColor('#a9a9a7').color,
             barColor: Phaser.Display.Color.HexStringToColor('#dadfe2').color,
-            centerColor: Phaser.Display.Color.HexStringToColor('#a0c4e4').color,
+            centerColor: Phaser.Display.Color.HexStringToColor(bgColor).color,
             anticlockwise: true,
             value: 0
         })
             .setVisible(false);
         this.add(this.progress);
 
-        this.pumpText = this.scene.add.text(13, -25  , '(e)', {
+        this.pumpText = this.scene.add.text(5, -36  , '(e)', {
             fontFamily: 'Comic Neue',
             fontSize: '25px',
             color: '#6069d2',
