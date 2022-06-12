@@ -43,22 +43,20 @@ export default class Source extends Sprite
             type: 'edge',
             quantity: 10
         });
-
-        setTimeout(() => this.scene.physics.add.collider(this, this.scene.icicles, this.freeze, this.canCollide, this))
     }
 
     static waterfallRepulsor<G extends GameObject & any>(that: G): G {
         let flowMul = that.scene.source.flowMul
-        return that.scene.source.flowMul ?
+        return that.scene.source.flowMul && that.x > that.scene.waterSurface.getCenter().x ?
             that.body.setGravityX(-5*Math.max(0, that.x-that.scene.waterSurface.getCenter().x * (1.6 - 0.15*flowMul))) :
-            that.body.setGravityX(0);
+            that.body.setGravityX(0).setDragX(that.body.drag.x || 100);
     }
 
-    private canCollide(_, icicle) {
+    canCollide(icicle) {
         return icicle.y < this.displayHeight;
     }
 
-    private freeze(_, icicle) {
+    freeze(icicle) {
         if (this.freezeLevel > 1 || icicle.y > this.displayHeight*0.75)
             return;
 
@@ -69,7 +67,7 @@ export default class Source extends Sprite
                 .setVelocity(0,0)
                 .setAcceleration(0,0)
                 .setVisible(false)
-                .setPosition(shard.x, this.y)
+                .setPosition(shard.x*1.04, this.y)
                 .body.setAllowGravity(false)
             )
         })
@@ -92,7 +90,7 @@ export default class Source extends Sprite
         this.thawTimer = null;
         this.setFrame(0);
         this.scene?.wallRight.setFrame(0);
-        this.shards.forEach(shard => shard.setDragX(202).setVisible(true).body.setAllowGravity(true));
+        this.shards.forEach(shard => shard.setVisible(true).body.setAllowGravity(true));
         this.shards = [];
         this.splash.start()
     }

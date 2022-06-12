@@ -14,10 +14,15 @@ export default class Icicle extends Projectile
 {
     level: number = 1;
     integrity: number;
+
     static readonly VOLUME = 50;
     static readonly IMPULSE = 800;
     static readonly GROUP = 'icicles';
+
     private timer;
+    protected get canCollideSource(): boolean {
+        return this.scene.source.canCollide(this)
+    };
 
     constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
@@ -93,6 +98,10 @@ export default class Icicle extends Projectile
         icicle.break(); // TODO pass through
         this.scene.cameras.main.shake(500, 0.01);
         this.scene.lose();
+    }
+
+    protected collideSource(projectile: any, source: any) {
+        return this.scene.source.freeze(projectile)
     }
 
     delayedCall(...etc) {

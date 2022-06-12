@@ -13,6 +13,11 @@ export default class Bullet extends Projectile
     static readonly IMPULSE = 600;
     static readonly GROUP = 'bullets';
 
+    get canCollideSource() {
+        return this.y >= this.scene.source.y * 0.95 &&
+            this.x <= this.scene.wallRight.getTopLeft().x+this.displayWidth;
+    }
+
     constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
         super(scene, x, y, K.Blob, ...etc)
@@ -25,10 +30,15 @@ export default class Bullet extends Projectile
         if (!this.scene.player.stateMachine.isCurrentState(S.Pumping))
             this.scene.waterLevel -= Bullet.VOLUME;
 
+        this.setDepth(this.scene.wallRight.depth);
+
         this.scene.physics.add.overlap(this, this.scene.blobs, Blob.drop)
     }
 
-    collideWalls(bullet: Bullet, wall: Image) {//TODO from the top
+    collideWalls(bullet: Bullet, wall: Image) {
+        if (bullet.x > this.scene.wallRight.getTopLeft().x + bullet.displayWidth)
+            return;
+
         bullet.setScale(0.25, 0.75)
         let direction = Math.sign(this.body.velocity.y);
 
@@ -40,12 +50,16 @@ export default class Bullet extends Projectile
                 .setRotation(direction * 0.1);
         }
         this.scene.bullets.kill(bullet)
-        bullet.body.setDragY(180);
+        bullet.body.setDragY(150);
     }
 
     collideWater(bullet: Bullet) {
         this.scene.bullets.killAndHide(bullet.disableBody(true,true));
         this.scene.waterLevel+= Bullet.VOLUME;
+    }
+
+    collideSource() {
+        //TODO
     }
 
     collidePlayer(projectile, player) {

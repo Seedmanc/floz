@@ -37,7 +37,8 @@ export default class Shard extends Projectile
     }
 
     collideWater() {
-        Source.waterfallRepulsor(this.setDragX(120))
+        Source.waterfallRepulsor(this.setDragX(100))
+        this.setMaxVelocity(100, 999)
 
         if (!this.timer) {
             this.timer = this.scene.time.addEvent({
@@ -57,6 +58,7 @@ export default class Shard extends Projectile
     }
 
     collideWalls() {}
+    collideSource() {}
 
     private overlapWater() {
         if (this.y > this.scene.scale.height - this.scene.waterSurface.displayHeight)
@@ -68,6 +70,10 @@ export default class Shard extends Projectile
             return;
         s1.setAccelerationX(15 * Math.sign(s1.x-s2.x))
         s2.setAccelerationX(-15* Math.sign(s1.x-s2.x));
+        setTimeout(() => {
+            s1.setAccelerationX(0)
+            s2.setAccelerationX(0);
+        }, 1000)
     }
 
     private contain(shard, wall) {

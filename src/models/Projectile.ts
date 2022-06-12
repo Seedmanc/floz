@@ -8,6 +8,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
 
     protected readonly defaultScale: number = 1;
     protected readonly canRotate: boolean = true;
+    protected canCollideSource;
 
     protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string, angle?, speed?) {
         super(scene, x, y, textureKey)
@@ -18,6 +19,7 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
 
         this.scene.physics.add.collider(this, this.scene.walls, this.collideWalls, undefined, this)
         this.scene.physics.add.collider(this, this.scene.waterSurface, this.collideWater, undefined, this)
+        this.scene.physics.add.collider(this, this.scene.source, this.collideSource, () => !!this.canCollideSource, this)
         window.setTimeout(() => this.delayedCall(angle, speed))
     }
 
@@ -43,4 +45,5 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     protected abstract collideWalls(projectile, wall)
     protected abstract collideWater(projectile, water)
     protected abstract collidePlayer(projectile, player)
+    protected abstract collideSource(projectile, source)
 }

@@ -30,6 +30,7 @@ export default class Blob extends Projectile
         this.disableBody(true, true);
     }
 
+    collideSource(){}
     collideWalls(){}
 
     collideWater(blob: Blob, water) {
