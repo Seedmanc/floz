@@ -24,7 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
 			gravity: { y: 200 },
 			fps: 60,
 			debug: true,
-			overlapBias: 6
+			overlapBias: 6.5
 		}
 	},
 	plugins: {

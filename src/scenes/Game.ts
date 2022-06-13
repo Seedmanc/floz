@@ -96,7 +96,7 @@ export default class GameScene extends Phaser.Scene
     }
 
     addEntities() {
-        this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*1.55);
+        this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*1.5);
         this.bullets = this.physics.add.group({allowGravity: true , classType: Bullet });
         this.icicles = this.physics.add.group({allowGravity: true, classType: Icicle });
         this.shards = this.physics.add.group({allowGravity: true, classType: Shard });

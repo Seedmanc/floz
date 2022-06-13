@@ -32,7 +32,7 @@ export default class Bullet extends Projectile
 
         this.setDepth(this.scene.wallRight.depth);
 
-        this.scene.physics.add.overlap(this, this.scene.blobs, Blob.drop)
+        this.scene.physics.add.collider(this, this.scene.blobs, Blob.drop)
     }
 
     collideWalls(bullet: Bullet, wall: Image) {
