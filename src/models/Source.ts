@@ -92,7 +92,7 @@ export default class Source extends Sprite
         this.thawTimer = null;
         this.setFrame(0);
         this.scene?.wallRight.setFrame(0);
-        this.shards.forEach(shard => shard.enableBody(false,0,0,true,true));
+        this.shards.forEach(shard => shard?.enableBody(false,0,0,true,true));
         this.shards = [];
         this.splash.start()
     }

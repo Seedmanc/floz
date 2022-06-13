@@ -49,8 +49,9 @@ export default class Blob extends Projectile
     }
 
     collidePlayer(blob: Blob, player: Player) {
+        console.log(Math.round((blob.volume-Bullet.VOLUME-1)/Blob.VALUE), blob.volume)
         blob.kill()
-        player.damage(Math.round((blob.volume-1)/Blob.VALUE))
+        player.damage(Math.round((blob.volume-Bullet.VOLUME-1)/Blob.VALUE))
         player.waterToll += blob.volume;
     }
 }

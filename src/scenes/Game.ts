@@ -105,7 +105,8 @@ export default class GameScene extends Phaser.Scene
     addInteractions() {
         this.physics.add.collider(this.player, this.waterSurface, Source.waterfallRepulsor);
         this.physics.add.collider(this.player, this.UI)
-        this.physics.add.collider(this.player, this.walls )
+        this.physics.add.collider(this.player, this.walls)
+        this.physics.add.collider(this.shards, this.bullets)
     }
 
     win() {

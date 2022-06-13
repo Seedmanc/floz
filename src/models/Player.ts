@@ -1,7 +1,6 @@
 import S from '~/const/StateKeys';
 import K from "~/const/TextureKeys";
 import Phaser from "phaser";
-import Projectile from '~/models/Projectile';
 import GameScene from "~/scenes/Game";
 import { ChargeState } from '~/statemachine/Charge';
 import HurtState from '~/statemachine/Hurt';
@@ -18,6 +17,7 @@ import CircularProgress = UIPlugins.CircularProgress;
 import TailWobble from "~/tweens/TailWobble";
 import Blinking from "~/tweens/Blinking";
 import {bgColor} from "~/main";
+import Blob from "~/models/Blob";
 
 
 export default class Player extends Phaser.GameObjects.Container
@@ -31,7 +31,7 @@ export default class Player extends Phaser.GameObjects.Container
     flipMul = 1;
     waterToll = 0;
 
-    readonly WATERLINE = 30;
+    readonly WATERLINE = 25;
 
     private hand!: Phaser.GameObjects.Sprite
     private _sprite!: Phaser.GameObjects.Sprite
@@ -77,17 +77,19 @@ export default class Player extends Phaser.GameObjects.Container
         this.addStates()
 
         this.scene.physics.add.overlap(this, this.scene.waterSurface, () => {
-            let belowWater =  Math.min( 0, this.scene.waterSurface.getTopCenter().y - (this.y + this.body.height/2))
+           let belowWater = Math.min( 0, this.scene.waterSurface.getTopCenter().y - (this.y + this.body.height/2))
 
-           if (belowWater <= -this.WATERLINE)
+           if (belowWater <= -this.WATERLINE) {
                this.damage();
-
-           if (this.body.embedded && this.body.checkCollision.down  )
-                this.body.setVelocityY(belowWater*11 - 22)
+               this.waterToll += Blob.VALUE;
+           }
+           if (this.body.embedded && this.body.checkCollision.down)
+               this.body.setVelocityY(-this.WATERLINE*1.4)
         });
     }
 
     tryPump() {
+        console.info('hurt', this.isHurt, 'cooldown', PumpState.isCooldown)
         if (this.isHurt && !PumpState.isCooldown) {
             this.stateMachine.setState(S.Pumping);
             this._keyE.off('up', this.tryPump, this);
@@ -124,21 +126,26 @@ export default class Player extends Phaser.GameObjects.Container
         }
         this.adjustSoaking()
     }
-    heal(amount = 1) {
-        this.health += amount;
+
+    heal(stages = 1) {
+        let turns = Math.round(this.waterToll/Bullet.VOLUME/this.isHurt)
+
+        for (let i = 0; i < turns; i++) {
+            this.spawnDroplets(i);
+            this.waterToll -= Bullet.VOLUME;
+        }
+
+        this.health++;
         this.scene.UI.updateHP(this.health);
         this.pumpText.setVisible(!!this.isHurt);
 
         this.adjustSoaking()
-
-        for (let i = 0; i < Math.round(this.waterToll/Bullet.VOLUME); i++) {
-            this.spawnDroplets(i%2);
-        }
     }
 
-    private spawnDroplets(side) {
+    private spawnDroplets(i: number) {
+        let side = i%2;
         // @ts-ignore
-        this.scene.bullets.create(this.x + (side ? 1 : -1)*this.body.width/2, this.y+this.body.height/3, side ? -Math.PI/4 : -3*Math.PI/4,
+        this.scene.bullets.create(this.x + (side ? 1 : -1)*this.body.width/2, this.y+this.body.height/3, (side ? -Math.PI/4 : -3*Math.PI/4) + i/20,
             Bullet.IMPULSE/Phaser.Math.Between(2,4))
     }
 
