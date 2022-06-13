@@ -10,7 +10,7 @@ export default class Bullet extends Projectile
 {
     defaultScale = 0.5;
     static readonly VOLUME = 25;
-    static readonly IMPULSE = 600;
+    static readonly IMPULSE = 500;
     static readonly GROUP = 'bullets';
 
     get canCollideSource() {

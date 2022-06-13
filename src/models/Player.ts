@@ -31,7 +31,7 @@ export default class Player extends Phaser.GameObjects.Container
     flipMul = 1;
     waterToll = 0;
 
-    readonly WATERLINE = 25;
+    readonly WATERLINE = 30
 
     private hand!: Phaser.GameObjects.Sprite
     private _sprite!: Phaser.GameObjects.Sprite

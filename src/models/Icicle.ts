@@ -16,7 +16,7 @@ export default class Icicle extends Projectile
     integrity: number;
 
     static readonly VOLUME = 50;
-    static readonly IMPULSE = 800;
+    static readonly IMPULSE = 1000;
     static readonly GROUP = 'icicles';
 
     private timer;
@@ -106,7 +106,7 @@ export default class Icicle extends Projectile
 
     delayedCall(...etc) {
         super.delayedCall(...etc);
-        this.setBounce(1);
+        this.setBounce(1).setMass(0.5);
 
         this.scene.physics.add.overlap(this, this.scene.walls, icicle => icicle['break']())
         if (this.level == 1)    // half the gravity

@@ -5,7 +5,7 @@ import {IState} from '~/statemachine/StateMachine';
 
 export default abstract class HurtState implements Omit<IState, 'name'> {
     static onEnter(this: Player) {
-        this.y = this.scene.waterSurface.getTopCenter().y - this.body.height/2
+        this.y = this.scene.waterSurface.getTopCenter().y - this.body.height/2 - this.WATERLINE/2
 
         this.scene.tweens.addCounter({
              from: 100,
