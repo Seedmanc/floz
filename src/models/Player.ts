@@ -18,6 +18,7 @@ import TailWobble from "~/tweens/TailWobble";
 import Blinking from "~/tweens/Blinking";
 import {bgColor} from "~/main";
 import Blob from "~/models/Blob";
+import DrownState from "~/statemachine/Drown";
 
 
 export default class Player extends Phaser.GameObjects.Container
@@ -78,6 +79,9 @@ export default class Player extends Phaser.GameObjects.Container
         this.addStates()
 
         this.scene.physics.add.overlap(this, this.scene.waterSurface, () => {
+           if (this.stateMachine.isCurrentState(S.Drowning))
+               return;
+
            let belowWater = Math.min( 0, this.scene.waterSurface.getTopCenter().y - (this.y + this.body.height/2))
 
            if (belowWater <= -this.WATERLINE) {
@@ -223,6 +227,7 @@ export default class Player extends Phaser.GameObjects.Container
             .addState(S.Charging, ChargeState)
             .addState(S.Hurt, HurtState)
             .addState(S.Pumping, PumpState)
+            .addState(S.Drowning, DrownState)
             .setState(S.Idle)
     }
 

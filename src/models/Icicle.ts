@@ -77,7 +77,7 @@ export default class Icicle extends Projectile
         let centerToBackCorner = (icicle.x - player.x) * player.flipMul
         let hitToTailX = speedToTailX <= 0
         let hitToTailY = centerToBackCorner >= -player.body.width / 7
-        let hitSlowly  = icicle.body.newVelocity.lengthSq() <= 25
+        let hitSlowly  = icicle.body.newVelocity.lengthSq() <= 36
 
         //TODO relative speed to player
         if ((icicle.body.touching.right || icicle.body.touching.left) && hitToTailX && this.scene.player.isHurt < 2 || // horizontal
@@ -106,7 +106,7 @@ export default class Icicle extends Projectile
 
     delayedCall(...etc) {
         super.delayedCall(...etc);
-        this.setBounce(1).setMass(0.5);
+        this.setBounce(1)
 
         this.scene.physics.add.overlap(this, this.scene.walls, icicle => icicle['break']())
         if (this.level == 1)    // half the gravity

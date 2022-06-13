@@ -11,6 +11,7 @@ import UI from "~/models/UI";
 import Bullet from "~/models/Bullet";
 import Shard from "~/models/Shards";
 import Source from "~/models/Source";
+import S from "~/const/StateKeys";
 
 export default class GameScene extends Phaser.Scene
 {
@@ -118,11 +119,12 @@ export default class GameScene extends Phaser.Scene
 
     lose() {
         this.player.body.checkCollision.down = false;
+        this.player.stateMachine.setState(S.Drowning)
 
         window.setTimeout(() => {
             this.scene.stop();
             this.scene.start('gameover', {})
-        }, 1000)
+        }, 1250)
     }
 
     raiseWater() { // TODO refactor
@@ -132,7 +134,9 @@ export default class GameScene extends Phaser.Scene
 
             this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
-            this.player.y = Math.min(this.player.y, this.UI.y - this.player.body.height/2);
+
+            if (!this.player.stateMachine.isCurrentState(S.Drowning))
+                this.player.y = Math.min(this.player.y, this.UI.y - this.player.body.height/2);
         } else {
             this.lose()
         }
