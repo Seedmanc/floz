@@ -33,6 +33,7 @@ export default class Player extends Phaser.GameObjects.Container
 
     readonly WATERLINE = 30
 
+    private shootTimeout: number;
     private hand!: Phaser.GameObjects.Sprite
     private _sprite!: Phaser.GameObjects.Sprite
     _reticicle!: Phaser.GameObjects.Image
@@ -84,7 +85,7 @@ export default class Player extends Phaser.GameObjects.Container
                this.waterToll += Blob.VALUE;
            }
            if (this.body.embedded && this.body.checkCollision.down)
-               this.body.setVelocityY(-this.WATERLINE*1.4)
+               this.body.setVelocityY(-this.WATERLINE*1.2)
         });
     }
 
@@ -99,6 +100,10 @@ export default class Player extends Phaser.GameObjects.Container
 
     shoot(projectile: typeof Icicle | typeof Bullet) {
         let angle = this.aimAngle;
+
+        if (this.shootTimeout && !this.scene.physics.world.drawDebug)
+            return;
+        this.shootTimeout = setTimeout(() => this.shootTimeout = null, 200);
 
         this.scene[projectile.GROUP].create(
             this.body.center.x + this._reticicle.x*this.flipMul,

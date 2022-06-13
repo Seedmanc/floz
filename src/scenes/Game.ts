@@ -132,6 +132,7 @@ export default class GameScene extends Phaser.Scene
 
             this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
+            this.player.y = Math.min(this.player.y, this.UI.y - this.player.body.height/2);
         } else {
             this.lose()
         }
