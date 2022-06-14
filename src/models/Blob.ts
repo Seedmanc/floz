@@ -10,6 +10,7 @@ export default class Blob extends Projectile
     //level: number = 1;
     static readonly VALUE = 100;
     volume = Blob.VALUE;
+    canRotate = false
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {

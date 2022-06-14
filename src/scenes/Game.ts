@@ -90,6 +90,7 @@ export default class GameScene extends Phaser.Scene
             for (let j=0; j<12-i; j++) {
                 let size = 50;
                 this.blobs.create(this.scale.width/2-size*12/2+j*size + i*size/2 + size/2 , size*2 + size * i/1.1)
+                    .rotation = Phaser.Math.Between(0, Math.PI*2);
             }
         }
 

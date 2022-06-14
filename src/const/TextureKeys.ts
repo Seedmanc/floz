@@ -12,7 +12,8 @@ enum keys {
     Shards,
     Hand,
     Tail,
-    Source
+    Source,
+    Won
 }
 
 
