@@ -34,7 +34,7 @@ export default class Player extends Phaser.GameObjects.Container
 
     readonly WATERLINE = 30
 
-    private shootTimeout: number;
+    private shootTimeout!: number;
     private hand!: Phaser.GameObjects.Sprite
     private _sprite!: Phaser.GameObjects.Sprite
     _reticicle!: Phaser.GameObjects.Image
@@ -107,7 +107,7 @@ export default class Player extends Phaser.GameObjects.Container
 
         if (this.shootTimeout && !this.scene.physics.world.drawDebug)
             return;
-        this.shootTimeout = setTimeout(() => this.shootTimeout = null, 200);
+        this.shootTimeout = setTimeout(() => this.shootTimeout = 0, 200);
 
         this.scene[projectile.GROUP].create(
             this.body.center.x + this._reticicle.x*this.flipMul,

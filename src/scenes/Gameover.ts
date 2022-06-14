@@ -15,11 +15,13 @@ export default class GameoverScene extends Phaser.Scene
 	init(obj) {
 	    this.#win = obj && !!obj.score;
 	    this.score = obj.score;
+	    localStorage.setItem('floz-highscore', Math.max((+(localStorage.getItem('floz-highscore') || 0)), this.score)+'');
     }
 
 	preload()
     {
-        this.load.image(K.Dead, 'ded.png')
+        if (!this.#win)
+            this.load.image(K.Dead, 'ded.png')
     }
 
     create()
