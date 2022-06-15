@@ -8,6 +8,9 @@ body {
     max-height: 1000px;
 }
 .canvas-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 1000px;
     height: 1000px;
     background: #a0c4e4;
@@ -20,4 +23,20 @@ canvas {
 .water {
     height: calc(100vh - 1000px) ;
     background: #266aa7;
+}
+
+
+.rotate {
+    width: 5rem;
+    height: 2rem;
+    animation: rotation 1s infinite linear;
+}
+
+@keyframes rotation {
+     from {
+         transform: rotate(0deg);
+     }
+     to {
+         transform: rotate(359deg);
+     }
 }
