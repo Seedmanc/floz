@@ -6,6 +6,7 @@ export interface IState
 	onEnter?: () => void
 	onUpdate?: (dt?: number) => void
 	onExit?: () => void
+	final?: boolean;
 }
 
 // todo extract more code into states
@@ -52,7 +53,8 @@ export default class StateMachine
 			name,
 			onEnter: config?.onEnter?.bind(context),
 			onUpdate: config?.onUpdate?.bind(context),
-			onExit: config?.onExit?.bind(context)
+			onExit: config?.onExit?.bind(context),
+			final: config?.final
 		})
 
 		return this
@@ -70,6 +72,9 @@ export default class StateMachine
 		{
 			return
 		}
+
+		if (this.currentState?.final)
+			return;
 
 		if (this.isChangingState)
 		{

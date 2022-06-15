@@ -119,13 +119,7 @@ export default class GameScene extends Phaser.Scene
     }
 
     lose() {
-        this.player.body.checkCollision.down = false;
         this.player.stateMachine.setState(S.Drowning)
-
-        window.setTimeout(() => {
-            this.scene.stop();
-            this.scene.start('gameover', {})
-        }, 1250)
     }
 
     raiseWater() { // TODO refactor
@@ -135,9 +129,6 @@ export default class GameScene extends Phaser.Scene
 
             this.waterSurface.setScale(1,1 + this.waterLevel * this.INFLOW_SPEED).body.updateFromGameObject();
             this.UI.y = this.scale.height - this.waterSurface.displayHeight;
-
-            if (!this.player.stateMachine.isCurrentState(S.Drowning))
-                this.player.y = Math.min(this.player.y, this.UI.y - this.player.body.height/2);
         } else {
             this.lose()
         }
@@ -147,10 +138,6 @@ export default class GameScene extends Phaser.Scene
 	    this.raiseWater()
 
         this.player.stateMachine.update();
-
-        if (this.player.y > this.scale.height - this.waterSurface.displayHeight/2 && this.player.body.checkCollision.down) {
-            this.lose();
-        }
 
         this.updateDebug();
     }

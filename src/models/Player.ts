@@ -32,7 +32,7 @@ export default class Player extends Phaser.GameObjects.Container
     flipMul = 1;
     waterToll = 0;
 
-    readonly WATERLINE = 30
+    readonly WATERLINE = 25
 
     private shootTimeout!: number;
     private hand!: Phaser.GameObjects.Sprite
@@ -79,9 +79,6 @@ export default class Player extends Phaser.GameObjects.Container
         this.addStates()
 
         this.scene.physics.add.overlap(this, this.scene.waterSurface, () => {
-           if (this.stateMachine.isCurrentState(S.Drowning))
-               return;
-
            let belowWater = Math.min( 0, this.scene.waterSurface.getTopCenter().y - (this.y + this.body.height/2))
 
            if (belowWater <= -this.WATERLINE) {
@@ -130,7 +127,7 @@ export default class Player extends Phaser.GameObjects.Container
         this.scene.UI.updateHP(this.health);
         this.stateMachine.setState(S.Hurt)
 //TODO reset charging
-        if (this.health == 0) {
+        if (this.health <= 0) {
             this.scene.lose()
         }
         this.adjustSoaking()
