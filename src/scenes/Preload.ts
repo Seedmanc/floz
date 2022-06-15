@@ -21,6 +21,7 @@ export default class PreloadScene extends Phaser.Scene
         this.load.image(K.Water, 'water.jpg')
         this.load.image(K.Player, 'player.png')
         this.load.image(K.Blob, 'blob.png')
+        this.load.image(K.Blob2, 'blob2.png')
         this.load.image(K.Score, 'score.png')
         this.load.image(K.HP, 'hp.jpg')
         this.load.image(K.HpBar, 'hpbar.png')
