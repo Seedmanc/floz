@@ -85,12 +85,14 @@ export default class GameScene extends Phaser.Scene
         this.wallLeft = this.walls.create(0, 0, K.WallLeft).setOrigin(0,0);
         this.wallLeft.body.updateFromGameObject();
 
-        this.blobs = this.physics.add.group({ immovable: true, allowGravity: false , classType: Blob});
+        this.blobs = this.physics.add.group({ immovable: true, allowGravity: false, classType: Blob});
         for(let i=0; i<3; i++) {
             for (let j=0; j<12-i; j++) {
                 let size = 50;
-                this.blobs.create(this.scale.width/2-size*12/2+j*size + i*size/2 + size/2 , size*2 + size * i/1.1)
-                    .rotation = Phaser.Math.Between(0, Math.PI*2);
+                let b = this.blobs.create(this.scale.width/2-size*12/2+j*size + i*size/2 + size/2 , size*2 + size * i/1.1)
+                    b.rotation = Phaser.Math.Between(0, Math.PI*2);
+                if (Math.random() > 0.66)
+                    b.setTexture(K.Blob2)
             }
         }
 

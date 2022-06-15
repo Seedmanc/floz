@@ -4,6 +4,7 @@ enum keys {
     Water,
     Player,
     Blob,
+    Blob2,
     Score,
     HP,
     HpBar,

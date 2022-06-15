@@ -20,6 +20,7 @@ export default class Blob extends Projectile
 
     static drop(bullet, blob) {
         blob.setAccelerationY(200)
+        blob.canRotate = true;
 
         if (bullet) {
             blob.volume += Bullet.VOLUME;
