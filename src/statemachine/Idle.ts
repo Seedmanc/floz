@@ -16,17 +16,23 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
 
         this.pumpText.on('pointerdown', this.tryPump, this)
 
-        this._inputs.on('pointerup', (pointer) => {
-            if (pointer.leftButtonReleased())
-                this.shoot(Bullet)
-            else if (this.scene.physics.world.drawDebug && pointer.rightButtonReleased())
-                this.shoot(Icicle)
-        });
+        this._inputs.on('pointerupoutside', IdleState.onPointerUp.bind(this));
+        this._inputs.on('pointerup', IdleState.onPointerUp.bind(this));
     }
     static onExit(this: Player) {
         this._inputs.off('pointerup')
+        this._inputs.off('pointerupoutside')
         this._keyE.off('down', this.tryPump, this)
 
         this.pumpText.off('pointerdown', this.tryPump, this)
+    }
+
+    private static onPointerUp (this: Player, pointer) {
+        pointer.event.stopImmediatePropagation()
+
+        if (pointer.leftButtonReleased())
+            this.shoot(Bullet)
+        else if (this.scene.physics.world.drawDebug && pointer.rightButtonReleased())
+            this.shoot(Icicle)
     }
 }

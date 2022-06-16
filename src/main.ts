@@ -18,6 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
 	fps: {
 		target: 60
 	},
+	input: { mouse: { target: window } },
 	physics: {
 		default: 'arcade',
 		arcade: {
