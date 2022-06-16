@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import S from '~/const/StateKeys';
 import Player from '~/models/Player';
 import {IState} from '~/statemachine/StateMachine';
+import PumpState from "~/statemachine/Pump";
 
 export default abstract class HurtState implements Omit<IState, 'name'> {
     static onEnter(this: Player) {
@@ -21,7 +22,7 @@ export default abstract class HurtState implements Omit<IState, 'name'> {
              },
              onComplete: () => {
                 this.stateMachine.setState(S.Idle)
-                this.pumpText.setVisible(true);
+                this.pumpText.setVisible(!PumpState.isCooldown);
              }
         })
     }

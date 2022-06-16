@@ -56,7 +56,6 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
         this._keyE.off('down')
         PumpState.isCooldown = true;
 
-        let textVisible = this.pumpText.visible
         this.pumpText.setVisible(false)
         let penaltyTime = (PumpState.maxPresses - PumpState.presses) * 10
         this.progress.setAlpha(0.75)
@@ -65,7 +64,7 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
             .then(() => {
                 PumpState.isCooldown = false;
                 this.progress.setVisible(false);
-                this.pumpText.setVisible(textVisible);
+                this.pumpText.setVisible(!!this.isHurt);
                 this.progress.setAlpha(1)
             });
 

@@ -54,5 +54,8 @@ export default class Blob extends Projectile
         blob.kill()
         player.damage(Math.round((blob.volume-Bullet.VOLUME-1)/Blob.VALUE))
         player.waterToll += blob.volume;
+        if (this.scene.blobs.countActive() == 0) {
+            this.scene.win()
+        }
     }
 }
