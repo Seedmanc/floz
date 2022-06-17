@@ -13,7 +13,8 @@ enum keys {
     Hand,
     Tail,
     Source,
-    Won
+    Won,
+    Floz
 }
 
 

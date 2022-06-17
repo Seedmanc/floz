@@ -5,7 +5,7 @@ import {bgColor} from '~/main';
 
 export default class PreloadScene extends Phaser.Scene
 {
-    floz!: Phaser.GameObjects.Text;
+    floz!: Phaser.GameObjects.Image;
     start!: Phaser.GameObjects.Text;
     score!: Phaser.GameObjects.Text;
     graphics!: Phaser.GameObjects.Graphics;
@@ -27,6 +27,7 @@ export default class PreloadScene extends Phaser.Scene
         this.load.image(K.Ice, 'ice.png')
         this.load.image(K.Shards, 'shard.png')
         this.load.image(K.Hand, 'hand.png')
+        this.load.image(K.Floz, 'floz.png')
         this.load.spritesheet(K.Tail, 'tails.png',{ frameWidth: 80, frameHeight: 100})
         this.load.addFile(new WebFontFile(this.load, ['Comic Neue', 'Quicksand']))
         this.load.spritesheet(K.Source, 'source.png',{ frameWidth: 408/3, frameHeight: 136})
@@ -35,12 +36,6 @@ export default class PreloadScene extends Phaser.Scene
     create() {
         const W = this.scale.width;
         const H = this.scale.height;
-
-        this.floz = this.add.text(W / 2, 85 + 2.5/2*50, '<flOz>', {
-            fontFamily: 'Comic Neue',
-            fontSize: '48px',
-            color: '#fff'
-        }).setOrigin(0.5, 0.5).setDepth(1)
 
         this.start = this.add.text(W / 2, H - 100 - 25, ' Start ', {
             fontFamily: 'Quicksand',
@@ -94,6 +89,8 @@ export default class PreloadScene extends Phaser.Scene
             .beginPath()
             .moveTo(W/2 - 6*50, 85).lineTo(W/2 + 6*50, 85).lineTo(W/2 + 5*50, 85+2.5*50).lineTo(W/2 - 5*50, 85+2.5*50)
             .closePath().fillPath();
+
+        this.floz = this.add.image(W / 2, 85 + 2.5/2*50, K.Floz).setOrigin(0.5, 0.5);
     }
 
 }
