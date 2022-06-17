@@ -12,6 +12,8 @@ import Bullet from "~/models/Bullet";
 import Shard from "~/models/Shards";
 import Source from "~/models/Source";
 import S from "~/const/StateKeys";
+import PumpState from "~/statemachine/Pump";
+import Cooldown from "~/tweens/Cooldown";
 
 export default class GameScene extends Phaser.Scene
 {
@@ -43,6 +45,7 @@ export default class GameScene extends Phaser.Scene
 
     init() {
 	    this.waterLevel = 0;
+	    PumpState.isCooldown = false;
     }
 
     create()
@@ -60,7 +63,7 @@ export default class GameScene extends Phaser.Scene
     setDebug() {
         this.debug = this.add.text( 0,0  , 'debug', {
             fontFamily: 'Quicksand',
-            fontSize: '32px',
+            fontSize: '24px',
             color: 'red',
             fontStyle: 'normal'
         });
