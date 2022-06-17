@@ -30,18 +30,14 @@ export default class GameoverScene extends Phaser.Scene
 
     create()
     {
-        let ui = new UI(this, this.scale.width/2, this.scale.height/2);
-        ui.toggleHP(!this.#win)
-        ui.setScore(this.score);
-
         let element;
 
         if (this.#win) {
-            element = ui;
-            let UI = this.add.existing(ui).setPosition(775 - ui.body.width/2, 125-ui.body.height/2);
+            let ui = this.add.existing((new UI(this, 775 - 120/2, 125-120/2)).toggleHP(!this.#win).setScore(this.score));
             this.add.image(this.scale.width/2, this.scale.height/2, K.Won).setOrigin(0.5, 0.5);
+            element = ui;
 
-            this.add.text(UI.x - UI.body.width*0.8, UI.y + UI.body.height*1.8, ' Restart ', {
+            this.add.text(ui.x - ui.body.width*0.8, ui.y + ui.body.height*1.8, ' Restart ', {
                 fontFamily: 'Quicksand',
                 fontSize: '48px',
                 color: '#fff',
@@ -56,7 +52,7 @@ export default class GameoverScene extends Phaser.Scene
 
             if (this.highscore && this.score > this.highscore) {
                 localStorage.setItem('floz-highscore', this.score);
-                let text = this.add.text(UI.x - UI.body.width*0.7 , UI.y + UI.body.height,
+                let text = this.add.text(ui.x - ui.body.width*0.7 , ui.y + ui.body.height,
                     "You've beaten your highscore of " + this.highscore + '!', {
                     fontFamily: 'Quicksand',
                     fontSize: '24px',

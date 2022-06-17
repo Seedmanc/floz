@@ -1,6 +1,6 @@
 {
 	"name": "floz",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "An ounce of water",
 	"scripts": {
 		"start": "parcel src/index.html -p 8000",

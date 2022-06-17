@@ -10,9 +10,8 @@ export default class UI extends Phaser.GameObjects.Container
     value: number = 0;
     body!: Phaser.Physics.Arcade.Body
 
-    private container: Phaser.GameObjects.Image;
     private readonly text: Phaser.GameObjects.Text;
-    private readonly hpBar!: Phaser.GameObjects.Image;
+    private readonly hpBar!: Phaser.GameObjects.Sprite;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
@@ -28,12 +27,10 @@ export default class UI extends Phaser.GameObjects.Container
             shadow: { color: '#8FA8BE', fill: true, offsetX: 1, offsetY: 2, blur: 1, stroke: false }
         });
 
-        let hpContainer = scene.add.image(0 , -this.score.height, K.HP);
-        this.container = hpContainer
-        this.hpBar = scene.add.image(0 , -12, K.HpBar);
-        this.hpBar.setOrigin(0.5,1).setScale(1, 2);
+        this.hpBar = scene.add.sprite(0 , -12, K.Face);
+        this.hpBar.setOrigin(0.5,1);
 
-        this.add([this.score, this.text, hpContainer, this.hpBar]);
+        this.add([this.score, this.text, this.hpBar]);
         this.setSize(this.score.width, this.score.height+this.text.height);
 
         this.scene.physics.add.existing(this)
@@ -43,7 +40,7 @@ export default class UI extends Phaser.GameObjects.Container
     }
 
     updateHP(value) {
-        this.hpBar.setScale(1, value/this.scene.MAX_HEALTH*2);
+        this.hpBar.setFrame(this.scene.MAX_HEALTH - value);
     }
 
     addScore(value) {
@@ -54,11 +51,12 @@ export default class UI extends Phaser.GameObjects.Container
     setScore(value) {
         this.value = value;
         this.text.text = this.value+'';
+        return this
     }
 
     toggleHP(on: boolean) {
         this.hpBar.visible = on;
-        this.container.visible = on;
+        return this;
     }
 
 }
