@@ -46,7 +46,8 @@ export default class Shard extends Projectile
                         this.scene?.shards.killAndHide(this);
                         this.disableBody(true, true);
                     }
-                    this.scene.waterLevel += Shard.VOLUME/2;
+                    if (this.scene?.waterLevel)
+                        this.scene.waterLevel += Shard.VOLUME/2;
                 }
             })
             this.scene.waterLevel += Shard.VOLUME/2

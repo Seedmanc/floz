@@ -50,9 +50,21 @@ export default class PreloadScene extends Phaser.Scene
                 this.scene.start('game');
             })
 
+        let controls = this.add.text(W / 2, H / 2, `
+                Controls:
+Click to shoot a droplet;
+Long press to charge an icicle;
+Tap E or the character to heal.
+        `, {
+            fontFamily: 'Quicksand',
+            fontSize: '24px',
+            color: '#fff',
+            shadow: {stroke: true, blur: 9, color: '#858585', fill: true}
+        }).setOrigin(0.5, 0.75)
+
         let highScore = localStorage.getItem('floz-highscore');
         if (highScore)
-            this.score = this.add.text(W / 2, H / 2, 'Your highscore is: ' + highScore, {
+            this.score = this.add.text(W / 2, H / 2 + controls.height/3, 'Your highscore is: ' + highScore, {
                 fontFamily: 'Quicksand',
                 fontSize: '32px',
                 color: '#fff',

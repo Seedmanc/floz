@@ -84,7 +84,7 @@ export default class Player extends Phaser.GameObjects.Container
 
            if (belowWater <= -this.WATERLINE) {
                this.damage();
-               this.waterToll += Blob.VALUE;
+               this.waterToll += 100;
            }
            if (this.body.embedded && this.body.checkCollision.down)
                this.body.setVelocityY(-this.WATERLINE*1.2)
