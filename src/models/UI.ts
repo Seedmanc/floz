@@ -45,7 +45,7 @@ export default class UI extends Phaser.GameObjects.Container
 
     addScore(value) {
         this.value+= value;
-        this.text.text = this.value+'';
+        this.text.text = Math.max(0, this.value)+'';
     }
 
     setScore(value) {

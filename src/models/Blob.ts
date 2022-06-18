@@ -8,8 +8,8 @@ import Bullet from "~/models/Bullet";
 export default class Blob extends Projectile
 {
     //level: number = 1;
-    static readonly VALUE = 100;
-    volume = Blob.VALUE;
+    VALUE = 100;
+    volume = this.VALUE;
     canRotate = false
 
     constructor(scene: Phaser.Scene, x: number, y: number)
@@ -24,7 +24,7 @@ export default class Blob extends Projectile
 
         if (bullet) {
             blob.volume += Bullet.VOLUME;
-            blob.defaultScale = Math.sqrt((blob.volume-Bullet.VOLUME)/Blob.VALUE);
+            blob.defaultScale = Math.sqrt((blob.volume-Bullet.VOLUME)/blob.VALUE);
             blob.scene.bullets.killAndHide(bullet);
             bullet.active = false;
             bullet.disableBody(true, true);
@@ -40,7 +40,7 @@ export default class Blob extends Projectile
     collideWalls(){}
 
     collideWater(blob: Blob, water) {
-        this.scene.UI.addScore( Blob.VALUE/10)
+        this.scene.UI.addScore( (blob.VALUE)/10 + Math.round((blob.volume - blob.VALUE)/Bullet.VOLUME/2))
         blob.kill();
 
         this.scene.waterLevel += blob.volume;
@@ -52,7 +52,8 @@ export default class Blob extends Projectile
 
     collidePlayer(blob: Blob, player: Player) {
         blob.kill()
-        player.damage(Math.round((blob.volume-Bullet.VOLUME-1)/Blob.VALUE))
+        player.damage(Math.round((blob.volume-Bullet.VOLUME-1)/blob.VALUE))
+        this.scene.UI.addScore(  - (blob.volume - blob.VALUE)/Bullet.VOLUME )
         player.waterToll += blob.volume;
         if (this.scene.blobs.countActive() == 0) {
             this.scene.win()

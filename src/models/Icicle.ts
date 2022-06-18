@@ -1,13 +1,13 @@
 import K from "~/const/TextureKeys";
-import Phaser from "phaser";
+import Phaser, {BlendModes} from "phaser";
 import Blob from "~/models/Blob";
 import Projectile from "~/models/Projectile";
 import Player from "~/models/Player";
 import TailSwatX from '~/tweens/TailSwatX';
 import TailSwatY from '~/tweens/TailSwatY';
 import TailWobble from '~/tweens/TailWobble';
-import GameObject = Phaser.GameObjects.GameObject;
 import Shard from "~/models/Shards";
+import Vector2 = Phaser.Math.Vector2;
 
 
 export default class Icicle extends Projectile
@@ -20,6 +20,10 @@ export default class Icicle extends Projectile
     static readonly GROUP = 'icicles';
 
     private timer;
+    private lastBlobTime = 0;
+    private killStreak = 0;
+    private blobs: Vector2[] = [];
+
     protected get canCollideSource(): boolean {
         return this.scene.source.canCollide(this)
     };
@@ -33,7 +37,8 @@ export default class Icicle extends Projectile
         this.scene.waterLevel -= Icicle.VOLUME;
         this.body.onWorldBounds = true;
 
-        this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob)
+        // @ts-ignore
+        this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob, undefined, this)
         this.scene.physics.world.once('worldbounds', this.collideWalls, this)
         this.scene.physics.add.collider(this.scene.icicles, this, this.annihilate)
     }
@@ -42,8 +47,35 @@ export default class Icicle extends Projectile
         both.forEach(icicle => icicle.break())
     }
 
-    private pierceBlob(icicle, blob: GameObject) {
+    private pierceBlob(icicle: Icicle, blob: Blob) {
         icicle.body.setSize(icicle.level*9, icicle.level*9)
+        if (!blob.canRotate) {  // active blob to avoid repetition of overlap
+            if (this.lastBlobTime && Math.round(performance.now()-this.lastBlobTime) <= 70) {
+                this.killStreak++;
+                this.blobs.push(blob.body.position.clone())
+
+                if (this.killStreak >= 4) {
+                    this.scene.UI.addScore( 1 + Math.round(this.killStreak/4))
+                    let emitter = this.scene.particles.setDepth(5).createEmitter({
+                        x: 0,
+                        y: 0,
+                        blendMode: BlendModes.SCREEN,
+                        scale: { start: 0.2, end: 0 },
+                        speed: { min: -100, max: 100 },
+                        quantity: 1
+                    })
+                    this.blobs.forEach((pos, i) => emitter.explode(i*2, pos.x+blob.body.halfWidth, pos.y+blob.body.halfHeight));
+
+                    if (this.blobs.length >= 9)
+                        icicle.break();
+                    setTimeout(() => emitter.remove(), 2000)
+                }
+            } else {
+                this.blobs = [];
+                this.killStreak = 0;
+            }
+            this.lastBlobTime = performance.now();
+        }
         Blob.drop(null, blob)
     }
 
