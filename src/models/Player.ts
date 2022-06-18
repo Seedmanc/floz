@@ -31,12 +31,13 @@ export default class Player extends Phaser.GameObjects.Container
     progress!: CircularProgress;
     flipMul = 1;
     waterToll = 0;
+    pumping!: Phaser.Animations.AnimationState;
 
     readonly WATERLINE = 25
 
     private shootTimeout!: number;
-    private hand!: Phaser.GameObjects.Sprite
-    private _sprite!: Phaser.GameObjects.Sprite
+    hand!: Phaser.GameObjects.Sprite
+    _sprite!: Phaser.GameObjects.Sprite
     _reticicle!: Phaser.GameObjects.Image
     _tail!: Phaser.GameObjects.Sprite
     _inputs: Phaser.Input.InputPlugin;
@@ -157,10 +158,18 @@ export default class Player extends Phaser.GameObjects.Container
 
     private addParts(scene) {
         this._sprite = scene.add.sprite(0, 0,  K.Player)
-            .setOrigin(0.5, 0.5);
+            .setOrigin(0.5, 0.5)
         this.add(this._sprite)
 
-        this.hand = scene.add.sprite(-5, -10,  K.Hand)
+        this._sprite.anims.create({
+            key: S.Pumping+'',
+            frames: this.scene.anims.generateFrameNumbers(K.Player, { start: 1, end: 3 }),
+            frameRate: 6,
+            repeat: -1
+        });
+        this.pumping = this._sprite.anims;
+
+            this.hand = scene.add.sprite(-5, -10,  K.Hand)
             .setOrigin(0.9, 0.9);
         this.add(this.hand)
 
@@ -169,7 +178,7 @@ export default class Player extends Phaser.GameObjects.Container
             .setOrigin(0.5, 0.5)
         this.add(this._reticicle);
 
-        this._tail = scene.add.sprite(1, 19, K.Tail, 0)
+        this._tail = scene.add.sprite(0, 0, K.Tail, 0)
             .setOrigin(0.2, 0.95)
         this.add(this._tail);
         TailWobble.add(this);
@@ -177,6 +186,13 @@ export default class Player extends Phaser.GameObjects.Container
         TailSwatY.add(this);
 
         this.addPumpButton()
+        this.handAndTail();
+    }
+
+    handAndTail() {
+        this.hand.setVisible(true)
+        this._tail.setPosition(1,19)
+        this._sprite.setFrame(0)
     }
 
     private adjustSoaking() {

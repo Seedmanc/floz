@@ -26,6 +26,10 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
             PumpState.checkTime(this)
             PumpState.pump(this)
         })
+
+        this.pumping.play(S.Pumping+'', true)
+        this.hand.setVisible(false)
+        this._tail.setPosition(6,24)
     }
 
     private static checkTime(player: Player) {
@@ -54,6 +58,9 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
 
     static onExit(this: Player) {
         this._keyE.off('down')
+        this.pumping.stop();
+        this.handAndTail()
+
         PumpState.isCooldown = true;
 
         this.pumpText.setVisible(false)

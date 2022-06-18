@@ -19,7 +19,7 @@ export default class PreloadScene extends Phaser.Scene
         this.load.image(K.WallLeft, 'left-wall.jpg')
         this.load.spritesheet(K.WallRight, 'right-wall.jpg', { frameWidth: 136, frameHeight: 799})
         this.load.image(K.Water, 'water.jpg')
-        this.load.image(K.Player, 'player.png')
+        this.load.spritesheet(K.Player, 'player.png', { frameWidth: 440/4, frameHeight: 111})
         this.load.image(K.Blob, 'blob.png')
         this.load.image(K.Blob2, 'blob2.png')
         this.load.image(K.Score, 'score.png')
@@ -71,10 +71,6 @@ export default class PreloadScene extends Phaser.Scene
             .fillRect(W - wallWidth, wallWidth, wallWidth, H)
             .fillCircle(W, wallWidth, wallWidth)
 
-        this.graphics   // boat
-            .beginPath()
-            .moveTo(W/2 - 55, H - 100 - 20).lineTo(W/2 + 55, H - 100 - 20).lineTo(W/2 + 55 - 20, H - 100).lineTo(W/2 - 55 + 20, H - 100)
-            .closePath().fillPath();
 
         this.graphics   //water surface
             .fillStyle(Phaser.Display.Color.GetColor(39, 107,168), 1)
@@ -88,6 +84,12 @@ export default class PreloadScene extends Phaser.Scene
             .fillStyle(Phaser.Display.Color.GetColor(70, 145,212), 1)
             .beginPath()
             .moveTo(W/2 - 6*50, 85).lineTo(W/2 + 6*50, 85).lineTo(W/2 + 5*50, 85+2.5*50).lineTo(W/2 - 5*50, 85+2.5*50)
+            .closePath().fillPath();
+
+        this.graphics   // boat
+            .fillStyle(0xdadee1)
+            .beginPath()
+            .moveTo(W/2 - 55, H - 100 - 20).lineTo(W/2 + 55, H - 100 - 20).lineTo(W/2 + 55 - 20, H - 100).lineTo(W/2 - 55 + 20, H - 100)
             .closePath().fillPath();
 
         this.floz = this.add.image(W / 2, 85 + 2.5/2*50, K.Floz).setOrigin(0.5, 0.5);
