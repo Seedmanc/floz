@@ -18,13 +18,17 @@ const config: Phaser.Types.Core.GameConfig = {
 	fps: {
 		target: 60
 	},
+	scale: {
+		mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
+		autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+	},
 	input: { mouse: { target: window } },
 	physics: {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 200 },
 			fps: 60,
-			debug: true,
+			debug: false,
 			overlapBias: 6
 		}
 	},

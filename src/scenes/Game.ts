@@ -50,6 +50,7 @@ export default class GameScene extends Phaser.Scene
 
     create()
     {
+        this.scale.lockOrientation('portrait')
         this.input.mouse.disableContextMenu();
         this.physics.world.setBoundsCollision();
 
@@ -148,7 +149,8 @@ export default class GameScene extends Phaser.Scene
     }
 
     private updateDebug() {
-        if (Phaser.Input.Keyboard.JustDown(this.toggleDebug)) {
+        if (Phaser.Input.Keyboard.JustDown(this.toggleDebug) && this.toggleDebug.shiftKey) {
+            this.UI.setScore(0)
             if (!this.physics.world.debugGraphic)
                 this.physics.world.createDebugGraphic();
             if (this.physics.world.drawDebug) {

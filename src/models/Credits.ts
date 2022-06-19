@@ -77,7 +77,7 @@ export default class Credits extends Phaser.GameObjects.Container
             stroke: '#FFFFFF',
         }).setOrigin(1, 0.5)
 
-        let youA = scene.add.image(this.table.getTopLeft().x+5, this.table.getTopLeft().y+20 + seedmancA.height*3, K.You).setOrigin(0, 0).setScale(1,0.8)
+        let youA = scene.add.image(this.table.getTopLeft().x+5, this.table.getTopLeft().y+20 + seedmancA.height*3, K.You).setOrigin(0, 0).setScale(1,0.75)
         let youT = scene.add.text( this.table.getTopCenter().x,  this.table.getTopCenter().y+10 + seedmancA.height*3.5, 'You', {
             fontFamily: 'Quicksand',
             fontSize: '26px',

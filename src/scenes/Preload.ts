@@ -17,6 +17,7 @@ export default class PreloadScene extends Phaser.Scene
 	}
 	preload()
     {
+        this.scale.lockOrientation('portrait')
         this.load.image(K.WallLeft, 'left-wall.jpg')
         this.load.spritesheet(K.WallRight, 'right-wall.jpg', { frameWidth: 136, frameHeight: 799})
         this.load.image(K.Water, 'water.jpg')
@@ -41,7 +42,7 @@ export default class PreloadScene extends Phaser.Scene
     create() {
         const W = this.scale.width;
         const H = this.scale.height;
-
+        this.scale.lockOrientation('portrait')
         this.add.existing(new Credits(this, W/2, H - 50));
 
         this.start = this.add.text(W / 2, H - 100 - 25, ' Start ', {
