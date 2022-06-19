@@ -14,7 +14,11 @@ enum keys {
     Tail,
     Source,
     Won,
-    Floz
+    Floz,
+    Seedmanc,
+    Alter,
+    Nanodesu,
+    You
 }
 
 

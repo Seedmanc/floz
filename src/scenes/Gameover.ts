@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import K from "~/const/TextureKeys";
 import UI from "~/models/UI";
 import {bgColor} from "~/main";
+import Credits from "~/models/Credits";
 
 export default class GameoverScene extends Phaser.Scene
 {
@@ -63,6 +64,8 @@ export default class GameoverScene extends Phaser.Scene
                 })
             } else if (!this.highscore)
                 localStorage.setItem('floz-highscore', this.score);
+
+            this.add.existing(new Credits(this, this.scale.width/2, this.scale.height - 2));
         } else
            element = this.add.image(this.scale.width/2, this.scale.height/2, K.Dead);
 

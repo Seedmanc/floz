@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import K from "~/const/TextureKeys";
 import WebFontFile from "~/etc/webfont";
 import {bgColor} from '~/main';
+import Credits from "~/models/Credits";
 
 export default class PreloadScene extends Phaser.Scene
 {
@@ -28,6 +29,10 @@ export default class PreloadScene extends Phaser.Scene
         this.load.image(K.Shards, 'shard.png')
         this.load.image(K.Hand, 'hand.png')
         this.load.image(K.Floz, 'floz.png')
+        this.load.image(K.Seedmanc, 'seedmanc.jpg')
+        this.load.image(K.Alter, 'alter.jpg')
+        this.load.image(K.Nanodesu, 'nanodesu.jpg')
+        this.load.image(K.You, 'you.jpg')
         this.load.spritesheet(K.Tail, 'tails.png',{ frameWidth: 80, frameHeight: 100})
         this.load.addFile(new WebFontFile(this.load, ['Comic Neue', 'Quicksand']))
         this.load.spritesheet(K.Source, 'source.png',{ frameWidth: 408/3, frameHeight: 136})
@@ -36,6 +41,8 @@ export default class PreloadScene extends Phaser.Scene
     create() {
         const W = this.scale.width;
         const H = this.scale.height;
+
+        this.add.existing(new Credits(this, W/2, H - 50));
 
         this.start = this.add.text(W / 2, H - 100 - 25, ' Start ', {
             fontFamily: 'Quicksand',

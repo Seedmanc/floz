@@ -92,7 +92,6 @@ export default class Player extends Phaser.GameObjects.Container
     }
 
     tryPump() {
-        console.info('hurt', this.isHurt, 'cooldown', PumpState.isCooldown)
         if (this.isHurt && !PumpState.isCooldown) {
             this.stateMachine.setState(S.Pumping);
             this._keyE.off('up', this.tryPump, this);
