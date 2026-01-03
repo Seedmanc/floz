@@ -27,7 +27,7 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
         this.pumpText.off('pointerdown', this.tryPump, this)
     }
 
-    private static onPointerUp (this: Player, pointer) {
+    private static onPointerUp(this: Player, pointer) {
         pointer.event.stopImmediatePropagation()
 
         if (pointer.leftButtonReleased())

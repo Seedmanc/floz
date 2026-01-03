@@ -9,7 +9,7 @@ export default class Credits extends Phaser.GameObjects.Container
 {
     scene: GameScene
     button: Phaser.GameObjects.Text;
-    table ;
+    table;
     container: Phaser.GameObjects.Group;
 
     constructor(scene: Phaser.Scene, x: number, y: number)
@@ -25,9 +25,9 @@ export default class Credits extends Phaser.GameObjects.Container
             shadow: {stroke: true, blur: 9, color: bgColor, fill: true}
         })  .setInteractive({cursor: 'pointer'})
             .setOrigin(0.5, 1)
-            .on('pointerup', () => {
+            .on('pointerup', () =>
                 this.container.toggleVisible()
-            })
+            )
         this.container = scene.add.group()
         this.table = scene.add.rectangle(0, 0 -this.button.height*1.5-10, scene.scale.width/2, scene.scale.height/3-10, 0x888888, 0.75)
             .setOrigin(0.5, 1)
@@ -94,7 +94,8 @@ export default class Credits extends Phaser.GameObjects.Container
 
 
         this.add([this.button, this.table, seedmancA, seedmancT, seedmancR, alterA, alterT, alterR, nanoA, nanoT, nanoR, youA, youT, youR]);
-        this.container.addMultiple([this.table, seedmancA, seedmancT, seedmancR, alterA, alterT, alterR, nanoA, nanoT, nanoR, youA, youT, youR]).setVisible(false)
+        this.container.addMultiple([this.table, seedmancA, seedmancT, seedmancR, alterA, alterT, alterR, nanoA, nanoT, nanoR, youA, youT, youR])
+            .setVisible(false)
         this.setDepth(5)
     }
 }

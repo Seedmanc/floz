@@ -3,7 +3,6 @@ import Phaser, {BlendModes} from "phaser";
 import GameScene from "~/scenes/Game";
 import Shard from "~/models/Shards";
 import Sprite = Phaser.Physics.Arcade.Sprite;
-import GameObject = Phaser.GameObjects.GameObject;
 import Player from "~/models/Player";
 
 
@@ -46,15 +45,15 @@ export default class Source extends Sprite
         });
     }
 
-    static waterfallRepulsor<G extends GameObject & any>(that: G): G {
+    static waterfallRepulsor(that: any) {
         let flowMul = that.scene.source.flowMul
-        // @ts-ignore
+
         let force = (that instanceof Player) ? 6 : 2
 
-        return that.scene.source.flowMul && that.x > that.scene.waterSurface.getCenter().x*1.5 ?
+        that.scene.source.flowMul && that.x > that.scene.waterSurface.getCenter().x*1.5 ?
             that.body.setGravityX(-force * Math.max(0, that.x-that.scene.waterSurface.getCenter().x * (1.65 - 0.15*flowMul)))
                   :
-            that.body.setGravityX(0) ;
+            that.body.setGravityX(0);
     }
 
     canCollide(icicle) {

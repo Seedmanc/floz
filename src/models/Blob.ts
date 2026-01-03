@@ -15,7 +15,8 @@ export default class Blob extends Projectile
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y, K.Blob)
-        this.body.setCircle(21).setOffset(4,4).customSeparateX = true; // TODO
+        this.body.setCircle(21).setOffset(4,4).customSeparateX = true; // avoid stopping falling blob when hitting it with droplet
+        this.body.angle = Math.random()*2*Math.PI;
     }
 
     static drop(bullet, blob) {

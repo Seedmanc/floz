@@ -120,9 +120,11 @@ export default class Icicle extends Projectile
 
             if (hitToTailX && !icicle.body.touching.down)
                 TailSwatX.play();
-            else if (hitToTailY)
-                TailSwatY.play((centerToBackCorner-20)/150);    // try to aim for the icicle
-            else
+            else if (hitToTailY) {
+                TailSwatY.play((centerToBackCorner - 20) / 150);    // try to aim for the icicle
+                if (!--icicle.integrity)
+                    icicle.break();
+            } else
                 TailWobble.play(-icicle.body.newVelocity.lengthSq()/100)
             return;
         }

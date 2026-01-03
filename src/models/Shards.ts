@@ -21,7 +21,7 @@ export default class Shard extends Projectile
         super(scene, icicle.x, icicle.y, K.Shards)
         this.body.setSize(this.body.width/2, this.body.height/2).setOffset(12, 0)
         this.speed = icicle.body.velocity.clone();
-        this.setAlpha(0.7)
+        this.setAlpha(0.75)
 
         this.scene.physics.add.collider(this, this.scene.shards, this.separate, undefined, this);
         this.scene.physics.add.collider(this, this.scene.UI, shard => shard.destroy());

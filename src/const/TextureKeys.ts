@@ -21,9 +21,8 @@ enum keys {
     You
 }
 
+const K = Object.fromEntries(
+    Object.keys(keys).map(k => [k, String((keys as any)[k])])
+) as Record<keyof typeof keys, string>;
 
-type myType = Exclude<Partial<Record<keyof typeof keys, string>>, null | undefined>;
-type NoUndefinedField<T> = { [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>> };
-// @ts-ignore
-const K:  NoUndefinedField<myType> = Object.entries(keys).reduce((prev, [key, value]) => ({...prev, [key]: String(value)}), {});
 export default K;

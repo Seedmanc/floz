@@ -17,7 +17,6 @@ import CircularProgress = UIPlugins.CircularProgress;
 import TailWobble from "~/tweens/TailWobble";
 import Blinking from "~/tweens/Blinking";
 import {bgColor} from "~/main";
-import Blob from "~/models/Blob";
 import DrownState from "~/statemachine/Drown";
 
 
@@ -133,7 +132,7 @@ export default class Player extends Phaser.GameObjects.Container
         this.adjustSoaking()
     }
 
-    heal(stages = 1) {
+    heal() {
         let turns = Math.round(this.waterToll/Bullet.VOLUME/this.isHurt)
 
         for (let i = 0; i < turns; i++) {

@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "An ounce of water",
 	"scripts": {
-		"start": "parcel src/index.html -p 8000",
+		"start": "parcel src/index.html -p 8001 --host localhost",
 		"build": "parcel build src/index.html --out-dir dist",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
@@ -21,14 +21,15 @@
 		"cssnano": "^5.1.12",
 		"eslint": "^6.8.0",
 		"minimist": ">=1.2.2",
-		"parcel-plugin-clean-easy": "^1.0.2",
-		"parcel-plugin-static-files-copy": "^2.4.3",
+		"parcel-plugin-clean-easy": "1.0.2",
+		"parcel-plugin-static-files-copy": "2.4.3",
 		"postcss": "^8.4.14",
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
-		"phaser": "^3.55.2",
-		"phaser3-rex-plugins": "^1.1.70"
+		"parcel-bundler": "1.12.5",
+		"phaser": "3.55.2",
+		"phaser3-rex-plugins": "1.1.70"
 	},
 	"parcelCleanPaths": [
 		"dist"

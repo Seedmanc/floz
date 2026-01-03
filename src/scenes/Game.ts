@@ -142,9 +142,7 @@ export default class GameScene extends Phaser.Scene
 
     update() {
 	    this.raiseWater()
-
         this.player.stateMachine.update();
-
         this.updateDebug();
     }
 
