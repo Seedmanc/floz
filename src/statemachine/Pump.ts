@@ -2,6 +2,7 @@ import S from '~/const/StateKeys';
 import Player from '~/models/Player';
 import {IState} from '~/statemachine/StateMachine';
 import Cooldown from "~/tweens/Cooldown";
+import K from "~/const/ResourceKeys";
 
 export default abstract class PumpState implements Omit<IState, 'name'> {
     private static timer;
@@ -51,6 +52,9 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
         if (player.isHurt && PumpState.presses < 0 || PumpState.presses == PumpState.maxPresses/2) {
             player.heal();
         }
+        let pumpSnd = player.sfx[K.Pump]
+        if (!pumpSnd.isPlaying)
+            pumpSnd.play({pan: player.Xpos})
         if (!player.isHurt) {
             player.stateMachine.setState(S.Idle)
         }

@@ -1,9 +1,10 @@
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import Phaser, {BlendModes} from "phaser";
 import GameScene from "~/scenes/Game";
 import Shard from "~/models/Shards";
 import Sprite = Phaser.Physics.Arcade.Sprite;
 import Player from "~/models/Player";
+import BaseSound = Phaser.Sound.BaseSound;
 
 
 export default class Source extends Sprite
@@ -15,6 +16,7 @@ export default class Source extends Sprite
     private thawTimer;
     private shards: Shard[] = [];
     private splash: Phaser.GameObjects.Particles.ParticleEmitter;
+    private sfx: BaseSound;
 
     get flowMul() {
         return 1-this.freezeLevel/2
@@ -43,6 +45,9 @@ export default class Source extends Sprite
             type: 'edge',
             quantity: 10
         });
+
+        this.sfx = this.scene.sound.add(K.Source, {loop: true});
+        this.sfx.play(  {pan: 0.5, volume: 0.5})
     }
 
     static waterfallRepulsor(that: any) {
@@ -65,7 +70,8 @@ export default class Source extends Sprite
             return;
 
         if (this.freezeLevel < 2)
-            this.shards.push(icicle.break());
+            this.shards.push(icicle.break(true));
+
         setTimeout(() => {
             this.shards.forEach(shard => shard
                 .disableBody(true,true)
@@ -79,9 +85,13 @@ export default class Source extends Sprite
         }
         this.setFrame(++this.freezeLevel)
         this.scene.wallRight.setFrame(this.freezeLevel);
+        this.scene.sound.play(K.Froze, {pan: 0.75, rate: 3-this.freezeLevel})
 
-        if (this.freezeLevel == 2)
-            this.splash.stop()
+        if (this.freezeLevel == 2) {
+            this.sfx.stop();
+            this.splash.stop();
+        } else
+            this.sfx.play( {volume: 0.25, rate: 0.75});
 
         this.thawTimer = setTimeout(() => this.thaw(), this.freezeLevel*5000)
     }
@@ -94,6 +104,10 @@ export default class Source extends Sprite
         this.shards.forEach(shard => shard?.enableBody(false,0,0,true,true));
         this.shards = [];
         this.splash.start()
+
+        this.sfx.stop();
+        this.scene.sound.play(K.Break, {pan: 0.75});
+        this.sfx.play({volume: 1, rate: 1});
     }
 
 }

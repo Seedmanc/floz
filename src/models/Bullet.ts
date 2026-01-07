@@ -1,4 +1,4 @@
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import Phaser from "phaser";
 import Blob from "~/models/Blob";
 import Projectile from "~/models/Projectile";
@@ -56,6 +56,13 @@ export default class Bullet extends Projectile
     collideWater(bullet: Bullet) {
         this.scene.bullets.killAndHide(bullet.disableBody(true,true));
         this.scene.waterLevel+= Bullet.VOLUME;
+        if (bullet.depth != -1)
+            this.scene.sound.play(K.Drop, {
+                pan: this.Xpos,
+                rate:  bullet.body.newVelocity.y/5,
+                volume:  bullet.body.newVelocity.y/5
+            });
+
     }
 
     collideSource() {

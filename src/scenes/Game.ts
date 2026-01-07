@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import K from '~/const/TextureKeys';
+import K from '~/const/ResourceKeys';
 import Player from "~/models/Player";
 import StaticGroup = Phaser.Physics.Arcade.StaticGroup;
 import Icicle from "~/models/Icicle";
@@ -113,7 +113,13 @@ export default class GameScene extends Phaser.Scene
     addInteractions() {
         this.physics.add.collider(this.player, this.waterSurface, Source.waterfallRepulsor);
         this.physics.add.collider(this.player, this.UI)
-        this.physics.add.collider(this.player, this.walls)
+        this.physics.add.collider(this.player, this.walls, (player,wall) => {
+            if (!this.physics.overlap(this.player, this.shards))
+                this.sound.play(K.WallLeft, {pan: player['Xpos'], volume: 1.5})
+            // @ts-ignore
+            if (wall.x < this.game.config.width/2)
+                this.player.scene.sound.stopByKey(K.Move)
+        })
         this.physics.add.collider(this.shards, this.bullets)
     }
 

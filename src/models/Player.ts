@@ -1,5 +1,5 @@
 import S from '~/const/StateKeys';
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import Phaser from "phaser";
 import GameScene from "~/scenes/Game";
 import { ChargeState } from '~/statemachine/Charge';
@@ -18,7 +18,7 @@ import TailWobble from "~/tweens/TailWobble";
 import Blinking from "~/tweens/Blinking";
 import {bgColor} from "~/main";
 import DrownState from "~/statemachine/Drown";
-
+import BaseSound = Phaser.Sound.BaseSound;
 
 export default class Player extends Phaser.GameObjects.Container
 {
@@ -31,6 +31,7 @@ export default class Player extends Phaser.GameObjects.Container
     flipMul = 1;
     waterToll = 0;
     pumping!: Phaser.Animations.AnimationState;
+    sfx: { [key: number]: BaseSound } = {};
 
     readonly WATERLINE = 25
 
@@ -44,6 +45,10 @@ export default class Player extends Phaser.GameObjects.Container
 
     get isHurt() {
         return  this.scene.MAX_HEALTH - this.health;
+    }
+
+    get Xpos(): number {
+        return 1.5*((this.body.x-this.scene.wallLeft.width)/(Number(this.scene.game.config.width)-2*this.scene.wallRight.width-this._sprite.width) - 0.5);
     }
 
     private get aimAngle(): number {
@@ -88,6 +93,8 @@ export default class Player extends Phaser.GameObjects.Container
            if (this.body.embedded && this.body.checkCollision.down)
                this.body.setVelocityY(-this.WATERLINE*1.2)
         });
+
+        this.addSounds();
     }
 
     tryPump() {
@@ -112,8 +119,20 @@ export default class Player extends Phaser.GameObjects.Container
         )
 
         this.body.setVelocityX(-Math.cos(angle) * projectile.IMPULSE/2)
+        let detune = 2*(1000/(1+(this.body.drag.x-200)/300))-1500
+        this.scene.sound.play(K.Move,{
+            pan: this.Xpos,
+            volume: Math.abs(this.body.velocity.x)/600,
+            rate: 1+(this.body.drag.x-200)/300,
+            detune
+        });
         if (this.health > 1)
           TailWobble.play()
+
+        let snd = projectile.GROUP == 'icicles' ?
+            K.Bullet :
+            K.Squirt
+        this.sfx[snd].play({pan: this.Xpos})
     }
 
     damage(amount = 1) {
@@ -125,7 +144,7 @@ export default class Player extends Phaser.GameObjects.Container
         this.health = Math.max(this.health - amount, 0);
         this.scene.UI.updateHP(this.health);
         this.stateMachine.setState(S.Hurt)
-//TODO reset charging
+
         if (this.health <= 0) {
             this.scene.lose()
         }
@@ -147,8 +166,15 @@ export default class Player extends Phaser.GameObjects.Container
         this.adjustSoaking()
     }
 
+    protected handAndTail() {
+        this.hand.setVisible(true)
+        this._tail.setPosition(1,19)
+        this._sprite.setFrame(0)
+    }
+
     private spawnDroplets(i: number) {
         let side = i%2;
+        this.scene.sound.play(K.Squirt,{delay:0.1*i,rate:0.8+i*0.1, volume: 0.7+i*0.1, pan: this.Xpos})
         // @ts-ignore
         this.scene.bullets.create(this.x + (side ? 1 : -1)*this.body.width/2, this.y+this.body.height/3, (side ? -Math.PI/4 : -3*Math.PI/4) + i/20,
             Bullet.IMPULSE/Phaser.Math.Between(2,4))
@@ -187,10 +213,9 @@ export default class Player extends Phaser.GameObjects.Container
         this.handAndTail();
     }
 
-    handAndTail() {
-        this.hand.setVisible(true)
-        this._tail.setPosition(1,19)
-        this._sprite.setFrame(0)
+    private addSounds() {
+        'Bullet,Pump,Squirt,Ice,Blob2,Tail'.split(',').forEach(key =>
+            this.sfx[K[key]] = this.scene.sound.add(K[key]));
     }
 
     private adjustSoaking() {
@@ -242,8 +267,7 @@ export default class Player extends Phaser.GameObjects.Container
             .setState(S.Idle)
     }
 
-    private preUpdate()
-    {
+    private preUpdate() {
         this.flipBody()
         this.adjustHand();
         this.adjustReticicle()

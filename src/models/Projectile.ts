@@ -11,6 +11,10 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     protected readonly canRotate: boolean = true;
     protected canCollideSource;
 
+    protected get Xpos(): number {
+        return 1.5*((this.body.x-this.scene.wallLeft.width)/(Number(this.scene.game.config.width)-2*this.scene.wallRight.width) - 0.5);
+    }
+
     protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string, angle?, speed?) {
         super(scene, x, y, textureKey)
 

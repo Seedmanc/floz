@@ -1,4 +1,4 @@
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import Phaser from "phaser";
 import GameScene from "~/scenes/Game";
 

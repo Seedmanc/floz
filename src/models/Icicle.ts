@@ -1,4 +1,4 @@
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import Phaser, {BlendModes} from "phaser";
 import Blob from "~/models/Blob";
 import Projectile from "~/models/Projectile";
@@ -8,6 +8,7 @@ import TailSwatY from '~/tweens/TailSwatY';
 import TailWobble from '~/tweens/TailWobble';
 import Shard from "~/models/Shards";
 import Vector2 = Phaser.Math.Vector2;
+import BaseSound = Phaser.Sound.BaseSound;
 
 
 export default class Icicle extends Projectile
@@ -18,6 +19,7 @@ export default class Icicle extends Projectile
     static readonly VOLUME = 50;
     static readonly IMPULSE = 1000;
     static readonly GROUP = 'icicles';
+    static sfx: { [key: number]: BaseSound } = {};
 
     private timer;
     private lastBlobTime = 0;
@@ -41,6 +43,8 @@ export default class Icicle extends Projectile
         this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob, undefined, this)
         this.scene.physics.world.once('worldbounds', this.collideWalls, this)
         this.scene.physics.add.collider(this.scene.icicles, this, this.annihilate)
+
+        Icicle.sfx[K.Ricochet] = this.scene.sound.add(K.Ricochet);
     }
 
     private annihilate(...both) {
@@ -65,7 +69,7 @@ export default class Icicle extends Projectile
                         quantity: 1
                     })
                     this.blobs.forEach((pos, i) => emitter.explode(i*2, pos.x+blob.body.halfWidth, pos.y+blob.body.halfHeight));
-
+                    this.scene.sound.play(K.Bonus)
                     if (this.blobs.length >= 9)
                         icicle.break();
                     setTimeout(() => emitter.remove(), 2000)
@@ -79,17 +83,21 @@ export default class Icicle extends Projectile
         Blob.drop(null, blob)
     }
 
-    break(): Shard {
+    break(silent?: boolean): Shard {
         // @ts-ignore
         let shard = this.scene.shards.create(this);
         this.scene.icicles.killAndHide(this.disableBody(true,true));
+        if (!silent)
+            this.scene.sound.play(K.Break, {pan: this.x/1000-0.5})
         return shard;
     }
 
     collideWalls(body) {
         let icicle = body.gameObject || body;
         if (!--icicle.integrity)
-            icicle.break();
+            icicle.break()
+        else
+            Icicle.sfx[K.Ricochet].play({pan: this.Xpos})
     }
 
     collideWater(icicle: Icicle) {
@@ -97,7 +105,8 @@ export default class Icicle extends Projectile
         if (icicle.angle > tol && icicle.angle < 180-tol) {
             this.body.setVelocityY(0);
             this.break();
-        }
+        } else
+            this.scene.sound.play(K.Slop, {pan: this.Xpos});
     }
 
     collidePlayer(icicle: Icicle, player: Player) {
@@ -116,12 +125,14 @@ export default class Icicle extends Projectile
             icicle.body.touching.down && hitToTailY && !this.scene.player.isHurt ||  // vertical
             hitSlowly)
         {
-            this.scene.cameras.main.shake(200, 0.00003 * icicle.body.newVelocity.lengthSq());
+            this.scene.cameras.main.shake(250, 0.00001 * icicle.body.newVelocity.lengthSq());
 
-            if (hitToTailX && !icicle.body.touching.down)
+            if (hitToTailX && !icicle.body.touching.down) {
                 TailSwatX.play();
-            else if (hitToTailY) {
+                player.sfx[K.Tail].play({pan: player.Xpos, volume: 0.5});
+            } else if (hitToTailY) {
                 TailSwatY.play((centerToBackCorner - 20) / 150);    // try to aim for the icicle
+                player.sfx[K.Tail].play({pan: player.Xpos, volume: 0.5});
                 if (!--icicle.integrity)
                     icicle.break();
             } else
@@ -129,8 +140,10 @@ export default class Icicle extends Projectile
             return;
         }
 
-        icicle.break(); // TODO pass through
+        icicle.break(); // TODO detach player from ship
+        player.body.setVelocityX(icicle.body.newVelocity.x*25)
         this.scene.cameras.main.shake(500, 0.01);
+        this.scene.sound.play(K.Hit, {pan: player.Xpos, volume: 2})
         this.scene.lose();
     }
 

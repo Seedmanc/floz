@@ -5,6 +5,7 @@ enum keys {
     Player,
     Blob,
     Blob2,
+    Bullet,
     Score,
     Face,
     Dead,
@@ -18,7 +19,20 @@ enum keys {
     Seedmanc,
     Alter,
     Nanodesu,
-    You
+    You,
+    Ricochet,
+    Squirt,
+    Pump,
+    Drop,
+    Hit,
+    Move,
+    Po,
+    Bonus,
+    Slop,
+    Break,
+    Charge,
+    Froze,
+    Over
 }
 
 const K = Object.fromEntries(

@@ -2,7 +2,7 @@
 import Phaser from "phaser";
 import GameScene from "~/scenes/Game";
 import {bgColor} from "~/main";
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 
 
 export default class Credits extends Phaser.GameObjects.Container

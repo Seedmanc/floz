@@ -1,4 +1,4 @@
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import Phaser from "phaser";
 import Projectile from "~/models/Projectile";
 import Player from "~/models/Player";
@@ -7,7 +7,6 @@ import Bullet from "~/models/Bullet";
 
 export default class Blob extends Projectile
 {
-    //level: number = 1;
     VALUE = 100;
     volume = this.VALUE;
     canRotate = false
@@ -30,6 +29,11 @@ export default class Blob extends Projectile
             bullet.active = false;
             bullet.disableBody(true, true);
         }
+        blob.scene.sound.play(K.Po, {
+            pan: blob.body.x/1000-0.5,
+            volume: (blob.volume/blob.VALUE)**2,
+            rate: blob.VALUE/blob.volume
+        });
     }
 
     kill() {
@@ -43,8 +47,14 @@ export default class Blob extends Projectile
     collideWater(blob: Blob, water) {
         this.scene.UI.addScore( (blob.VALUE)/10 + Math.round((blob.volume - blob.VALUE)/Bullet.VOLUME/2))
         blob.kill();
+        let size = (blob.volume-Bullet.VOLUME)/blob.VALUE
 
         this.scene.waterLevel += blob.volume;
+        this.scene.sound.play(K.Blob, {
+            pan: this.Xpos,
+            rate: 1.25/size+ (0.5-Math.random())/2,
+            volume: 1.5*size+ (0.5-Math.random())/2
+        }) ;
 
         if (this.scene.blobs.countActive() == 0) {
             this.scene.win()
@@ -56,6 +66,7 @@ export default class Blob extends Projectile
         player.damage(Math.round((blob.volume-Bullet.VOLUME-1)/blob.VALUE))
         this.scene.UI.addScore(  - (blob.volume - blob.VALUE)/Bullet.VOLUME )
         player.waterToll += blob.volume;
+        player.sfx[K.Blob2].play({pan: player.Xpos, rate: 0.75});
         if (this.scene.blobs.countActive() == 0) {
             this.scene.win()
         }

@@ -1,4 +1,4 @@
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import Phaser from "phaser";
 import Projectile from "~/models/Projectile";
 import Icicle from "~/models/Icicle";
@@ -39,6 +39,7 @@ export default class Shard extends Projectile
         Source.waterfallRepulsor(this.setAccelerationX(0).setDragX(100))
 
         if (!this.timer) {
+            this.scene.sound.play(K.Slop, {pan: this.Xpos});
             this.timer = this.scene.time.addEvent({
                 delay: this.LIFE * 1000,
                 callback: () => {
@@ -56,9 +57,13 @@ export default class Shard extends Projectile
 
     collidePlayer(shard: Shard, player: Player) {
         player.body.velocity.x = Phaser.Math.Average([player.body.velocity.x, 50 * Math.sign(player.x-shard.x)]);
+        this.scene.sound.stopByKey(K.WallLeft)
     }
 
-    collideWalls() {}
+    collideWalls(_,wall) {
+        if (wall.x < 500)
+            this.scene.sound.play(K.Slop, {pan: this.Xpos, rate: 2, volume: 2})
+    }
     collideSource() {}
 
     private overlapWater() {

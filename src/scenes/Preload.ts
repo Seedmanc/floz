@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import WebFontFile from "~/etc/webfont";
 import {bgColor} from '~/main';
 import Credits from "~/models/Credits";
@@ -37,6 +37,29 @@ export default class PreloadScene extends Phaser.Scene
         this.load.spritesheet(K.Tail, 'tails.png',{ frameWidth: 80, frameHeight: 100})
         this.load.addFile(new WebFontFile(this.load, ['Comic Neue', 'Quicksand']))
         this.load.spritesheet(K.Source, 'source.png',{ frameWidth: 408/3, frameHeight: 136})
+
+        this.load.audio(K.Source, 'waterfall.ogg');
+        this.load.audio(K.Bullet, 'shoot.ogg');
+        this.load.audio(K.Ice, 'iceready.ogg');
+        this.load.audio(K.Dead, 'drowned.mp3');
+        this.load.audio(K.Ricochet, 'ricochet.wav');
+        this.load.audio(K.Squirt, 'squirt.mp3');
+        this.load.audio(K.Pump, 'pump.mp3');
+        this.load.audio(K.Blob2, 'blobbed.ogg');
+        this.load.audio(K.Tail, 'tailswat.ogg');
+        this.load.audio(K.Blob, 'blobsplash.mp3');
+        this.load.audio(K.Drop, 'droplet.mp3');
+        this.load.audio(K.Hit, 'hit.mp3');
+        this.load.audio(K.Move, 'move.mp3');
+        this.load.audio(K.WallLeft, 'wall.mp3');
+        this.load.audio(K.Po, 'po.mp3');
+        this.load.audio(K.Bonus, 'bonus.mp3');
+        this.load.audio(K.Slop, 'slop.mp3');
+        this.load.audio(K.Break, 'break.mp3');
+        this.load.audio(K.Charge, 'charge2.mp3');
+        this.load.audio(K.Froze, 'froze.ogg');
+        this.load.audio(K.Score, 'highscore.mp3');
+        this.load.audio(K.Over, 'gameover.mp3');
     }
 
     create() {
@@ -60,13 +83,13 @@ export default class PreloadScene extends Phaser.Scene
 
         let controls = this.add.text(W / 2, H / 2, `
                 Controls:
-Click to shoot a droplet;
+      Click to shoot a droplet;
 Long press to charge an icicle;
 Tap E or the character to heal.
         `, {
             fontFamily: 'Quicksand',
             fontSize: '24px',
-            color: '#fff',
+            color: '#266aa7',
             shadow: {stroke: true, blur: 9, color: '#858585', fill: true}
         }).setOrigin(0.5, 0.75)
 

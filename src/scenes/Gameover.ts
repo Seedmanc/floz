@@ -1,14 +1,16 @@
 import Phaser from 'phaser'
-import K from "~/const/TextureKeys";
+import K from "~/const/ResourceKeys";
 import UI from "~/models/UI";
 import {bgColor} from "~/main";
 import Credits from "~/models/Credits";
+import BaseSound = Phaser.Sound.BaseSound;
 
 export default class GameoverScene extends Phaser.Scene
 {
     #win!: boolean;
     private score;
     private highscore;
+    private music!: BaseSound;
 
 	constructor()
 	{
@@ -23,15 +25,17 @@ export default class GameoverScene extends Phaser.Scene
 
 	preload()
     {
-        if (!this.#win)
-            this.load.image(K.Dead, 'ded.png')
-        else
+        if (this.#win)
             this.load.image(K.Won, 'fullbody100.png')
+        else {
+            this.load.audio(K.Dead, 'drowned.mp3');
+            this.load.image(K.Dead, 'ded.png')
+        }
     }
 
     create()
-    {
-        let element;
+    {   let element;
+        this.sound.stopAll();
 
         if (this.#win) {
             let ui = this.add.existing((new UI(this, 775 - 120/2, 125-120/2)).toggleHP(!this.#win).setScore(this.score));
@@ -62,16 +66,23 @@ export default class GameoverScene extends Phaser.Scene
                     wordWrap: { width: 200 },
                     shadow: {stroke: true, blur: 9, color: '#8585858F', fill: true}
                 })
-            } else if (!this.highscore)
-                localStorage.setItem('floz-highscore', this.score);
+                this.sound.play(K.Score);
+            } else {
+                this.sound.play(K.Over);
+                if (!this.highscore)
+                    localStorage.setItem('floz-highscore', this.score);
+            }
 
             this.add.existing(new Credits(this, this.scale.width/2, this.scale.height - 2));
-        } else
-           element = this.add.image(this.scale.width/2, this.scale.height/2, K.Dead);
+        } else {
+            element = this.add.image(this.scale.width/2, this.scale.height/2, K.Dead);
+            (this.music = this.sound.add(K.Dead)).play()
+        }
 
         element.setInteractive({ cursor: 'pointer' })
 
         element.on('pointerup', () => {
+            this.music.stop()
             this.scene.stop();
             this.scene.start('game');
         })
