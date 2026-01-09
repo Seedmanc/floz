@@ -119,6 +119,7 @@ export default class Player extends Phaser.GameObjects.Container
         )
 
         this.body.setVelocityX(-Math.cos(angle) * projectile.IMPULSE/2)
+
         let detune = 2*(1000/(1+(this.body.drag.x-200)/300))-1500
         this.scene.sound.play(K.Move,{
             pan: this.Xpos,
@@ -126,6 +127,7 @@ export default class Player extends Phaser.GameObjects.Container
             rate: 1+(this.body.drag.x-200)/300,
             detune
         });
+
         if (this.health > 1)
           TailWobble.play()
 

@@ -124,10 +124,16 @@ export default class GameScene extends Phaser.Scene
     }
 
     win() {
-        this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) +
-            this.player.health / this.WATER_TO_POINTS);
-        this.scene.stop();
-        this.scene.start('gameover', {score: this.UI.value})
+        this.bullets.getChildren().forEach(_ => this.waterLevel+= Bullet.VOLUME)
+        this.shards.getChildren().forEach(_ => this.waterLevel+= Shard.VOLUME/2)
+        this.icicles.getChildren().forEach(_ => this.waterLevel+= Icicle.VOLUME)
+        this.raiseWater()
+        window.setTimeout(() => {
+            this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) +
+                this.player.health / this.WATER_TO_POINTS);
+            this.scene.stop();
+            this.scene.start('gameover', {score: this.UI.value})
+        })
     }
 
     lose() {

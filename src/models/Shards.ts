@@ -47,8 +47,7 @@ export default class Shard extends Projectile
                         this.scene?.shards.killAndHide(this);
                         this.disableBody(true, true);
                     }
-                    if (this.scene?.waterLevel)
-                        this.scene.waterLevel += Shard.VOLUME/2;
+                    this.scene.bullets.create(this.x, this.y)
                 }
             })
             this.scene.waterLevel += Shard.VOLUME/2
@@ -58,12 +57,10 @@ export default class Shard extends Projectile
     collidePlayer(shard: Shard, player: Player) {
         player.body.velocity.x = Phaser.Math.Average([player.body.velocity.x, 50 * Math.sign(player.x-shard.x)]);
         this.scene.sound.stopByKey(K.WallLeft)
+        this.collideWater()
     }
 
-    collideWalls(_,wall) {
-        if (wall.x < 500)
-            this.scene.sound.play(K.Slop, {pan: this.Xpos, rate: 2, volume: 2})
-    }
+    collideWalls() {}
     collideSource() {}
 
     private overlapWater() {

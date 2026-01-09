@@ -47,7 +47,7 @@ export default class Source extends Sprite
         });
 
         this.sfx = this.scene.sound.add(K.Source, {loop: true});
-        this.sfx.play(  {pan: 0.5, volume: 0.5})
+        this.sfx.play(  {pan: 0.5, volume: 0.4})
     }
 
     static waterfallRepulsor(that: any) {
