@@ -12,7 +12,8 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     protected canCollideSource;
 
     protected get Xpos(): number {
-        return 1.5*((this.body.x-this.scene.wallLeft.width)/(Number(this.scene.game.config.width)-2*this.scene.wallRight.width) - 0.5);
+        let r = 1.5*((this.body.x-this.scene.wallLeft.width)/(Number(this.scene.game.config.width)-2*this.scene.wallRight.width) - 0.5);
+        return r;
     }
 
     protected constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string, angle?, speed?) {
@@ -24,7 +25,6 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
 
         this.scene.physics.add.collider(this, this.scene.walls, this.collideWalls, undefined, this)
         this.scene.physics.add.collider(this, this.scene.waterSurface, this.collideWater, undefined, this)
-        this.scene.physics.add.collider(this, this.scene.source, this.collideSource, () => !!this.canCollideSource, this)
         window.setTimeout(() => this.delayedCall(angle, speed))
     }
 
@@ -51,5 +51,4 @@ export default abstract class Projectile extends Phaser.Physics.Arcade.Image {
     protected abstract collideWalls(projectile, wall)
     protected abstract collideWater(projectile, water)
     protected abstract collidePlayer(projectile, player)
-    protected abstract collideSource(projectile, source)
 }

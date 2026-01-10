@@ -32,7 +32,8 @@ enum keys {
     Break,
     Charge,
     Froze,
-    Over
+    Over,
+    Wave
 }
 
 const K = Object.fromEntries(

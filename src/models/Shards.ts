@@ -42,19 +42,24 @@ export default class Shard extends Projectile
             this.scene.sound.play(K.Slop, {pan: this.Xpos});
             this.timer = this.scene.time.addEvent({
                 delay: this.LIFE * 1000,
-                callback: () => {
-                    if (this?.body) {
-                        this.scene?.shards.killAndHide(this);
-                        this.disableBody(true, true);
-                    }
-                    this.scene.bullets.create(this.x, this.y)
-                }
+                callback: ()=>this.melt()
             })
             this.scene.waterLevel += Shard.VOLUME/2
         }
     }
 
+    melt() {
+        if (this?.body) {
+            this.scene?.shards.killAndHide(this);
+            this.disableBody(true, true);
+            this.scene.bullets.create(this.x, this.y)
+        }
+    }
+
     collidePlayer(shard: Shard, player: Player) {
+        if (player.body.touching.up)
+            shard.body.velocity.x = Math.sign(shard.x-player.x)*150
+
         player.body.velocity.x = Phaser.Math.Average([player.body.velocity.x, 50 * Math.sign(player.x-shard.x)]);
         this.scene.sound.stopByKey(K.WallLeft)
         this.collideWater()

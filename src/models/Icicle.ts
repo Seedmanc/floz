@@ -43,7 +43,7 @@ export default class Icicle extends Projectile
         this.scene.physics.add.overlap(this, this.scene.blobs, this.pierceBlob, undefined, this)
         this.scene.physics.world.once('worldbounds', this.collideWalls, this)
         this.scene.physics.add.collider(this.scene.icicles, this, this.annihilate)
-
+        this.scene.physics.add.collider(this, this.scene.source, this.collideSource, () => this.canCollideSource, this)
         Icicle.sfx[K.Ricochet] = this.scene.sound.add(K.Ricochet);
     }
 
@@ -105,8 +105,8 @@ export default class Icicle extends Projectile
         if (icicle.angle > tol && icicle.angle < 180-tol) {
             this.body.setVelocityY(0);
             this.break();
-        } else
-            this.scene.sound.play(K.Slop, {pan: this.Xpos});
+        }
+        this.scene.sound.play(K.Slop, {pan: this.Xpos});
     }
 
     collidePlayer(icicle: Icicle, player: Player) {

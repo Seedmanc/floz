@@ -71,7 +71,7 @@ export default class GameoverScene extends Phaser.Scene
                         })
                     this.sound.play(K.Score);
                     this.reward++;
-                    localStorage.setItem('floz-reward', this.reward);
+                    localStorage.setItem('floz-reward', this.reward+'');
 
                     if (this.reward > this.MAX_REWARD)
                         this.reward = Phaser.Math.Between(1, this.MAX_REWARD)

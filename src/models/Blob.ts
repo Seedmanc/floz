@@ -45,11 +45,12 @@ export default class Blob extends Projectile
     collideWalls(){}
 
     collideWater(blob: Blob, water) {
+        let U =  (blob.volume-blob.VALUE)*(blob.body.velocity.y)/500
         this.scene.UI.addScore( (blob.VALUE)/10 + Math.round((blob.volume - blob.VALUE)/Bullet.VOLUME/2))
         blob.kill();
         let size = (blob.volume-Bullet.VOLUME)/blob.VALUE
 
-        this.scene.waterLevel += blob.volume;
+        this.scene.waterLevel += (blob.volume - Bullet.VOLUME);
         this.scene.sound.play(K.Blob, {
             pan: this.Xpos,
             rate: 1.25/size+ (0.5-Math.random())/2,
@@ -58,7 +59,12 @@ export default class Blob extends Projectile
 
         if (this.scene.blobs.countActive() == 0) {
             this.scene.win()
+            return;
         }
+        this.scene.bullets.create(blob.x-blob.body.radius/2, blob.y ).setVelocityY(-U*3)
+        let wave1 = this.scene.waves.create(blob.x-blob.body.radius*2, blob.y+blob.body.radius/1.5).setVelocityX(-U*2);
+        let wave2 = this.scene.waves.create(blob.x+blob.body.radius, blob.y+blob.body.radius/1.5).setVelocityX(U*2);
+        [wave1, wave2].forEach(w => w.defaultScale+=U/300)
     }
 
     collidePlayer(blob: Blob, player: Player) {

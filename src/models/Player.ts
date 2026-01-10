@@ -19,6 +19,8 @@ import Blinking from "~/tweens/Blinking";
 import {bgColor} from "~/main";
 import DrownState from "~/statemachine/Drown";
 import BaseSound = Phaser.Sound.BaseSound;
+import createDampedOscillation from "~/tweens/WaveWobble";
+import Tween = Phaser.Tweens.Tween;
 
 export default class Player extends Phaser.GameObjects.Container
 {
@@ -32,6 +34,7 @@ export default class Player extends Phaser.GameObjects.Container
     waterToll = 0;
     pumping!: Phaser.Animations.AnimationState;
     sfx: { [key: number]: BaseSound } = {};
+    wobble!: Tween;
 
     readonly WATERLINE = 25
 
@@ -44,7 +47,7 @@ export default class Player extends Phaser.GameObjects.Container
     _keyE: Phaser.Input.Keyboard.Key;
 
     get isHurt() {
-        return  this.scene.MAX_HEALTH - this.health;
+        return this.scene.MAX_HEALTH - this.health;
     }
 
     get Xpos(): number {
@@ -59,7 +62,7 @@ export default class Player extends Phaser.GameObjects.Container
         else if (r > 0 && r < Math.PI/2)
             r = Math.min(Math.PI/5, r)
 
-        return r;
+        return r+this.angle/50;
     }
 
     constructor(scene: Phaser.Scene, x: number, y: number)
@@ -210,6 +213,14 @@ export default class Player extends Phaser.GameObjects.Container
         TailWobble.add(this);
         TailSwatX.add(this);
         TailSwatY.add(this);
+
+        this.wobble = createDampedOscillation(this.scene, this, {
+            duration: 3000,
+            amplitude: 20,
+            frequency: 3,
+            decayRate: 1.0,
+            onComplete: null
+        });
 
         this.addPumpButton()
         this.handAndTail();

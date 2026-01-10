@@ -24,6 +24,7 @@ export default class PreloadScene extends Phaser.Scene
         this.load.spritesheet(K.Player, 'player.png', { frameWidth: 440/4, frameHeight: 111})
         this.load.image(K.Blob, 'blob.png')
         this.load.image(K.Blob2, 'blob2.png')
+        this.load.image(K.Wave, 'wave.png')
         this.load.image(K.Score, 'score.png')
         this.load.spritesheet(K.Face, 'face.png', { frameWidth: 500/4, frameHeight: 145})
         this.load.image(K.Ice, 'ice.png')

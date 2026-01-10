@@ -8,7 +8,7 @@ import Image = Phaser.Physics.Arcade.Image;
 
 export default class Bullet extends Projectile
 {
-    defaultScale = 0.5;
+    defaultScale = 0.45;
     static readonly VOLUME = 25;
     static readonly IMPULSE = 500;
     static readonly GROUP = 'bullets';
@@ -39,7 +39,7 @@ export default class Bullet extends Projectile
         if (bullet.x > this.scene.wallRight.getTopLeft().x + bullet.displayWidth)
             return;
 
-        bullet.setScale(0.25, 0.75).setDepth(-1)
+        bullet.setScale(0.2, 0.7).setDepth(-1)
         let direction = Math.sign(this.body.velocity.y);
 
         if (wall == this.scene.wallLeft) {

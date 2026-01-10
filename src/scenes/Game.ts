@@ -13,7 +13,19 @@ import Shard from "~/models/Shards";
 import Source from "~/models/Source";
 import S from "~/const/StateKeys";
 import PumpState from "~/statemachine/Pump";
-import Cooldown from "~/tweens/Cooldown";
+import Wave from "~/models/Wave";
+
+function debounce(func, wait) {
+    let inThrottle;
+    return function() {
+        const context = this;
+        const args = arguments;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, wait);
+        }
+}}
 
 export default class GameScene extends Phaser.Scene
 {
@@ -24,6 +36,7 @@ export default class GameScene extends Phaser.Scene
     player!: Player;
     blobs!: Group
     bullets!: Group;
+    waves!: Group;
     shards!: Group;
     waterLevel!: number;
     icicles!: Group
@@ -32,6 +45,8 @@ export default class GameScene extends Phaser.Scene
     particles!: Phaser.GameObjects.Particles.ParticleEmitterManager;
     debug!: Phaser.GameObjects.Text;
     toggleDebug!: Phaser.Input.Keyboard.Key;
+
+    private playBounce = debounce(() =>this.sound.play(K.WallLeft, {pan: this.player.Xpos, volume: 1, detune: (Math.random()-0.5)*1000}), 500);
 
     readonly MAX_HEALTH = 3;
     readonly INFLOW_SPEED = 1/3300;
@@ -106,6 +121,7 @@ export default class GameScene extends Phaser.Scene
     addEntities() {
         this.player = new Player(this, this.scale.width/2, this.scale.height-this.waterSurface.height*1.5);
         this.bullets = this.physics.add.group({allowGravity: true , classType: Bullet });
+        this.waves = this.physics.add.group({allowGravity: false , classType: Wave });
         this.icicles = this.physics.add.group({allowGravity: true, classType: Icicle });
         this.shards = this.physics.add.group({allowGravity: true, classType: Shard });
     }
@@ -114,8 +130,8 @@ export default class GameScene extends Phaser.Scene
         this.physics.add.collider(this.player, this.waterSurface, Source.waterfallRepulsor);
         this.physics.add.collider(this.player, this.UI)
         this.physics.add.collider(this.player, this.walls, (player,wall) => {
-            if (!this.physics.overlap(this.player, this.shards))
-                this.sound.play(K.WallLeft, {pan: player['Xpos'], volume: 1.5})
+            if (!this.physics.overlap(this.player, this.shards) && !this.sound.get(K.WallLeft)?.isPlaying)
+                this.playBounce()
             // @ts-ignore
             if (wall.x < this.game.config.width/2)
                 this.player.scene.sound.stopByKey(K.Move)
@@ -124,16 +140,16 @@ export default class GameScene extends Phaser.Scene
     }
 
     win() {
-        this.bullets.getChildren().forEach(_ => this.waterLevel+= Bullet.VOLUME)
-        this.shards.getChildren().forEach(_ => this.waterLevel+= Shard.VOLUME/2)
-        this.icicles.getChildren().forEach(_ => this.waterLevel+= Icicle.VOLUME)
+        this.bullets.getChildren().filter(el => el.active).forEach(_ => this.waterLevel+= Bullet.VOLUME)
+        this.shards.getChildren().filter(el => el.active).forEach(_ => this.waterLevel+= Shard.VOLUME/2)
+        this.icicles.getChildren().filter(el => el.active).forEach(_ => this.waterLevel+= Icicle.VOLUME)
         this.raiseWater()
         window.setTimeout(() => {
             this.UI.addScore(Math.round((this.scale.height - this.waterSurface.displayHeight - this.BLOBS_TOP) * this.WATER_TO_POINTS) +
                 this.player.health / this.WATER_TO_POINTS);
             this.scene.stop();
             this.scene.start('gameover', {score: this.UI.value})
-        })
+        }, 500)
     }
 
     lose() {
