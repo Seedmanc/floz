@@ -7,6 +7,7 @@ import Bullet from "~/models/Bullet";
 
 export default class Blob extends Projectile
 {
+    static Value_ = 100
     VALUE = 100;
     volume = this.VALUE;
     canRotate = false

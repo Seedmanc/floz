@@ -33,7 +33,8 @@ enum keys {
     Charge,
     Froze,
     Over,
-    Wave
+    Wave,
+    Nope
 }
 
 const K = Object.fromEntries(

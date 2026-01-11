@@ -13,6 +13,7 @@ export module ChargeState {
         this._inputs.off('pointerup')
         this._inputs.off('pointerupoutside')
         this._reticicle.setVisible(false)
+        this.scene.sound.stopByKey(K.Charge)
     }
     export function onUpdate(this: Player) {
         if (this._inputs.activePointer.getDuration() > 1000) {

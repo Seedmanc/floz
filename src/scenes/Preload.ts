@@ -61,6 +61,7 @@ export default class PreloadScene extends Phaser.Scene
         this.load.audio(K.Froze, 'froze.ogg');
         this.load.audio(K.Score, 'highscore.mp3');
         this.load.audio(K.Over, 'gameover.mp3');
+        this.load.audio(K.Nope, 'nope.ogg');
     }
 
     create() {

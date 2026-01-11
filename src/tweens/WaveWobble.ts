@@ -16,9 +16,9 @@ export default function createDampedOscillation(scene, gameObject, config: any =
     const tween = scene.tweens.add({
         targets: { progress: 0 },  // Clean dummy object
         progress: 1,
+        amplitude,
         duration: duration,
         ease: 'Expo.easeOut',
-        paused: true,
         onUpdate: function(tweenObj) {
             const t = tweenObj.progress;  // 0 to 1 progress
             const decay = Math.exp(-decayRate * t);
@@ -30,12 +30,7 @@ export default function createDampedOscillation(scene, gameObject, config: any =
         }
     });
 
-    // Handle early interruptions (pause/stop)
-    tween.on('pause', finalizeOscillation);
-    tween.on('stop', finalizeOscillation);
-
     function finalizeOscillation() {
-        if (isComplete) return;
         isComplete = true;
         gameObject.angle = baseAngle;  // Snap to rest position
 

@@ -19,8 +19,9 @@ import Blinking from "~/tweens/Blinking";
 import {bgColor} from "~/main";
 import DrownState from "~/statemachine/Drown";
 import BaseSound = Phaser.Sound.BaseSound;
-import createDampedOscillation from "~/tweens/WaveWobble";
 import Tween = Phaser.Tweens.Tween;
+import Shake from "~/tweens/Shake";
+import Blob from "~/models/Blob";
 
 export default class Player extends Phaser.GameObjects.Container
 {
@@ -91,7 +92,7 @@ export default class Player extends Phaser.GameObjects.Container
 
            if (belowWater <= -this.WATERLINE) {
                this.damage();
-               this.waterToll += 100;
+               this.waterToll += Blob.Value_;
            }
            if (this.body.embedded && this.body.checkCollision.down)
                this.body.setVelocityY(-this.WATERLINE*1.2)
@@ -111,9 +112,9 @@ export default class Player extends Phaser.GameObjects.Container
     shoot(projectile: typeof Icicle | typeof Bullet) {
         let angle = this.aimAngle;
 
-        if (this.shootTimeout && !this.scene.physics.world.drawDebug)
+        if (!this.scene.physics.world.drawDebug && (this.shootTimeout || this.scene.bullets.getChildren().filter(b => b.active).length >= 5))
             return;
-        this.shootTimeout = setTimeout(() => this.shootTimeout = 0, 200);
+        this.shootTimeout = setTimeout(() => this.shootTimeout = 0, 400);
 
         this.scene[projectile.GROUP].create(
             this.body.center.x + this._reticicle.x*this.flipMul,
@@ -214,14 +215,6 @@ export default class Player extends Phaser.GameObjects.Container
         TailSwatX.add(this);
         TailSwatY.add(this);
 
-        this.wobble = createDampedOscillation(this.scene, this, {
-            duration: 3000,
-            amplitude: 20,
-            frequency: 3,
-            decayRate: 1.0,
-            onComplete: null
-        });
-
         this.addPumpButton()
         this.handAndTail();
     }
@@ -278,6 +271,7 @@ export default class Player extends Phaser.GameObjects.Container
             .addState(S.Pumping, PumpState)
             .addState(S.Drowning, DrownState)
             .setState(S.Idle)
+        IdleState.tween = Shake.add(this.progress, () => IdleState.isShaking = false)
     }
 
     private preUpdate() {

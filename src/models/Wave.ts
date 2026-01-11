@@ -2,11 +2,11 @@ import K from "~/const/ResourceKeys";
 import Phaser from "phaser";
 import Projectile from "~/models/Projectile";
 import Player from "~/models/Player";
+import createDampedOscillation from "~/tweens/WaveWobble";
 
 
 export default class Wave extends Projectile
-{
-    defaultScale = 0.3;
+{   defaultScale = 0.3;
 
     constructor(scene: Phaser.Scene, x: number, y: number, ...etc)
     {
@@ -29,7 +29,14 @@ export default class Wave extends Projectile
 
     collidePlayer(projectile, player:Player) {
         this.collideWalls(projectile)
-        player.wobble.resetTweenData(false)
-        player.wobble.play();
+        let div =player.waterToll/300
+        let mul = (0.5+this.defaultScale)**2
+        setTimeout(() => player.wobble = createDampedOscillation(this.scene, player, {
+            duration: (2000 - 1000*div)*mul,
+            amplitude: (15 - 10*div)*mul,
+            frequency: (2 - div)*mul,
+            decayRate: 1.0,
+            onComplete: null
+        }) );
     }
 }

@@ -7,6 +7,7 @@ import K from "~/const/ResourceKeys";
 export default abstract class PumpState implements Omit<IState, 'name'> {
     private static timer;
     private static presses;
+    private static maxCooldown = 1;
 
     static readonly maxPresses = 10;
     static isCooldown: boolean;
@@ -14,6 +15,7 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
     static onEnter(this: Player) {
         PumpState.presses = PumpState.maxPresses;
         PumpState.checkTime(this)
+        PumpState.maxCooldown = (this.scene.MAX_HEALTH - this.scene.player.health)*0.75;
 
         this.progress.setVisible(true)
         this.pumpText.text = ' e '
@@ -68,7 +70,7 @@ export default abstract class PumpState implements Omit<IState, 'name'> {
         PumpState.isCooldown = true;
 
         this.pumpText.setVisible(false)
-        let penaltyTime = (PumpState.maxPresses - PumpState.presses) * 10
+        let penaltyTime = (PumpState.maxPresses - PumpState.presses) * 10 * PumpState.maxCooldown
         this.progress.setAlpha(0.75)
 
         Cooldown.run(this, penaltyTime, this.progress.setValue)

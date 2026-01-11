@@ -3,11 +3,23 @@ import Bullet from '~/models/Bullet';
 import Icicle from '~/models/Icicle';
 import Player from '~/models/Player';
 import {IState} from '~/statemachine/StateMachine';
-
+import PumpState from "~/statemachine/Pump";
+import K from "~/const/ResourceKeys";
 export default abstract class IdleState implements Omit<IState, 'name'> {
+    static isShaking = false;
+    static tween;
+
     static onUpdate(this: Player) {
-        if (this._inputs.activePointer.getDuration() > 250 && this._inputs.activePointer.isDown)
-            this.stateMachine.setState(S.Charging)
+        if (this._inputs.activePointer.getDuration() > 250 && this._inputs.activePointer.isDown) {
+            if (PumpState.isCooldown && !this.scene.physics.world.drawDebug) {
+                if (!IdleState.isShaking) {
+                    IdleState.tween.play()
+                    this.scene.sound.play(K.Nope)
+                    IdleState.isShaking = true;
+                }
+            } else
+                this.stateMachine.setState(S.Charging)
+        }
     }
     static onEnter(this: Player) {
         this._reticicle.setVisible(false)
@@ -20,6 +32,7 @@ export default abstract class IdleState implements Omit<IState, 'name'> {
         this._inputs.on('pointerup', IdleState.onPointerUp.bind(this));
     }
     static onExit(this: Player) {
+        IdleState.isShaking = false;
         this._inputs.off('pointerup')
         this._inputs.off('pointerupoutside')
         this._keyE.off('down', this.tryPump, this)
