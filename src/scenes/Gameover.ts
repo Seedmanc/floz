@@ -12,7 +12,7 @@ export default class GameoverScene extends Phaser.Scene
     private highscore;
     private music!: BaseSound;
     private reward!: number;
-    private readonly MAX_REWARD = 5;
+    static readonly MAX_REWARD = 5;
 
 	constructor()
 	{
@@ -29,8 +29,13 @@ export default class GameoverScene extends Phaser.Scene
 	preload()
     {
         if (this.#win) {
-            for (let i = 0; i<= this.MAX_REWARD; i++)
-                this.load.image('win' + i, 'win' + i + '.jpg')
+            if (this.highscore && this.score > this.highscore) {
+                this.reward++;
+                if (this.reward > GameoverScene.MAX_REWARD)
+                    this.reward = Phaser.Math.Between(1, GameoverScene.MAX_REWARD)
+            }
+            this.reward = Math.min(this.reward, GameoverScene.MAX_REWARD);
+            this.load.image('win' + this.reward, 'win' + this.reward + '.jpg')
         } else {
             this.load.audio(K.Dead, 'drowned.mp3');
             this.load.image(K.Dead, 'ded.png')
@@ -70,17 +75,12 @@ export default class GameoverScene extends Phaser.Scene
                             shadow: {stroke: true, blur: 8, color: '#00000080', fill: true}
                         })
                     this.sound.play(K.Score);
-                    this.reward++;
                     localStorage.setItem('floz-reward', this.reward+'');
-
-                    if (this.reward > this.MAX_REWARD)
-                        this.reward = Phaser.Math.Between(1, this.MAX_REWARD)
             } else {
                 this.sound.play(K.Over);
                 if (!this.highscore)
                     localStorage.setItem('floz-highscore', this.score);
             }
-            this.reward = Math.min(this.reward, this.MAX_REWARD);
             this.add.image(this.scale.width/2, this.scale.height/2, 'win'+this.reward)
                 .setOrigin(0.5, 0.5).setSize(1000,1000).setDepth(-1);
 

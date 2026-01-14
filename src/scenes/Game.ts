@@ -18,6 +18,7 @@ import Wave from "~/models/Wave";
 function debounce(func, wait) {
     let inThrottle;
     return function() {
+        // @ts-ignore
         const context = this;
         const args = arguments;
         if (!inThrottle) {
