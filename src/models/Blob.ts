@@ -62,9 +62,10 @@ export default class Blob extends Projectile
             this.scene.win()
             return;
         }
-        this.scene.bullets.create(blob.x-blob.body.radius/2, blob.y ).setVelocityY(-U*3)
-        let wave1 = this.scene.waves.create(blob.x-blob.body.radius*2, blob.y+blob.body.radius/1.5).setVelocityX(-U*2);
-        let wave2 = this.scene.waves.create(blob.x+blob.body.radius, blob.y+blob.body.radius/1.5).setVelocityX(U*2);
+        let extra = this.scene.source.freezeLevel == 2 ? 0 : 0.25
+        this.scene.bullets.create(blob.x-blob.body.radius/2, blob.y ).setVelocityY(-U*(3.25+extra))
+        let wave1 = this.scene.waves.create(blob.x-blob.body.radius*2, blob.y+blob.body.radius/1.5).setVelocityX(-U*(2.25+extra));
+        let wave2 = this.scene.waves.create(blob.x+blob.body.radius, blob.y+blob.body.radius/1.5).setVelocityX(U*(2.25+extra));
         [wave1, wave2].forEach(w => w.defaultScale+=U/300)
     }
 

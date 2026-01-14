@@ -8,6 +8,7 @@ body {
 #game {
     background: #c4ced8; 
     max-height: 1000px;
+    height: 100vw!important;
 }
 .canvas-placeholder {
     display: flex;
