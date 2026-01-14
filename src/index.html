@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 	<head>
+		<script>
+			var head = document.getElementsByTagName('HEAD')[0];
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'styles.module.css';
+			head.appendChild(link);
+		</script>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<!-- Google tag (gtag.js) -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-34RM4NL3M6"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];
@@ -12,14 +21,6 @@
 		</script>
 
 		<title>Floz: an ounce of water</title>
-		<script>
-			var head = document.getElementsByTagName('HEAD')[0];
-			var link = document.createElement('link');
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = 'styles.module.css';
-			head.appendChild(link);
-		</script>
 
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<link rel="icon" href="../public/favicon.png" sizes="128x128" type="image/png">
@@ -35,13 +36,13 @@
 		<meta name="title" content="Floz">
 		<meta name="publisher" content="Seedmanc">
 		<meta name="abstract" content="A galaxian/breakout game concept I saw in my dream">
-		<meta name="date" content="2022-19-06">
+		<meta name="date" content="2026-14-01">
 		<meta name="theme-color" content="#a0c4e4"/>
-		<meta property="og:url" content="http://seedmanc.github.io/floz">
-		<link rel="canonical" href="http://seedmanc.github.io/floz">
-		<meta property="og:image" content="http://seedmanc.github.io/floz/floz.png">
+		<meta property="og:url" content="https://seedmanc.github.io/floz">
+		<link rel="canonical" href="https://seedmanc.github.io/floz">
+		<meta property="og:image" content="https://seedmanc.github.io/floz/floz.png">
 	</head>
-	<body style="background: #a0c4e4">
+	<body style="background: rgb(39, 107, 168)">
 		<div id="game">
 			<div class="canvas-placeholder">
 				<img class="rotate" src="../public/ice.png">
