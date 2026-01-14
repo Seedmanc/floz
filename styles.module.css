@@ -8,6 +8,7 @@ body {
 #game {
     background: #c4ced8; 
     max-height: 1000px;
+    height: 100vw!important;
 }
 .canvas-placeholder {
     display: flex;
@@ -26,6 +27,7 @@ canvas {
     height: calc(100vh - 1000px) ;
     background: #266aa7;
     text-align: center;
+    user-select: none;
 }
 
 .water span {
