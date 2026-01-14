@@ -39,15 +39,14 @@ export default class PreloadScene extends Phaser.Scene
         this.load.addFile(new WebFontFile(this.load, ['Comic Neue', 'Quicksand']))
         this.load.spritesheet(K.Source, 'source.png',{ frameWidth: 408/3, frameHeight: 136})
 
-        this.load.audio(K.Source, 'waterfall.ogg');
-        this.load.audio(K.Bullet, 'shoot.ogg');
-        this.load.audio(K.Ice, 'iceready.ogg');
-        this.load.audio(K.Dead, 'drowned.mp3');
-        this.load.audio(K.Ricochet, 'ricochet.wav');
+        this.load.audio(K.Source, 'waterfall.mp3');
+        this.load.audio(K.Bullet, 'shoot.mp3');
+        this.load.audio(K.Ice, 'iceready.mp3');
+        this.load.audio(K.Ricochet, 'ricochet.mp3');
         this.load.audio(K.Squirt, 'squirt.mp3');
         this.load.audio(K.Pump, 'pump.mp3');
-        this.load.audio(K.Blob2, 'blobbed.ogg');
-        this.load.audio(K.Tail, 'tailswat.ogg');
+        this.load.audio(K.Blob2, 'blobbed.mp3');
+        this.load.audio(K.Tail, 'tailswat.mp3');
         this.load.audio(K.Blob, 'blobsplash.mp3');
         this.load.audio(K.Drop, 'droplet.mp3');
         this.load.audio(K.Hit, 'hit.mp3');
@@ -58,10 +57,10 @@ export default class PreloadScene extends Phaser.Scene
         this.load.audio(K.Slop, 'slop.mp3');
         this.load.audio(K.Break, 'break.mp3');
         this.load.audio(K.Charge, 'charge2.mp3');
-        this.load.audio(K.Froze, 'froze.ogg');
+        this.load.audio(K.Froze, 'froze.mp3');
         this.load.audio(K.Score, 'highscore.mp3');
         this.load.audio(K.Over, 'gameover.mp3');
-        this.load.audio(K.Nope, 'nope.ogg');
+        this.load.audio(K.Nope, 'nope.mp3');
     }
 
     create() {
@@ -92,7 +91,7 @@ Tap E or the character to heal.
             fontFamily: 'Quicksand',
             fontSize: '24px',
             color: '#266aa7',
-            shadow: {stroke: true, blur: 9, color: '#858585', fill: true}
+            shadow: {stroke: true, blur: 9, color: '#FFFFFF', fill: true}
         }).setOrigin(0.5, 0.75)
 
         let highScore = localStorage.getItem('floz-highscore');

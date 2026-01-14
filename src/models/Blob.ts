@@ -21,6 +21,12 @@ export default class Blob extends Projectile
 
     static drop(bullet, blob) {
         blob.setAccelerationY(200)
+        if (bullet || !blob.canRotate)
+            blob.scene.sound.play(K.Po, {
+                pan: blob.body.x/1000-0.5,
+                volume: (blob.volume/blob.VALUE)**2,
+                rate: blob.VALUE/blob.volume
+            });
         blob.canRotate = true;
 
         if (bullet) {
@@ -30,11 +36,6 @@ export default class Blob extends Projectile
             bullet.active = false;
             bullet.disableBody(true, true);
         }
-        blob.scene.sound.play(K.Po, {
-            pan: blob.body.x/1000-0.5,
-            volume: (blob.volume/blob.VALUE)**2,
-            rate: blob.VALUE/blob.volume
-        });
     }
 
     kill() {
@@ -62,8 +63,8 @@ export default class Blob extends Projectile
             this.scene.win()
             return;
         }
-        let extra = this.scene.source.freezeLevel == 2 ? 0 : 0.25
-        this.scene.bullets.create(blob.x-blob.body.radius/2, blob.y ).setVelocityY(-U*(3.25+extra))
+        let extra = this.scene.source.freezeLevel > 0 ? 0.5 : 0
+        this.scene.bullets.create(blob.x-blob.body.radius/2, blob.y ).setVelocityY(-U*(3.25-extra))
         let wave1 = this.scene.waves.create(blob.x-blob.body.radius*2, blob.y+blob.body.radius/1.5).setVelocityX(-U*(2.25+extra));
         let wave2 = this.scene.waves.create(blob.x+blob.body.radius, blob.y+blob.body.radius/1.5).setVelocityX(U*(2.25+extra));
         [wave1, wave2].forEach(w => w.defaultScale+=U/300)

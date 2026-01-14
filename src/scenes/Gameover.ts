@@ -22,7 +22,7 @@ export default class GameoverScene extends Phaser.Scene
 	init(obj) {
 	    this.#win = obj && !!obj.score;
 	    this.score = obj.score;
-        this.highscore = localStorage.getItem('floz-highscore');
+        this.highscore = Number(localStorage.getItem('floz-highscore') || 0);
         this.reward = Number(localStorage.getItem('floz-reward')) || 0;
     }
 
